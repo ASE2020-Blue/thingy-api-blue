@@ -1,11 +1,11 @@
-# Question
+# :question: Question
 * Should all user stories, really be user centered?
     * Or could we imagine, creating stories for infrastructure/tests etc.?
 
 ---
 ---
 
-# User stories
+# :star: :busts_in_silhouette: User stories
 ## Thingy initialisation
 The user wants to name the place where he places a new thingy
 
