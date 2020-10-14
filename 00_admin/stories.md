@@ -17,6 +17,13 @@ change the location of its published data
 
 
 
+## Authentication
+The user wants to protect the thingys data with credentials
+
+No sign-up, permissions, roles. Simply few initial logins (with potentially a _forgot password?_)
+
+
+
 ## Reporting - Messaging - Weekly report
 The user wants to get reports weekly, by message
 
@@ -27,8 +34,19 @@ The user wants to get reports monthly, by message
 
 
 
+## Reporting - Messaging - Silent mode
+The user wants to enable/disable a silent mode, to delay reports or/and alerts,
+using different commands
+
+
+
 ## Reporting - App - Graphical report
 The user wants to see a certains report (weekly or monthly), more graphically
+
+
+
+## Reporting - App - Location selection
+The user wants to see the reports of different locations/subjects
 
 
 
