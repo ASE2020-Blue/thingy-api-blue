@@ -1,0 +1,1 @@
+setInterval(() => console.log("Hello from the messenger bot"), 1500);
