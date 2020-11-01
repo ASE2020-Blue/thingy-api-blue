@@ -38,7 +38,7 @@ var Todo = mongoose.model("Todo", todoSchema);
 
 
 router
-  .get('/thingy_places/', thingy_places_list)
+  .get('/hello/', hello_world)
  
   /*
   //TODOS
@@ -67,9 +67,8 @@ router
   ;
 
 
-async function thingy_places_list(ctx) {
-  var thingy_places = await thingy_places.find().exec();
-  ctx.body = thingy_places
+async function hello_world(ctx){
+  ctx.body = "Hello, World !"
 }
 
 /*

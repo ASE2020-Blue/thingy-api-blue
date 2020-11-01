@@ -4,7 +4,7 @@
   "description": "backend of the thingy project for team Blue",
   "main": "backend_koa.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
