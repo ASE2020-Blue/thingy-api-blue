@@ -9,6 +9,7 @@
     "start": "node $NODE_OPTIONS ./bot.js"
   },
   "dependencies": {
-    "grpc": "^1.22.5"
+    "grpc": "^1.22.5",
+    "telegraf": "^3.38.0"
   }
 }
