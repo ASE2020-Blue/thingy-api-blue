@@ -4,7 +4,7 @@
   "description": "backend of the thingy project for team Blue",
   "main": "backend_koa.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./test"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "@koa/cors": "^3.1.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
-    "koa-router": "^9.4.0"
+    "koa-router": "^9.4.0",
+    "mocha": "^8.2.0"
   }
 }
