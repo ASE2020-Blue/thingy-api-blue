@@ -19,11 +19,11 @@
 
 ## Todos
 
-- [ ] Create bot with:
-    - [ ] Token
-    - [ ] Username
-    - [ ] Name
-- [ ] env variable to set to who to text
+- [X] Create bot with:
+    - [X] Token
+    - [X] Username: _[@ASEBlueBot](t.me/ASEBlueBot)_
+    - [X] Name: _ASE-Blue_
+- [X] env variable to set to who to text
 - [ ] Global commands: `/start, /help, /settings`
 - [ ] Set help commands with `/setcommands` to the _BotFather_
 - [ ] Use keyboards and/or inline keyboards ([examples](https://core.telegram.org/bots#keyboards))
