@@ -4,7 +4,7 @@
 
 
 ### Building `.proto` files
-    ../protos/build_protos.sh ./src/proto ./src/proto/@types
+    ../protos/build_protos.sh ./src/proto ./src/@types/proto
 
 
 ## library selection
