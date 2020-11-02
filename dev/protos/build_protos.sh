@@ -94,7 +94,7 @@ echo
 echo "Building js files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
   --js_out="import_style=commonjs,binary:$JS_OUT" \
-  --grpc_out="$JS_OUT" \
+  --grpc_out=grpc_js:"$JS_OUT" \
   --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
   -I "$DIR" \
   $BUILD_FILES
@@ -103,7 +103,7 @@ echo
 
 echo "Building ts files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
-  --ts_out="$TS_OUT" \
+  --ts_out=grpc_js:"$TS_OUT" \
   --plugin=protoc-gen-ts="$DIR/node_modules/.bin/protoc-gen-ts" \
   -I "$DIR" \
   $BUILD_FILES
