@@ -78,14 +78,14 @@ fi
 # ------------
 # FIXME
 # ------------
-# Trying fixing it by prefixing the directory
-if ! [ -e "$BUILD_FILES" ]; then
-  BUILD_FILES="$DIR/"$BUILD_FILES
-fi
-if ! [ -e "$BUILD_FILES" ]; then
-  >&2 echo "No target proto files found with: $BUILD_FILES"
-  exit 1
-fi
+## Trying fixing it by prefixing the directory
+#if ! [ -e "$BUILD_FILES" ]; then
+#  BUILD_FILES="$DIR/"$BUILD_FILES
+#fi
+#if ! [ -e "$BUILD_FILES" ]; then
+#  >&2 echo "No target proto files found with: $BUILD_FILES"
+#  exit 1
+#fi
 
 
 

@@ -3,9 +3,10 @@ FROM node:12-alpine
 
 RUN mkdir /root/app
 WORKDIR /root/app
-VOLUME [ "/root/app" ]
 
 COPY ./messenger-app/package.json /root/app
 RUN yarn install
+
+VOLUME [ "/root/app" ]
 
 CMD ["yarn", "run", "start"]
