@@ -1,10 +1,10 @@
-// package: 
+// package:
 // file: thingy_localization.proto
 
 /* tslint:disable */
 /* eslint-disable */
 
-import * as grpc from "grpc";
+import * as grpc from "@grpc/grpc-js";
 import * as thingy_localization_pb from "./thingy_localization_pb";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 

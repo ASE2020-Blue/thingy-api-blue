@@ -1,5 +1,5 @@
+import {sendUnaryData, ServerUnaryCall} from '@grpc/grpc-js';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
-import {sendUnaryData, ServerUnaryCall} from 'grpc';
 import {Telegram} from 'telegraf';
 
 import {IMessengerServer} from '../@types/proto/messenger_grpc_pb';
@@ -16,7 +16,7 @@ export class MessengerServer implements IMessengerServer {
         this.telegram = telegram;
     }
 
-    public sendTestMessage(call: ServerUnaryCall<TestMessageRequest>, callback: sendUnaryData<Empty>): void {
+    public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
         console.log(`${new Date().toISOString()}    sendTestMessage`);
         console.log(`\t"${call.request.getText()}"`);
 

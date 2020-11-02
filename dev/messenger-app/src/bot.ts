@@ -1,5 +1,3 @@
-import * as grpc from "grpc";
-
 const dotenv = require('dotenv');
 /**
  * Get the key-values of the `.env` file, and place then in the `process.env` variable
