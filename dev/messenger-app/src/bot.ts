@@ -1,3 +1,5 @@
+import { server } from './services/Server';
+
 const dotenv = require('dotenv');
 /**
  * Get the key-values of the `.env` file, and place then in the `process.env` variable
@@ -26,4 +28,8 @@ bot.start((ctx) => {
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 bot.on('sticker', (ctx) => ctx.reply('👍'));
 bot.hears('hi', (ctx) => ctx.reply('Hey there mister'));
-bot.launch();
+bot.launch()
+    .then(() => {
+        console.log('Starting gRPC');
+        server.start();
+    });
