@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+
+/**
+ * 1. Node-Red get button trigger (2 clicks)
+ * 2. Ask messenger to ask for location
+ * 3. Messenger, tells backend which location to store
+ */
+
+service Localization {
+    /**
+     * Implemented by the messenger app
+     */
+    rpc AskNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
+    /**
+     * Implemented by the backend
+     */
+    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
+}
+
+
+message ThingyLocalization {
+    string thingy_uudi = 1;
+    string location = 2;
+}

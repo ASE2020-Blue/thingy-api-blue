@@ -1,4 +1,4 @@
-// package: messenger
+// package: 
 // file: messenger.proto
 
 /* tslint:disable */
@@ -8,9 +8,6 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class TestMessageRequest extends jspb.Message { 
-    getChatid(): string;
-    setChatid(value: string): TestMessageRequest;
-
     getText(): string;
     setText(value: string): TestMessageRequest;
 
@@ -27,7 +24,6 @@ export class TestMessageRequest extends jspb.Message {
 
 export namespace TestMessageRequest {
     export type AsObject = {
-        chatid: string,
         text: string,
     }
 }

@@ -1,4 +1,4 @@
-// package: messenger
+// package: 
 // file: messenger.proto
 
 /* tslint:disable */
@@ -13,7 +13,7 @@ interface IMessengerService extends grpc.ServiceDefinition<grpc.UntypedServiceIm
 }
 
 interface IMessengerService_ISendTestMessage extends grpc.MethodDefinition<messenger_pb.TestMessageRequest, google_protobuf_empty_pb.Empty> {
-    path: "/messenger.Messenger/SendTestMessage";
+    path: "/Messenger/SendTestMessage";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<messenger_pb.TestMessageRequest>;
