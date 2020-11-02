@@ -1,5 +1,14 @@
 # Messenger App 🔔 📱
 
+## Getting started
+
+
+### Building `.proto` files
+    ../protos/build_protos.sh ./src/proto ./src/proto/@types
+
+
+## library selection
+
 * Telegram `Node` examples: https://core.telegram.org/bots/samples#node-js
 
     * [telgraf.js](https://github.com/telegraf/telegraf):
@@ -12,9 +21,15 @@
         * 🥳 `Tests`: [example](https://github.com/mast/telegram-bot-api#running-tests)
 
 
-## Choice
+### Choice
 
 ![Telegraf](https://github.com/telegraf/telegraf/raw/develop/docs/header.png)
+
+
+### Inspiration
+
+[Podsearch bot](https://github.com/Fazendaaa/podsearch_bot), as it developed with
+`TypeScript` and has running tests on `Travis`.
 
 
 ## Todos

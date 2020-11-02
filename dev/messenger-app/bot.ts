@@ -11,6 +11,8 @@ dotenv.config();
 const { Telegraf } = require('telegraf');
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+bot.startPolling();
+bot.use(Telegraf.log());
 
 bot.start((ctx) => {
     ctx.reply('Welcome!');
@@ -20,6 +22,7 @@ bot.start((ctx) => {
         `(@${ctx.from.username} - ${ctx.from.id})`
     );
 });
+
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 bot.on('sticker', (ctx) => ctx.reply('👍'));
 bot.hears('hi', (ctx) => ctx.reply('Hey there'));
