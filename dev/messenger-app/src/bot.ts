@@ -1,4 +1,4 @@
-import { server } from './services/Server';
+import * as grpc from "grpc";
 
 const dotenv = require('dotenv');
 /**
@@ -9,6 +9,9 @@ const dotenv = require('dotenv');
  *  - DEV_ID
  */
 dotenv.config();
+
+const { GRPC_BIND_HOST, GRPC_BIND_POST } = process.env;
+import { server } from './services/Server';
 
 const { Telegraf } = require('telegraf');
 
@@ -30,6 +33,7 @@ bot.on('sticker', (ctx) => ctx.reply('👍'));
 bot.hears('hi', (ctx) => ctx.reply('Hey there mister'));
 bot.launch()
     .then(() => {
-        console.log('Starting gRPC');
+        console.log(`Starting gRPC: ${GRPC_BIND_HOST}:${GRPC_BIND_POST}`);
+        server.bind(`${GRPC_BIND_HOST}:${GRPC_BIND_POST}`, grpc.ServerCredentials.createInsecure());
         server.start();
     });
