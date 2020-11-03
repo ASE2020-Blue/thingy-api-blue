@@ -1,0 +1,14 @@
+{
+  "name": "messenger-app",
+  "version": "0.1.0",
+  "main": "bot.js",
+  "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
+  "author": "Alain Schaller",
+  "license": "MIT",
+  "scripts": {
+    "start": "node $NODE_OPTIONS ./bot.js"
+  },
+  "dependencies": {
+    "grpc": "^1.22.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "node-red-notifier",
+  "version": "0.1.0",
+  "main": "settings.js",
+  "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
+  "author": "Alain Schaller",
+  "license": "MIT",
+
+  "__scripts_comments": "Got it from empty docker image",
+  "scripts": {
+    "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+    "debug": "node --inspect=0.0.0.0:9229 $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+    "debug_brk": "node --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+  },
+
+  "dependencies": {
+    "node-red": "1.2.2",
+    "node-red-contrib-grpc": "1.2.1"
+  }
+}
