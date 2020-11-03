@@ -16,7 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   thingy.init({
-    id: DataTypes.INTEGER,
+    id: {
+      primaryKey: true,
+      type: DataTypes.INTEGER},
     name: DataTypes.STRING,
     createdAt: {
       allowNull: false,
@@ -25,12 +27,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     updatedAt: {
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)'),
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP(3)'),
       type: DataTypes.DATE
     },
   }, {
     sequelize,
     modelName: 'thingy',
+    freezeTableName: true,
   });
   return thingy;
 };
