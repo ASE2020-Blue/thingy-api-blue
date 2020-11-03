@@ -1,7 +1,7 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 'use strict';
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 var thingy_localization_pb = require('./thingy_localization_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 
@@ -33,24 +33,11 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 // 2. Ask messenger to ask for location
 // 3. Messenger, tells backend which location to store
 //
-var LocalizationService = exports.LocalizationService = {
-  // *
+// *
 // Implemented by the messenger app
-askNewLocation: {
-    path: '/Localization/AskNewLocation',
-    requestStream: false,
-    responseStream: false,
-    requestType: thingy_localization_pb.ThingyLocalization,
-    responseType: google_protobuf_empty_pb.Empty,
-    requestSerialize: serialize_ThingyLocalization,
-    requestDeserialize: deserialize_ThingyLocalization,
-    responseSerialize: serialize_google_protobuf_Empty,
-    responseDeserialize: deserialize_google_protobuf_Empty,
-  },
-  // *
-// Implemented by the backend
-setNewLocation: {
-    path: '/Localization/SetNewLocation',
+var DemandLocalizationService = exports.DemandLocalizationService = {
+  askNewLocation: {
+    path: '/DemandLocalization/AskNewLocation',
     requestStream: false,
     responseStream: false,
     requestType: thingy_localization_pb.ThingyLocalization,
@@ -62,4 +49,21 @@ setNewLocation: {
   },
 };
 
-exports.LocalizationClient = grpc.makeGenericClientConstructor(LocalizationService);
+exports.DemandLocalizationClient = grpc.makeGenericClientConstructor(DemandLocalizationService);
+// *
+// Implemented by the backend
+var PersistLocalizationService = exports.PersistLocalizationService = {
+  setNewLocation: {
+    path: '/PersistLocalization/SetNewLocation',
+    requestStream: false,
+    responseStream: false,
+    requestType: thingy_localization_pb.ThingyLocalization,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_ThingyLocalization,
+    requestDeserialize: deserialize_ThingyLocalization,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
+  },
+};
+
+exports.PersistLocalizationClient = grpc.makeGenericClientConstructor(PersistLocalizationService);
