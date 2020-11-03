@@ -13,12 +13,12 @@ module.exports = {
         unique: true
       },
       createdAt: {
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
         allowNull: false,
         type: Sequelize.DATE,
       },
       updatedAt: {
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
         allowNull: false,
         type: Sequelize.DATE,
       }
