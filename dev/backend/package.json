@@ -6,8 +6,9 @@
   "author": "Yael Iseli, Alain Schaller, Jérôme Vonlanthen",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon serve.js",
-    "serve": "nodemon serve.js"
+    "start": "npm run db:migrate & nodemon serve.js",
+    "db:migrate": "npx sequelize db:migrate",
+    "db:seed": "npx sequelize db:seed:all"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
