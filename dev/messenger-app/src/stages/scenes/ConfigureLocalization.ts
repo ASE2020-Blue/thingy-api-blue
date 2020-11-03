@@ -75,9 +75,9 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
     switch (data) {
         case CONFIRM_CALLBACK:
             const thingyLocalization = new ThingyLocalization();
-            const { location, thingyUuuid } = session;
+            const { location, thingyUuid } = session;
             thingyLocalization.setLocation(location);
-            thingyLocalization.setThingyUudi(thingyUuuid);
+            thingyLocalization.setThingyUudi(thingyUuid);
             // setNewLocation(thingyLocalization)
             //     .then(() => {
                     reply('All good hear! It has been saved 💾');
@@ -86,6 +86,7 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
                 // .catch(error => {
                 //     console.error('Error while setting new location...');
                 //     console.error(error);
+                //     // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
                 //     reply('Oups... got and error, let\'s try again! 🙃');
                 //     scene.reenter();
                 // });

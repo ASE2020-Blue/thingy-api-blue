@@ -1,6 +1,8 @@
 const grpc = require('@grpc/grpc-js');
 const { MessengerService } = require('../../proto/messenger_grpc_pb');
 import { Telegram } from 'telegraf';
+import { DemandLocalizationService } from '../../proto/thingy_localization_grpc_pb';
+import { DemandLocalizationServer } from './DemandLocalizationServer';
 
 import { MessengerServer } from './MessengerServer';
 
@@ -10,6 +12,7 @@ export function createServer (telegram: Telegram) {
     const server = new grpc.Server();
 
     server.addService(MessengerService, new MessengerServer(telegram));
+    server.addService(DemandLocalizationService, new DemandLocalizationServer(telegram));
 
     server.bindAsync(
         `${MESS_GRPC_BIND_HOST}:${MESS_GRPC_BIND_PORT}`,
