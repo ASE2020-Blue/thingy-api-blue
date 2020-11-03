@@ -1,6 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 const { MessengerService } = require('../../proto/messenger_grpc_pb');
-import {Telegram} from 'telegraf';
+import { Telegram } from 'telegraf';
 
 import { MessengerServer } from './MessengerServer';
 

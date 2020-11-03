@@ -9,6 +9,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 import { createServer } from './services/server';
+import { fgRed, reset } from './utils/consoleColors';
+
 const { Telegraf } = require('telegraf');
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
@@ -18,10 +20,16 @@ bot.use(Telegraf.log());
 bot.start((ctx) => {
     ctx.reply('Welcome!');
 
+    const chatId = ctx.from.id;
+
     console.log(
         `Started talking with: ${ctx.from.first_name} ${ctx.from.last_name}` +
-        `(@${ctx.from.username} - ${ctx.from.id})`
+        `(@${ctx.from.username} - ${chatId})`
     );
+    if (! process.env.DEV_ID) {
+        process.env.DEV_ID = chatId;
+        console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
+    }
 });
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
