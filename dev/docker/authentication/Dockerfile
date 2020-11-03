@@ -4,7 +4,7 @@ FROM node:12-alpine
 RUN mkdir /root/app
 WORKDIR /root/app
 
-COPY ./messenger-app/package.json /root/app
+COPY ./authentication/package.json /root/app
 RUN yarn install
 
 VOLUME [ "/root/app" ]
