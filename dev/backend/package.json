@@ -6,15 +6,21 @@
   "author": "Yael Iseli, Alain Schaller, Jérôme Vonlanthen",
   "license": "MIT",
   "scripts": {
-    "start": "node $NODE_OPTIONS ./serve.js"
+    "start": "npm run db:migrate & nodemon serve.js",
+    "db:migrate": "npx sequelize db:migrate",
+    "db:seed": "npx sequelize db:seed:all"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
-    "koa-router": "^9.4.0"
+    "koa-router": "^9.4.0",
+    "pg": "^8.4.2",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.3.5"
   },
   "devDependencies": {
-    "mocha": "^8.2.0"
+    "mocha": "^8.2.0",
+    "sequelize-cli": "^6.2.0"
   }
 }
