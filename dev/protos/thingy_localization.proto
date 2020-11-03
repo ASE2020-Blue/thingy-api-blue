@@ -27,7 +27,7 @@ service DemandLocalization {
  */
 service PersistLocalization {
     rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
-    rpc PendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);
+    rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);
 }
 
 

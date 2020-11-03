@@ -29,9 +29,15 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 
 
 // *
+// # Setting new location
 // 1. Node-Red get button trigger (2 clicks)
 // 2. Ask messenger to ask for location
 // 3. Messenger, tells backend which location to store
+//
+// # New user start conversation with bot
+// 1. Messenger asks the backed for missing location
+// 2. If some thingy are missing locations, return to the messenger the uuids
+// 3. Like 'new location' scenario, starting from point 2
 //
 // *
 // Implemented by the messenger app
@@ -63,6 +69,17 @@ var PersistLocalizationService = exports.PersistLocalizationService = {
     requestDeserialize: deserialize_ThingyLocalization,
     responseSerialize: serialize_google_protobuf_Empty,
     responseDeserialize: deserialize_google_protobuf_Empty,
+  },
+  getPendingLocation: {
+    path: '/PersistLocalization/GetPendingLocation',
+    requestStream: false,
+    responseStream: true,
+    requestType: google_protobuf_empty_pb.Empty,
+    responseType: thingy_localization_pb.ThingyLocalization,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
+    responseSerialize: serialize_ThingyLocalization,
+    responseDeserialize: deserialize_ThingyLocalization,
   },
 };
 
