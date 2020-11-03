@@ -1,9 +1,9 @@
-import {sendUnaryData, ServerUnaryCall} from '@grpc/grpc-js';
+import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Telegram } from 'telegraf';
 
-import { IMessengerServer } from '../../@types/proto/messenger_grpc_pb';
-import { TestMessageRequest } from '../../@types/proto/messenger_pb';
+import { IMessengerServer } from '../../proto/messenger_grpc_pb';
+import { TestMessageRequest } from '../../proto/messenger_pb';
 
 /**
  * TODO document
