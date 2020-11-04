@@ -8,6 +8,8 @@
   "scripts": {
     "prod-start": "node $NODE_OPTIONS ./dist/bot.js",
     "start": "nodemon $NODE_OPTIONS ./dist/bot.js",
+    "debug": "nodemon --inspect=0.0.0.0:9229 $NODE_OPTIONS ./dist/bot.js",
+    "debug-brk": "nodemon --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS ./dist/bot.js",
     "build": "tsc",
     "build-proto": "../protos/build_protos.sh ./src/proto ./src/@types/proto && echo && echo Build proto successful",
     "watch": "tsc -w",
