@@ -15,6 +15,10 @@ const RESTART_CALLBACK = 'configure_new_location_restart';
 const STOP_CALLBACK = 'configure_new_location_stop';
 
 export function askIfUserWantsToConfigure (telegram: Telegram, thingyUudi: string) {
+    if (!thingyUudi) {
+        console.log('Dropping request after asking location for an empty uuid...');
+        return;
+    }
 
     telegram.sendMessage(process.env.DEV_ID,
         `You requested a new location for '*${thingyUudi}*'? 🧐\nWant to set a new location? 📍`,
@@ -78,7 +82,7 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
             const thingyLocalization = new ThingyLocalization();
             const { location, thingyUuid } = session;
             thingyLocalization.setLocation(location);
-            thingyLocalization.setThingyUudi(thingyUuid);
+            thingyLocalization.setThingyUuid(thingyUuid);
             // setNewLocation(thingyLocalization)
             //     .then(() => {
                     reply('All good hear! It has been saved 💾');

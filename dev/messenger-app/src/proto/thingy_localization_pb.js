@@ -68,7 +68,7 @@ proto.ThingyLocalization.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ThingyLocalization.toObject = function(includeInstance, msg) {
   var f, obj = {
-    thingyUudi: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    thingyUuid: jspb.Message.getFieldWithDefault(msg, 1, ""),
     location: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
@@ -108,7 +108,7 @@ proto.ThingyLocalization.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setThingyUudi(value);
+      msg.setThingyUuid(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -143,7 +143,7 @@ proto.ThingyLocalization.prototype.serializeBinary = function() {
  */
 proto.ThingyLocalization.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getThingyUudi();
+  f = message.getThingyUuid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -161,10 +161,10 @@ proto.ThingyLocalization.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string thingy_uudi = 1;
+ * optional string thingy_uuid = 1;
  * @return {string}
  */
-proto.ThingyLocalization.prototype.getThingyUudi = function() {
+proto.ThingyLocalization.prototype.getThingyUuid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -173,7 +173,7 @@ proto.ThingyLocalization.prototype.getThingyUudi = function() {
  * @param {string} value
  * @return {!proto.ThingyLocalization} returns this
  */
-proto.ThingyLocalization.prototype.setThingyUudi = function(value) {
+proto.ThingyLocalization.prototype.setThingyUuid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 

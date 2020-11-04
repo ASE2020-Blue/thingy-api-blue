@@ -8,8 +8,8 @@ import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class ThingyLocalization extends jspb.Message { 
-    getThingyUudi(): string;
-    setThingyUudi(value: string): ThingyLocalization;
+    getThingyUuid(): string;
+    setThingyUuid(value: string): ThingyLocalization;
 
     getLocation(): string;
     setLocation(value: string): ThingyLocalization;
@@ -27,7 +27,7 @@ export class ThingyLocalization extends jspb.Message {
 
 export namespace ThingyLocalization {
     export type AsObject = {
-        thingyUudi: string,
+        thingyUuid: string,
         location: string,
     }
 }

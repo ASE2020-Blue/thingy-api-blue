@@ -15,7 +15,7 @@ export class DemandLocalizationServer extends AbstractTelegramContext implements
 
     public askNewLocation(call: ServerUnaryCall<ThingyLocalization, Empty>, callback: sendUnaryData<Empty>): void {
         console.log(`${new Date().toISOString()}    askNewLocation`);
-        const thingyUudi = call.request.getThingyUudi();
+        const thingyUudi = call.request.getThingyUuid();
         console.log(`\t"${thingyUudi}"`);
 
         askIfUserWantsToConfigure(this.telegram, thingyUudi);

@@ -32,6 +32,6 @@ service PersistLocalization {
 
 
 message ThingyLocalization {
-    string thingy_uudi = 1;
+    string thingy_uuid = 1;
     string location = 2;
 }

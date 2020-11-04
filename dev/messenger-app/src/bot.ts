@@ -12,7 +12,6 @@ import { ThingyLocalization } from './proto/thingy_localization_pb';
 import { getPendingLocation } from './services/client/persistLocalizationClient';
 import { createServer } from './services/server';
 import {
-    askIfUserWantsToConfigure,
     SCENE_ID as CONFIGURE_LOCATION_SCENE_ID,
     USER_ACCEPT_SETTING_NEW_LOCATION,
     USER_REFUSE_SETTING_NEW_LOCATION
@@ -58,9 +57,9 @@ bot.start(ctx => {
     }
 
     const thingy1 = new ThingyLocalization();
-    thingy1.setThingyUudi('blue-15');
+    thingy1.setThingyUuid('blue-15');
     const thingy2 = new ThingyLocalization();
-    thingy2.setThingyUudi('blue-16');
+    thingy2.setThingyUuid('blue-16');
     askUserPendingLocation(ctx, [ thingy1, thingy2 ]);
     // TODO
     // getPendingLocation().then(thingies => {
@@ -76,12 +75,10 @@ bot.action([
     const { data } = callbackQuery;
     switch (data) {
         case USER_REFUSE_PENDING_CONFIGURATION:
-            reply('No pressure 👍\nYou can configure them any them');
-            break;
+            return reply('No pressure 👍\nYou can configure them any them');
 
-        // case USER_ACCEPT_SETTING_NEW_LOCATION: composed key/thingyUui
         case USER_REFUSE_SETTING_NEW_LOCATION:
-            replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
+            return replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
     }
 });
 
@@ -100,10 +97,6 @@ bot.on('callback_query', ({ callbackQuery, scene, session }) => {
     }
 });
 
-bot.command('askset', ({ telegram }) => {
-    askIfUserWantsToConfigure(telegram, 'blue-3');
-});
-
 bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
     const { text } = message;
     const [ thingyUuid, ...splitLocation ] = text.replace(/\/\w+\s*/, '')
@@ -114,7 +107,7 @@ bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
         // TODO refactor
         const thingyLocalization = new ThingyLocalization();
         thingyLocalization.setLocation(location);
-        thingyLocalization.setThingyUudi(thingyUuid);
+        thingyLocalization.setThingyUuid(thingyUuid);
         // setNewLocation(thingyLocalization)
         //     .then(() => {
         reply('All good hear! It has been saved 💾');
@@ -136,7 +129,6 @@ bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 bot.hears('hi', (ctx) => ctx.reply('Hey there mister'));
-
 
 bot.launch()
     .then(() => createServer(bot.telegram));
