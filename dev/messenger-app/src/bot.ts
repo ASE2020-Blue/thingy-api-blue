@@ -98,7 +98,7 @@ bot.on('callback_query', ({ callbackQuery, scene, session }) => {
     }
 });
 
-bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
+function setlocationHandler ({ telegram, message, session, reply, scene }) {
     const { text } = message;
     const [ thingyUuid, ...splitLocation ] = text.replace(/\/\w+\s*/, '')
         .split(' ');
@@ -122,14 +122,17 @@ bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
         // });
 
         return;
-    } else if (thingyUuid) {
-        session.thingyUuid = thingyUuid;
     }
+    // Even if it is empty, set it in the session, to make sure we will ask the name or not reuse a previous name
+    session.thingyUuid = thingyUuid;
     scene.enter(CONFIGURE_LOCATION_SCENE_ID);
-});
+}
+
+bot.command('setlocation', setlocationHandler);
+bot.command('setposition', setlocationHandler);
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
-bot.hears('hi', (ctx) => ctx.reply('Hey there mister'));
+bot.hears('echo', (ctx) => ctx.reply('Hey there mister'));
 
 bot.launch()
     .then(() => createServer(bot.telegram));

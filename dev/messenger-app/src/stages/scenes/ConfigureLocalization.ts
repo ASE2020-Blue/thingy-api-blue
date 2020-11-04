@@ -97,7 +97,7 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
                 // });
 
         case STOP_CALLBACK:
-            replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [<thingy-name>]`');
+            replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <thingy\'s place>]`');
             return scene.leave();
 
         case RESTART_CALLBACK:
