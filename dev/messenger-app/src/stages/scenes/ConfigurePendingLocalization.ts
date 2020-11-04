@@ -33,13 +33,13 @@ function continueSetting (ctx: SceneContextMessageUpdate, next) {
     console.log(session.thingiesUuid);
 
     const { thingiesUuid } = session;
-    const [ firstThingyUudi ] = thingiesUuid;
-    if (! firstThingyUudi)
+    const [ firstThingyUuid ] = thingiesUuid;
+    if (! firstThingyUuid)
         return scene.leave();
 
     return reply(`Lets put some oder in the location of: ${thingiesUuid.join(', ')} 🗄`)
         .then(() => {
-            session.thingyUuid = firstThingyUudi;
+            session.thingyUuid = firstThingyUuid;
             return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
         });
 }

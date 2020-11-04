@@ -18,10 +18,10 @@ export class MessengerServer extends AbstractTelegramContext implements IMesseng
 
     public askNewLocation(call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): void {
         console.log(`${new Date().toISOString()}    askNewLocation`);
-        const thingyUudi = call.request.getThingyUuid();
-        console.log(`\t"${thingyUudi}"`);
+        const thingyUuid = call.request.getThingyUuid();
+        console.log(`\t"${thingyUuid}"`);
 
-        askIfUserWantsToConfigure(this.telegram, thingyUudi);
+        askIfUserWantsToConfigure(this.telegram, thingyUuid);
     }
 
     public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
