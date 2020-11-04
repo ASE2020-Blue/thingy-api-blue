@@ -1,14 +1,14 @@
 {
   "name": "backend",
   "version": "0.1.0",
-  "main": "serve.js",
+  "main": "src/serve.js",
   "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
   "author": "Yael Iseli, Alain Schaller, Jérôme Vonlanthen",
   "license": "MIT",
   "scripts": {
-    "start": "yarn run db:migrate && yarn run db:seed && nodemon serve.js",
+    "start": "yarn run db:migrate && nodemon src/serve.js",
     "db:migrate": "sequelize db:migrate",
-    "db:seed": "sequelize db:seed:all"
+    "db:seed": "sequelize db:seed:all --debug"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
@@ -16,6 +16,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
     "pg": "^8.4.2",
+    "@grpc/grpc-js": "^1.1.8",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.5"
   },

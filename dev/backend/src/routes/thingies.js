@@ -58,6 +58,8 @@ async function getAllPendingThingies(ctx) {
   ctx.status = 200;
 }
 
+// TODO review: Really? We want to expose such route?
+//  Somebody could fill our db for "nothing"
 async function createThingy(ctx) {
   const body = ctx.request.body;
   if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
@@ -66,6 +68,8 @@ async function createThingy(ctx) {
   return thingy.upsert(body);
 }
 
+// TODO review: Really? We want to expose such route?
+//  Danger zone that open?
 async function deleteThingy(ctx) {
   const t = await thingy.findOne({
     where: {
