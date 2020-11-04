@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
 
   environmentParamsValue.init({
     thingyId: DataTypes.INTEGER,
-    value: DataTypes.INTEGER,
+    value: DataTypes.FLOAT,
     envParam: DataTypes.ENUM("TEMPERATURE", "HUMIDITY", "AIR_QUALITY", "AIR_PRESSURE", "CO2_EQUIV", "LIGHT")
   }, {
     sequelize,

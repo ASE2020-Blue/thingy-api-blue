@@ -20,15 +20,15 @@ async function getValue(ctx) {
 
 async function createValue(ctx) {
   const body = ctx.request.body;
-  if (!body.value || !body.envParam || !body.uuid) ctx.throw(400, {'error': '"value,envParam,uuid" are required fields'});
+  const { value, envParam, uuid } = body
+  if ( ! value || ! envParam || ! uuid) ctx.throw(400, {'error': '"value,envParam,uuid" are required fields'});
   let t = await thingy.findOne({
-    where: {
-      uuid: body.uuid
-    }
+    where: { uuid }
   });
-  if (!t) ctx.throw(404, { error: "thingy not found" });
+  if (!t)
+    t = await thingy.upsert({ uuid });
   ctx.status = 200;
-  return environmentParamsValue.upsert({value: body.value, envParam: body.envParam, thingyId: t.id})
+  return environmentParamsValue.upsert({value: value, envParam: envParam, thingyId: t.id})
 }
 
 async function deleteValue(ctx) {
