@@ -4,14 +4,14 @@ const { thingy, locationHistory } = require("../models");
 
 const baseRoute = "/thingy";
 router
-  .get(baseRoute, getAllThingys)
-  .get(baseRoute + "/pending", getAllPendingThingys)
+  .get(baseRoute, getAllThingies)
+  .get(baseRoute + "/pending", getAllPendingThingies)
   .get(baseRoute + "/:uuid", getThingy)
   .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
   .put(baseRoute, createThingy)
   .delete(baseRoute + "/:uuid", deleteThingy);
 
-async function getAllThingys(ctx) {
+async function getAllThingies(ctx) {
   ctx.body = await thingy.findAll();
   ctx.status = 200;
 }
@@ -45,8 +45,8 @@ async function getThingyLocations(ctx) {
   ctx.body = t.locationHistories;
 }
 
-async function getAllPendingThingys(ctx) {
-  let thingys = await thingy.findAll({
+async function getAllPendingThingies(ctx) {
+  let thingies = await thingy.findAll({
     include: [
       {
         model: locationHistory,
@@ -54,7 +54,7 @@ async function getAllPendingThingys(ctx) {
     ],
   });
 
-  ctx.body = thingys.filter((thingy) => thingy.locationHistories.length === 0);
+  ctx.body = thingies.filter((thingy) => thingy.locationHistories.length === 0);
   ctx.status = 200;
 }
 

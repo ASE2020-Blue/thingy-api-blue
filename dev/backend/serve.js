@@ -2,8 +2,8 @@ const Koa = require('koa');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
-const thingys = require("./routes/thingys")
-const historyLocations = require("./routes/locationHistorys")
+const thingies = require("./routes/thingies")
+const historyLocations = require("./routes/locationHistories")
 const environmentParamsValues = require("./routes/environmentParamsValues")
 
 const app = new Koa();
@@ -32,7 +32,7 @@ app
   .use(cors())
   .use(router.routes())
   .use(router.allowedMethods())
-  .use(thingys.routes())
+  .use(thingies.routes())
   .use(historyLocations.routes())
   .use(environmentParamsValues.routes());
 

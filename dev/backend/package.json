@@ -6,9 +6,9 @@
   "author": "Yael Iseli, Alain Schaller, Jérôme Vonlanthen",
   "license": "MIT",
   "scripts": {
-    "start": "npm run db:migrate & npm run db:seed & nodemon serve.js",
-    "db:migrate": "npx sequelize db:migrate",
-    "db:seed": "npx sequelize db:seed:all"
+    "start": "yarn run db:migrate && yarn run db:seed && nodemon serve.js",
+    "db:migrate": "sequelize db:migrate",
+    "db:seed": "sequelize db:seed:all"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "mocha": "^8.2.0",
+    "nodemon": "^2.0.6",
     "sequelize-cli": "^6.2.0"
   }
 }
