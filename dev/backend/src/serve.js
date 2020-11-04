@@ -2,13 +2,14 @@ const Koa = require('koa');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
-const thingies = require("./routes/thingies")
-const historyLocations = require("./routes/locationHistories")
-const environmentParamsValues = require("./routes/environmentParamsValues")
+
+const thingies = require("./routes/thingies");
+const historyLocations = require("./routes/locationHistories");
+const environmentParamsValues = require("./routes/environmentParamsValues");
+
+const { createGRpcServer } = require('./services/server');
 
 const app = new Koa();
-
-// TODO
 
 // logger
 app.use(async (ctx, next) => {
@@ -37,3 +38,5 @@ app
   .use(environmentParamsValues.routes());
 
 app.listen(8080);
+
+createGRpcServer();

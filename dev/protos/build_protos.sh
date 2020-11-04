@@ -103,7 +103,7 @@ echo
 
 echo "Building ts files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
-  --ts_out=grpc_js:"$TS_OUT" \
+  --ts_out=import_style=commonjs,grpc_js:"$TS_OUT" \
   --plugin=protoc-gen-ts="$DIR/node_modules/.bin/protoc-gen-ts" \
   -I "$DIR" \
   $BUILD_FILES

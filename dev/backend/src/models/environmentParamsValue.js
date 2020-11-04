@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.thingy)
     }
-  };
+  }
+
   environmentParamsValue.init({
     thingyId: DataTypes.INTEGER,
     value: DataTypes.INTEGER,

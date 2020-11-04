@@ -13,8 +13,8 @@ import "google/protobuf/empty.proto";
  * Implemented by the backend
  */
 service PersistLocalization {
-    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
     rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);
+    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
 }
 
 

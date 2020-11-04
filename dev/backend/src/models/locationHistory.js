@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.thingy)
     }
-  };
+  }
+
   locationHistory.init({
     thingyId: DataTypes.INTEGER,
     locationName: DataTypes.STRING,

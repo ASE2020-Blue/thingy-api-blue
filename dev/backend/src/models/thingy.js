@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE'
       });
     }
-  };
+  }
+
   thingy.init({
     id: {
       primaryKey: true,

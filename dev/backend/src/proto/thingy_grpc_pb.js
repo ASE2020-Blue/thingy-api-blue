@@ -2,7 +2,7 @@
 
 'use strict';
 var grpc = require('@grpc/grpc-js');
-var thingy_pb = require('./thingy_pb.d.ts');
+var thingy_pb = require('./thingy_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 
 function serialize_ThingyLocalization(arg) {
@@ -37,17 +37,6 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 // *
 // Implemented by the backend
 var PersistLocalizationService = exports.PersistLocalizationService = {
-  setNewLocation: {
-    path: '/PersistLocalization/SetNewLocation',
-    requestStream: false,
-    responseStream: false,
-    requestType: thingy_pb.ThingyLocalization,
-    responseType: google_protobuf_empty_pb.Empty,
-    requestSerialize: serialize_ThingyLocalization,
-    requestDeserialize: deserialize_ThingyLocalization,
-    responseSerialize: serialize_google_protobuf_Empty,
-    responseDeserialize: deserialize_google_protobuf_Empty,
-  },
   getPendingLocation: {
     path: '/PersistLocalization/GetPendingLocation',
     requestStream: false,
@@ -58,6 +47,17 @@ var PersistLocalizationService = exports.PersistLocalizationService = {
     requestDeserialize: deserialize_google_protobuf_Empty,
     responseSerialize: serialize_ThingyLocalization,
     responseDeserialize: deserialize_ThingyLocalization,
+  },
+  setNewLocation: {
+    path: '/PersistLocalization/SetNewLocation',
+    requestStream: false,
+    responseStream: false,
+    requestType: thingy_pb.ThingyLocalization,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_ThingyLocalization,
+    requestDeserialize: deserialize_ThingyLocalization,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
   },
 };
 

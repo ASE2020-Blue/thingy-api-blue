@@ -5,7 +5,7 @@ const { thingy, locationHistory } = require("../models");
 const baseRoute = "/thingy";
 router
   .get(baseRoute, getAllThingies)
-  .get(baseRoute + "/pending", getAllPendingThingies)
+  // .get(baseRoute + "/pending", getAllPendingThingies)
   .get(baseRoute + "/:uuid", getThingy)
   .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
   .put(baseRoute, createThingy)
@@ -45,18 +45,18 @@ async function getThingyLocations(ctx) {
   ctx.body = t.locationHistories;
 }
 
-async function getAllPendingThingies(ctx) {
-  let thingies = await thingy.findAll({
-    include: [
-      {
-        model: locationHistory,
-      },
-    ],
-  });
-
-  ctx.body = thingies.filter((thingy) => thingy.locationHistories.length === 0);
-  ctx.status = 200;
-}
+// async function getAllPendingThingies(ctx) {
+//   let thingies = await thingy.findAll({
+//     include: [
+//       {
+//         model: locationHistory,
+//       },
+//     ],
+//   });
+//
+//   ctx.body = thingies.filter((thingy) => thingy.locationHistories.length === 0);
+//   ctx.status = 200;
+// }
 
 // TODO review: Really? We want to expose such route?
 //  Somebody could fill our db for "nothing"
