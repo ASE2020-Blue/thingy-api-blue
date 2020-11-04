@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+
+/**
+ * Services that the bot service provides to the rest of the infrastructure
+ *
+ * # Setting new location
+ * 1. Node-Red get button trigger (2 clicks)
+ * 2. Ask messenger to ask for location
+ * 3. Messenger, tells backend which location to store
+ */
+service Messenger {
+  rpc AskNewLocation (ThingyId) returns (google.protobuf.Empty);
+
+  rpc SendTestMessage (TestMessageRequest) returns (google.protobuf.Empty);
+}
+
+
+message ThingyId {
+  string thingy_uuid = 1;
+}
+
+message TestMessageRequest {
+  string text = 1;
+}
+
+/**
+ * Not used yet
+ */
+enum MessageType {
+  PLAIN = 0;
+  MARKDOWN = 1;
+}

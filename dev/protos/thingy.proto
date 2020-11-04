@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+/**
+ * # New user start conversation with bot
+ * 1. Messenger asks the backed for missing location
+ * 2. If some thingy are missing locations, return to the messenger the uuids
+ * 3. Like 'new location' scenario (of messenger), starting from point 2
+ */
+
+/**
+ * Implemented by the backend
+ */
+service PersistLocalization {
+    rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);
+    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
+}
+
+
+message ThingyLocalization {
+    string thingy_uuid = 1;
+    string location = 2;
+}
