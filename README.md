@@ -27,6 +27,10 @@ Usage: up [options] [--scale SERVICE=NUM...] [--] [SERVICE...]
 For example: `docker-compose up backend` (which will also start the db, as it is declared as depended).
 
 
+**Note:** So services, may need to build first. See there readme's in their
+development directory.
+
+
 ### Detach of `docker-compose up`
 With the `-d`/`--detach` argument (_Detached mode: Run containers in the background, print new container names. Incompatible with `--abort-on-container-exit.`_), you can start the project without having to
 have a busy terminal full of logs.
