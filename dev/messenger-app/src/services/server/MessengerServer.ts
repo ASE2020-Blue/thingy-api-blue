@@ -1,19 +1,18 @@
-import {sendUnaryData, ServerUnaryCall} from '@grpc/grpc-js';
+import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Telegram } from 'telegraf';
 
-import { IMessengerServer } from '../../@types/proto/messenger_grpc_pb';
-import { TestMessageRequest } from '../../@types/proto/messenger_pb';
+import { IMessengerServer } from '../../proto/messenger_grpc_pb';
+import { TestMessageRequest } from '../../proto/messenger_pb';
+import { AbstractTelegramContext } from './AbstractTelegramContext';
 
 /**
  * TODO document
  */
-export class MessengerServer implements IMessengerServer {
-
-    private telegram: Telegram;
+export class MessengerServer extends AbstractTelegramContext implements IMessengerServer {
 
     constructor(telegram: Telegram) {
-        this.telegram = telegram;
+        super(telegram);
     }
 
     public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
