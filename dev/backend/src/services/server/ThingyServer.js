@@ -1,4 +1,5 @@
 const { sendUnaryData, ServerWritableStream } = require('@grpc/grpc-js');
+const { Empty } = require('google-protobuf/google/protobuf/empty_pb');
 const { IPersistLocalizationServer } = require('../../proto/thingy_grpc_pb');
 
 const { thingy, locationHistory } = require("../../models");
@@ -22,8 +23,14 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
             .then((thingies) => {
                 thingies
                     .filter(thingy => thingy.locationHistories.length === 0)
-                    .map(({ uuid }) => ({ thingy_uuid: uuid }))
-                    .forEach(call.write);
+                    .map(({ uuid }) => ({
+                        thingyUuid: uuid,
+                        location: null
+                    }))
+                    .forEach(simpleThingy => {
+                        console.log(simpleThingy);
+                        call.write(simpleThingy);
+                    });
                 call.end();
             })
     }
@@ -35,7 +42,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
         console.log(`\t${thingyUuid}: ${thingyLocation}`);
 
         if ( ! thingyUuid || ! thingyLocation) {
-            callback(new Error('BadRequest, missing params!'));
+            callback(new Error('BadRequest, missing or invalid params!'));
             return;
         }
 
@@ -53,6 +60,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
                         locationName: thingyLocation,
                         thingyId: foundThingy.id
                     })
+                        .then(() => callback(null, new Empty()))
                         .catch(callback);
             })
     }

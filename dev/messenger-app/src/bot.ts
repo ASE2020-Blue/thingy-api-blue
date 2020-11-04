@@ -10,7 +10,7 @@ dotenv.config();
 
 import { ThingyId } from './proto/messenger_pb';
 import { ThingyLocalization } from './proto/thingy_pb';
-import { getPendingLocation } from './services/client/persistLocalizationClient';
+import { getPendingLocation, setNewLocation } from './services/client/persistLocalizationClient';
 import { createServer } from './services/server';
 import {
     SCENE_ID as CONFIGURE_LOCATION_SCENE_ID,
@@ -98,7 +98,7 @@ bot.on('callback_query', ({ callbackQuery, scene, session }) => {
     }
 });
 
-function setlocationHandler ({ telegram, message, session, reply, scene }) {
+function setlocationHandler ({ message, session, reply, scene }) {
     const { text } = message;
     const [ thingyUuid, ...splitLocation ] = text.replace(/\/\w+\s*/, '')
         .split(' ');
@@ -109,23 +109,23 @@ function setlocationHandler ({ telegram, message, session, reply, scene }) {
         const thingyLocalization = new ThingyLocalization();
         thingyLocalization.setLocation(location);
         thingyLocalization.setThingyUuid(thingyUuid);
-        // setNewLocation(thingyLocalization)
-        //     .then(() => {
-        reply('All good hear! It has been saved 💾');
-        // })
-        // .catch(error => {
-        //     console.error('Error while setting new location...');
-        //     console.error(error);
-        //     // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
-        //     reply('Oups... got and error, let\'s try again! 🙃');
-        //     scene.reenter();
-        // });
 
-        return;
+        return setNewLocation(thingyLocalization)
+            .then(() => reply('All good hear! It has been saved 💾'))
+            .catch(error => {
+                console.error('Error while setting new location...');
+                console.error(error);
+                // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
+                reply('Oups... got and error, let\'s try again! 🙃');
+
+                return scene.reenter();
+            });
     }
+
     // Even if it is empty, set it in the session, to make sure we will ask the name or not reuse a previous name
     session.thingyUuid = thingyUuid;
-    scene.enter(CONFIGURE_LOCATION_SCENE_ID);
+
+    return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
 }
 
 bot.command('setlocation', setlocationHandler);

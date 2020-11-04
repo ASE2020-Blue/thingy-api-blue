@@ -17,6 +17,7 @@ const STOP_CALLBACK = 'configure_new_location_stop';
 export function askIfUserWantsToConfigure (telegram: Telegram, thingyUuid: string) {
     if (!thingyUuid) {
         console.log('Dropping request after asking location for an empty uuid...');
+
         return;
     }
 
@@ -83,18 +84,20 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
             const { location, thingyUuid } = session;
             thingyLocalization.setLocation(location);
             thingyLocalization.setThingyUuid(thingyUuid);
-            // setNewLocation(thingyLocalization)
-            //     .then(() => {
-                    reply('All good hear! It has been saved 💾');
-                    return scene.leave();
-                // })
-                // .catch(error => {
-                //     console.error('Error while setting new location...');
-                //     console.error(error);
-                //     // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
-                //     reply('Oups... got and error, let\'s try again! 🙃');
-                //     scene.reenter();
-                // });
+
+            return setNewLocation(thingyLocalization)
+                .then(() =>
+                    reply('All good hear! It has been saved 💾')
+                        .then(() => scene.leave())
+                )
+                .catch(error => {
+                    console.error('Error while setting new location...');
+                    console.error(error);
+
+                    // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
+                    return reply('Oups... got and error, let\'s try again! 🙃')
+                        .then(() => scene.reenter());
+                });
 
         case STOP_CALLBACK:
             replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <thingy\'s place>]`');
@@ -106,21 +109,23 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
     }
 });
 
+// FIXME! Re-entrant infinite loop
 // @ts-ignore
-clScene.leave(({ session, scene }, next) => {
-    const { thingyUuid, thingiesUuid } = session;
-    console.log('leaving configure', thingyUuid, thingiesUuid);
-
-    // FIXME!!
-    if (thingiesUuid) {
-        const uuidIndex = thingiesUuid.indexOf(thingyUuid);
-        if (uuidIndex >= 0) {
-            thingiesUuid.splice(uuidIndex, 1);
-        }
-
-        session.thingiesUuid = thingiesUuid; // Not sure if it is necessary
-
-        return next()
-            .then(() => scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID));
-    }
-});
+// clScene.leave(({ session, scene }, next) => {
+//     const { thingyUuid, thingiesUuid } = session;
+//     console.log('leaving configure', thingyUuid, thingiesUuid);
+//
+//     if (thingiesUuid) {
+//         const uuidIndex = thingiesUuid.indexOf(thingyUuid);
+//         if (uuidIndex >= 0) {
+//             thingiesUuid.splice(uuidIndex, 1);
+//         }
+//
+//         session.thingiesUuid = thingiesUuid; // Not sure if it is necessary
+//         const [ nextUuid ] = thingiesUuid;
+//         session.thingyUuid = nextUuid; // Not sure if it is necessary
+//
+//         return next()
+//             .then(() => scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID));
+//     }
+// });

@@ -22,12 +22,16 @@ export class MessengerServer extends AbstractTelegramContext implements IMesseng
         console.log(`\t"${thingyUudi}"`);
 
         askIfUserWantsToConfigure(this.telegram, thingyUudi);
+
+        callback(undefined, new Empty());
     }
 
     public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
         console.log(`${new Date().toISOString()}    sendTestMessage`);
         console.log(`\t"${call.request.getText()}"`);
 
-        this.telegram.sendMessage(process.env.DEV_ID, call.request.getText());
+        this.telegram.sendMessage(process.env.DEV_ID, call.request.getText())
+            .then(() => callback(undefined, new Empty()))
+            .catch(error => callback(error, undefined));
     }
 }
