@@ -15,11 +15,11 @@ export function createServer (telegram: Telegram) {
         `${MESS_GRPC_BIND_HOST}:${MESS_GRPC_BIND_PORT}`,
         grpc.ServerCredentials.createInsecure(),
         (error, port) => {
-            if (error) {
-                console.log(`Started gRPC: ${MESS_GRPC_BIND_HOST}:${port}`);
+            if (error)
                 throw error;
-            }
+
             server.start();
+            console.log(`Started gRPC: ${MESS_GRPC_BIND_HOST}:${port}`);
         }
     );
 }
