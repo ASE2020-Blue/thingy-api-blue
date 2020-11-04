@@ -5,9 +5,41 @@ import { cplScene } from './scenes/ConfigurePendingLocalization';
 const { leave } = Stage;
 
 export const stageManager = new Stage([cplScene, clScene]);
-stageManager.command('cancel', leave());
-stageManager.command('exit', leave());
-stageManager.command('stop', leave());
-stageManager.hears('cancel', leave());
-stageManager.hears('exit', leave());
-stageManager.hears('stop', leave());
+
+stageManager.command('cancel', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.command('exit', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.command('stop', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.command('status', ({ scene }) => {
+    console.log('Current scene: ', scene.current && scene.current.id);
+});
+
+stageManager.hears('cancel', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.hears('exit', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.hears('stop', ctx => {
+    // @ts-ignore
+    ctx.session = undefined;
+    leave();
+});
+stageManager.hears('status', ({ scene }) => {
+    console.log('Current scene: ', scene.current && scene.current.id);
+});

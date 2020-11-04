@@ -1,6 +1,7 @@
 import { BaseScene, Markup, Telegram } from 'telegraf';
 import { ThingyLocalization } from '../../proto/thingy_localization_pb';
 import { setNewLocation } from '../../services/client/persistLocalizationClient';
+import { SCENE_ID as CONFIGURE_PENDING_LOCATION_SCENE_ID } from './ConfigurePendingLocalization';
 
 export const SCENE_ID = 'configure-localization';
 
@@ -34,12 +35,12 @@ export function askIfUserWantsToConfigure (telegram: Telegram, thingyUudi: strin
 clScene.enter(({ reply, replyWithMarkdown, session }) => {
     const { thingyUuid } = session;
     if (thingyUuid)
-        replyWithMarkdown(`Name the new place for *${thingyUuid}*`,
+        return replyWithMarkdown(`Name the new place for *${thingyUuid}*`,
             Markup.forceReply()
                 .extra()
         );
     else
-        reply('What is the name of the thingy you want to set?',
+        return reply('What is the name of the thingy you want to set?',
             Markup.forceReply()
                 .extra()
         );
@@ -81,7 +82,7 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
             // setNewLocation(thingyLocalization)
             //     .then(() => {
                     reply('All good hear! It has been saved 💾');
-                    scene.leave();
+                    return scene.leave();
                 // })
                 // .catch(error => {
                 //     console.error('Error while setting new location...');
@@ -90,13 +91,32 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
                 //     reply('Oups... got and error, let\'s try again! 🙃');
                 //     scene.reenter();
                 // });
-            break;
+
         case STOP_CALLBACK:
             replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [<thingy-name>]`');
-            break;
+            return scene.leave();
 
         case RESTART_CALLBACK:
         default:
-            scene.reenter(); // TODO check if doesn't had a new layer
+            return scene.reenter();
+    }
+});
+
+// @ts-ignore
+clScene.leave(({ session, scene }, next) => {
+    const { thingyUuid, thingiesUudi } = session;
+    console.log('leaving configure', thingyUuid, thingiesUudi);
+
+    // FIXME!!
+    if (thingiesUudi) {
+        const uuidIndex = thingiesUudi.indexOf(thingyUuid);
+        if (uuidIndex >= 0) {
+            thingiesUudi.splice(uuidIndex, 1);
+        }
+
+        session.thingiesUuid = thingiesUudi; // Not sure if it is necessary
+
+        return next()
+            .then(() => scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID));
     }
 });

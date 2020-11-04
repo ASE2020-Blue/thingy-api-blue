@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
  */
 dotenv.config();
 
+import { ThingyLocalization } from './proto/thingy_localization_pb';
 import { getPendingLocation } from './services/client/persistLocalizationClient';
 import { createServer } from './services/server';
 import {
@@ -41,34 +42,39 @@ bot.use(Telegraf.log());
 bot.use(session);
 bot.use(stageManager.middleware());
 
-bot.start((ctx) => {
-    ctx.reply('Welcome from the bot root!');
+bot.start(ctx => {
+    const { reply, from } = ctx;
 
-    const chatId = ctx.from.id;
+    reply('Welcome on the Telegram bot of group 🔷🥳');
 
+    const chatId = from.id;
     console.log(
-        `Started talking with: ${ctx.from.first_name} ${ctx.from.last_name}` +
-        `(@${ctx.from.username} - ${chatId})`
+        `Started talking with: ${from.first_name} ${from.last_name}` +
+        `(@${from.username} - ${chatId})`
     );
     if (! process.env.DEV_ID) {
         process.env.DEV_ID = chatId;
         console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
     }
 
-    askUserPendingLocation(ctx);
+    const thingy1 = new ThingyLocalization();
+    thingy1.setThingyUudi('blue-15');
+    const thingy2 = new ThingyLocalization();
+    thingy2.setThingyUudi('blue-16');
+    askUserPendingLocation(ctx, [ thingy1, thingy2 ]);
     // TODO
     // getPendingLocation().then(thingies => {
     //
     // })
 });
 
-bot.on('callback_query', ({ callbackQuery, reply, replyWithMarkdown , scene, session }) => {
+// Handle callback actions defined in the triggers array passed as argument
+bot.action([
+    USER_REFUSE_PENDING_CONFIGURATION,
+    USER_REFUSE_SETTING_NEW_LOCATION
+], ({ callbackQuery, reply, replyWithMarkdown }) => {
     const { data } = callbackQuery;
-    // tslint:disable-next-line:switch-default
     switch (data) {
-        case USER_ACCEPT_PENDING_CONFIGURATION:
-            scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID);
-            break;
         case USER_REFUSE_PENDING_CONFIGURATION:
             reply('No pressure 👍\nYou can configure them any them');
             break;
@@ -77,15 +83,55 @@ bot.on('callback_query', ({ callbackQuery, reply, replyWithMarkdown , scene, ses
         case USER_REFUSE_SETTING_NEW_LOCATION:
             replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
     }
+});
 
-    if (data.startsWith(USER_ACCEPT_SETTING_NEW_LOCATION)) {
+// Handle no matching actions
+bot.on('callback_query', ({ callbackQuery, scene, session }) => {
+    const { data } = callbackQuery;
+
+    if (data.startsWith(USER_ACCEPT_PENDING_CONFIGURATION)) {
+        session.thingiesUuid = data.replace(new RegExp(USER_ACCEPT_PENDING_CONFIGURATION), '')
+            .split('/');
+        return scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID);
+
+    } else if (data.startsWith(USER_ACCEPT_SETTING_NEW_LOCATION)) {
         session.thingyUuid = data.replace(new RegExp(USER_ACCEPT_SETTING_NEW_LOCATION), '');
-        scene.enter(CONFIGURE_LOCATION_SCENE_ID);
+        return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
     }
 });
 
-bot.command('testnew', ({ telegram }) => {
+bot.command('askset', ({ telegram }) => {
     askIfUserWantsToConfigure(telegram, 'blue-3');
+});
+
+bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
+    const { text } = message;
+    const [ thingyUuid, ...splitLocation ] = text.replace(/\/\w+\s*/, '')
+        .split(' ');
+    const location = splitLocation.join(' ');
+
+    if (thingyUuid && location) {
+        // TODO refactor
+        const thingyLocalization = new ThingyLocalization();
+        thingyLocalization.setLocation(location);
+        thingyLocalization.setThingyUudi(thingyUuid);
+        // setNewLocation(thingyLocalization)
+        //     .then(() => {
+        reply('All good hear! It has been saved 💾');
+        // })
+        // .catch(error => {
+        //     console.error('Error while setting new location...');
+        //     console.error(error);
+        //     // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
+        //     reply('Oups... got and error, let\'s try again! 🙃');
+        //     scene.reenter();
+        // });
+
+        return;
+    } else if (thingyUuid) {
+        session.thingyUuid = thingyUuid;
+    }
+    scene.enter(CONFIGURE_LOCATION_SCENE_ID);
 });
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
