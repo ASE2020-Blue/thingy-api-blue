@@ -57,15 +57,9 @@ bot.start(ctx => {
         console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
     }
 
-    const thingy1 = new ThingyId();
-    thingy1.setThingyUuid('blue-15');
-    const thingy2 = new ThingyId();
-    thingy2.setThingyUuid('blue-16');
-    askUserPendingLocation(ctx, [ thingy1, thingy2 ]);
-    // TODO
-    // getPendingLocation().then(thingies => {
-    //
-    // })
+    getPendingLocation()
+        .then(thingies => askUserPendingLocation(ctx, thingies))
+        .catch(error => console.error('Error while requesting pending locations', error));
 });
 
 // Handle callback actions defined in the triggers array passed as argument

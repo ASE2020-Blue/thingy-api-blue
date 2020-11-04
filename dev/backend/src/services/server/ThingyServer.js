@@ -23,10 +23,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
             .then((thingies) => {
                 thingies
                     .filter(thingy => thingy.locationHistories.length === 0)
-                    .map(({ uuid }) => ({
-                        thingyUuid: uuid,
-                        location: null
-                    }))
+                    .map(thingy => thingy.getGRpcLocation())
                     .forEach(simpleThingy => {
                         console.log(simpleThingy);
                         call.write(simpleThingy);

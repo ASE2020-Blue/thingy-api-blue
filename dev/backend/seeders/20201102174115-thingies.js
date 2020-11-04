@@ -4,7 +4,13 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('thingy', [
       {
-        uuid: 'blue-22',
+        uuid: 'rainbow-22',
+      },
+      {
+        uuid: 'red-22',
+      },
+      {
+        uuid: 'unicorn-22',
       }
     ], {});
   },

@@ -1,4 +1,6 @@
 'use strict';
+const { ThingyLocalization } = require('../proto/thingy_pb');
+
 const {
   Model
 } = require('sequelize');
@@ -13,6 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'thingyId',
         onDelete: 'CASCADE'
       });
+    }
+
+    getGRpcLocation() {
+      let thingyLocalization = new ThingyLocalization();
+      thingyLocalization.setThingyUuid(this.uuid);
+      let location = this.locationHistory && this.locationHistory[1].locationName || undefined;
+      thingyLocalization.setLocation(location);
+      return thingyLocalization;
     }
   }
 

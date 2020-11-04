@@ -11,6 +11,12 @@ export const USER_REFUSE_PENDING_CONFIGURATION = 'configure_pending_location_no'
 export const cplScene = new BaseScene(SCENE_ID);
 
 export function askIfUserWantsToConfigure (ctx: TelegrafContext, thingies: Array<ThingyId>) {
+    if (thingies.length === 0) {
+        console.log('No pending thingies!');
+
+        return;
+    }
+
     const thingiesUuids = thingies.map(t => t.getThingyUuid());
     ctx.reply(
         'We started collecting data for one or more thingy, do you want to configure where you placed them?',
