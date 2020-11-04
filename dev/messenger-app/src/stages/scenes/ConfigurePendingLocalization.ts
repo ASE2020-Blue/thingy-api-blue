@@ -1,7 +1,7 @@
 import { BaseScene, Markup } from 'telegraf';
 import { TelegrafContext } from 'telegraf/typings/context';
 import { SceneContextMessageUpdate } from 'telegraf/typings/stage';
-import { ThingyLocalization } from '../../proto/thingy_localization_pb';
+import { ThingyId } from '../../proto/messenger_pb';
 import { SCENE_ID as CONFIGURE_LOCATION_SCENE_ID } from './ConfigureLocalization';
 
 export const SCENE_ID = 'configure-pending-localization';
@@ -10,13 +10,14 @@ export const USER_REFUSE_PENDING_CONFIGURATION = 'configure_pending_location_no'
 
 export const cplScene = new BaseScene(SCENE_ID);
 
-export function askIfUserWantsToConfigure (ctx: TelegrafContext, thingies: Array<ThingyLocalization>) {
+export function askIfUserWantsToConfigure (ctx: TelegrafContext, thingies: Array<ThingyId>) {
+    const thingiesUuids = thingies.map(t => t.getThingyUuid());
     ctx.reply(
         'We started collecting data for one or more thingy, do you want to configure where you placed them?',
         Markup
             .inlineKeyboard(
                 [
-                    Markup.callbackButton('Yes', `${USER_ACCEPT_PENDING_CONFIGURATION}${thingies.join('/')}`),
+                    Markup.callbackButton('Yes', `${USER_ACCEPT_PENDING_CONFIGURATION}${thingiesUuids.join('/')}`),
                     Markup.callbackButton('No', USER_REFUSE_PENDING_CONFIGURATION)
                 ],
                 {}

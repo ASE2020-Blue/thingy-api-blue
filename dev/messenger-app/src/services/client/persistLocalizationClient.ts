@@ -1,7 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
-import { PersistLocalizationClient } from '../../proto/thingy_localization_grpc_pb';
-import { ThingyLocalization } from '../../proto/thingy_localization_pb';
+import { PersistLocalizationClient } from '../../proto/thingy_grpc_pb';
+import { ThingyLocalization } from '../../proto/thingy_pb';
 
 const { BACKEND_GRPC_BIND_PORT } = process.env;
 

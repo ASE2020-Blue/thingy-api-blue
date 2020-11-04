@@ -3,7 +3,8 @@ import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Telegram } from 'telegraf';
 
 import { IMessengerServer } from '../../proto/messenger_grpc_pb';
-import { TestMessageRequest } from '../../proto/messenger_pb';
+import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
+import { askIfUserWantsToConfigure } from '../../stages/scenes/ConfigureLocalization';
 import { AbstractTelegramContext } from './AbstractTelegramContext';
 
 /**
@@ -13,6 +14,14 @@ export class MessengerServer extends AbstractTelegramContext implements IMesseng
 
     constructor(telegram: Telegram) {
         super(telegram);
+    }
+
+    public askNewLocation(call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): void {
+        console.log(`${new Date().toISOString()}    askNewLocation`);
+        const thingyUudi = call.request.getThingyUuid();
+        console.log(`\t"${thingyUudi}"`);
+
+        askIfUserWantsToConfigure(this.telegram, thingyUudi);
     }
 
     public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {

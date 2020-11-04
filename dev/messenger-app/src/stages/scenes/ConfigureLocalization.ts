@@ -1,5 +1,5 @@
 import { BaseScene, Markup, Telegram } from 'telegraf';
-import { ThingyLocalization } from '../../proto/thingy_localization_pb';
+import { ThingyLocalization } from '../../proto/thingy_pb';
 import { setNewLocation } from '../../services/client/persistLocalizationClient';
 import { SCENE_ID as CONFIGURE_PENDING_LOCATION_SCENE_ID } from './ConfigurePendingLocalization';
 

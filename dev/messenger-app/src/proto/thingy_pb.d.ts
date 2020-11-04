@@ -1,5 +1,5 @@
 // package: 
-// file: thingy_localization.proto
+// file: thingy.proto
 
 /* tslint:disable */
 /* eslint-disable */

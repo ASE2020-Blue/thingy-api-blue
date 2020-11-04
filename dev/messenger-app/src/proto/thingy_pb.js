@@ -1,4 +1,4 @@
-// source: thingy_localization.proto
+// source: thingy.proto
 /**
  * @fileoverview
  * @enhanceable

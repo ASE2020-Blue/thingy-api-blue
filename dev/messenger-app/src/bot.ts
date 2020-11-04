@@ -8,7 +8,8 @@ const dotenv = require('dotenv');
  */
 dotenv.config();
 
-import { ThingyLocalization } from './proto/thingy_localization_pb';
+import { ThingyId } from './proto/messenger_pb';
+import { ThingyLocalization } from './proto/thingy_pb';
 import { getPendingLocation } from './services/client/persistLocalizationClient';
 import { createServer } from './services/server';
 import {
@@ -56,9 +57,9 @@ bot.start(ctx => {
         console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
     }
 
-    const thingy1 = new ThingyLocalization();
+    const thingy1 = new ThingyId();
     thingy1.setThingyUuid('blue-15');
-    const thingy2 = new ThingyLocalization();
+    const thingy2 = new ThingyId();
     thingy2.setThingyUuid('blue-16');
     askUserPendingLocation(ctx, [ thingy1, thingy2 ]);
     // TODO
@@ -104,7 +105,7 @@ bot.command('setlocation', ({ telegram, message, session, reply, scene }) => {
     const location = splitLocation.join(' ');
 
     if (thingyUuid && location) {
-        // TODO refactor
+        // TODO refactor - move to "shared" method
         const thingyLocalization = new ThingyLocalization();
         thingyLocalization.setLocation(location);
         thingyLocalization.setThingyUuid(thingyUuid);
