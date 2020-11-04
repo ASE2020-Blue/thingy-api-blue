@@ -36,4 +36,4 @@ Then, to stop them, use `docker-compose down`
 
 ### Postgres storage
 Postgres with store its data on a volume handled internally by Docker.
-If you want to remove all its data, use `docker volume prune ase-blue-pgdata`.
+If you want to remove all its data, use `docker volume rm ase-blue-pgdata`.

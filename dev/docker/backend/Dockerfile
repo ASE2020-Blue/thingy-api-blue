@@ -11,8 +11,6 @@ RUN mkdir /root/app
 WORKDIR /root/app
 
 COPY ./backend/package.json /root/app
-RUN npm install -g nodemon
-
 RUN yarn install
 
 VOLUME [ "/root/app" ]

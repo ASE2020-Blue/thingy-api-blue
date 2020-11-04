@@ -23,7 +23,6 @@ services:
             - postgres
         env_file:
             - .env
-        restart: always
         ports:
             - "8080:8080"
         volumes:
@@ -61,12 +60,21 @@ services:
         volumes:
             - ./node-red-notifier-data:/data
 
+    # For persisting sessions related elements, like in the messenger app
+    redis:
+        image: redis:6.0-alpine
+        command: redis-server --appendonly yes # Persists the data in docker
+        env_file:
+            - .env
+
     messenger:
         build:
             context: .
             dockerfile: docker/messenger/Dockerfile
         env_file:
             - .env
+        depends_on:
+            - redis
         volumes:
             # Avoid shadowing the node_modules folder
             # https://stackoverflow.com/a/32785014/3771148
