@@ -1,6 +1,6 @@
 const Router = require("koa-router")
 const router = new Router()
-const {environmentParamsValue} = require("../models")
+const {environmentParamsValue, thingy} = require("../models")
 
 const baseRoute = "/environmentParamsValue"
 router.get(baseRoute, getAllValues)
@@ -20,10 +20,15 @@ async function getValue(ctx) {
 
 async function createValue(ctx) {
   const body = ctx.request.body;
-  if (!body.value || !body.envParam || !body.thingyId) ctx.throw(400, {'error': '"value,envParam,thingyId" are required fields'});
+  if (!body.value || !body.envParam || !body.uuid) ctx.throw(400, {'error': '"value,envParam,uuid" are required fields'});
+  let t = await thingy.findOne({
+    where: {
+      uuid: body.uuid
+    }
+  });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
   ctx.status = 200;
-
-  return environmentParamsValue.upsert(body)
+  return environmentParamsValue.upsert({value: body.value, envParam: body.envParam, thingyId: t.id})
 }
 
 async function deleteValue(ctx) {

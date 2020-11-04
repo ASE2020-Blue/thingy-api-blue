@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER},
-    name: DataTypes.STRING,
+    uuid: DataTypes.STRING,
     createdAt: {
       allowNull: false,
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP(3)'),

@@ -6,10 +6,10 @@ const baseRoute = "/thingy";
 router
   .get(baseRoute, getAllThingys)
   .get(baseRoute + "/pending", getAllPendingThingys)
-  .get(baseRoute + "/:id", getThingy)
-  .get(baseRoute + "/:id/locationHistories", getThingysLocations)
+  .get(baseRoute + "/:uuid", getThingy)
+  .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
   .put(baseRoute, createThingy)
-  .delete(baseRoute + "/:id", deleteThingy);
+  .delete(baseRoute + "/:uuid", deleteThingy);
 
 async function getAllThingys(ctx) {
   ctx.body = await thingy.findAll();
@@ -17,14 +17,20 @@ async function getAllThingys(ctx) {
 }
 
 async function getThingy(ctx) {
-  ctx.body = await thingy.findByPk(ctx.params.id);
+  let t = await thingy.findOne({
+    where: {
+      uuid: ctx.params.uuid
+    }
+  });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
+  ctx.body = t
   ctx.status = 200;
 }
 
-async function getThingysLocations(ctx) {
+async function getThingyLocations(ctx) {
   let t = await thingy.findOne({
     where: {
-      id: ctx.params.id,
+      uuid: ctx.params.uuid,
     },
     include: [
       {
@@ -33,6 +39,7 @@ async function getThingysLocations(ctx) {
       },
     ],
   });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
 
   ctx.status = 200;
   ctx.body = t.locationHistories;
@@ -53,14 +60,18 @@ async function getAllPendingThingys(ctx) {
 
 async function createThingy(ctx) {
   const body = ctx.request.body;
-  if (!body.name) ctx.throw(400, { error: '"name" is a required field' });
+  if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
   ctx.status = 200;
 
   return thingy.upsert(body);
 }
 
 async function deleteThingy(ctx) {
-  const t = await thingy.findByPk(ctx.params.id);
+  const t = await thingy.findOne({
+    where: {
+      uuid: ctx.params.uuid
+    }
+  });
   if (!t) ctx.throw(404, { error: "thingy not found" });
   ctx.status = 200;
   return t.destroy();

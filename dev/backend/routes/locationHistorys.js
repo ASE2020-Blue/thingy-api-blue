@@ -1,6 +1,6 @@
 const Router = require("koa-router")
 const router = new Router()
-const {locationHistory} = require("../models")
+const {locationHistory, thingy} = require("../models")
 
 const baseRoute = "/locationHistory"
 router.get(baseRoute, getAllLocationHistory)
@@ -14,10 +14,15 @@ async function getAllLocationHistory(ctx) {
 
 async function createLocationHistory(ctx) {
   const body = ctx.request.body;
-  if (!body.locationName || ! body.thingyId) ctx.throw(400, {'error': '"locationName" and "thingyId" are required fields'});
+  if (!body.locationName || ! body.uuid) ctx.throw(400, {'error': '"locationName" and "thingyId" are required fields'});
+  let t = await thingy.findOne({
+    where: {
+      uuid: body.uuid
+    }
+  });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
   ctx.status = 200;
-
-  return locationHistory.upsert(body)
+  return locationHistory.upsert({locationName: body.locationName, thingyId: t.id})
 }
 
 async function deleteLocationHistory(ctx) {
