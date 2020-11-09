@@ -14,7 +14,9 @@ async function getAllValues(ctx) {
 }
 
 async function getValue(ctx) {
-  ctx.body = await environmentParamsValue.findByPk(ctx.params.id)
+  const value = await environmentParamsValue.findByPk(ctx.params.id)
+  if (!value) ctx.throw(404, { error: "environment value not found" });
+  ctx.body = value
   ctx.status = 200;
 }
 
