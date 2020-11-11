@@ -1,11 +1,12 @@
 import { BaseScene, Markup, Telegram } from 'telegraf';
+import { Message } from 'telegraf/typings/telegram-types';
+import { SceneSessionContext } from '../../context';
 import { ThingyLocalization } from '../../proto/thingy_pb';
 import { setNewLocation } from '../../services/client/persistLocalizationClient';
-import { SCENE_ID as CONFIGURE_PENDING_LOCATION_SCENE_ID } from './ConfigurePendingLocalization';
 
 export const SCENE_ID = 'configure-localization';
 
-export const clScene = new BaseScene(SCENE_ID);
+export const clScene = new BaseScene<SceneSessionContext>(SCENE_ID);
 
 export const USER_ACCEPT_SETTING_NEW_LOCATION = 'configure_new_location_yes/';
 export const USER_REFUSE_SETTING_NEW_LOCATION = 'configure_new_location_no';
@@ -14,14 +15,14 @@ const CONFIRM_CALLBACK = 'configure_new_location_confirm';
 const RESTART_CALLBACK = 'configure_new_location_restart';
 const STOP_CALLBACK = 'configure_new_location_stop';
 
-export function askIfUserWantsToConfigure (telegram: Telegram, thingyUuid: string) {
+export function askIfUserWantsToConfigure (telegram: Telegram, thingyUuid: string): Promise<Message | any> {
     if (!thingyUuid) {
         console.log('Dropping request after asking location for an empty uuid...');
 
-        return;
+        return Promise.resolve();
     }
 
-    telegram.sendMessage(process.env.DEV_ID,
+    return telegram.sendMessage(process.env.DEV_ID,
         `You requested a new location for '*${thingyUuid}*'? 🧐\nWant to set a new location? 📍`,
         Markup
             .inlineKeyboard(
@@ -36,7 +37,6 @@ export function askIfUserWantsToConfigure (telegram: Telegram, thingyUuid: strin
     );
 }
 
-// @ts-ignore
 clScene.enter(({ reply, replyWithMarkdown, session }) => {
     const { thingyUuid } = session;
     if (thingyUuid)
@@ -51,13 +51,12 @@ clScene.enter(({ reply, replyWithMarkdown, session }) => {
         );
 });
 
-// @ts-ignore
 clScene.on('message', ({ replyWithMarkdown, reply, session, message }) => {
     const { thingyUuid } = session;
     const { text } = message;
     session.location = text;
     if (thingyUuid) {
-        replyWithMarkdown(`Please confirm: _${thingyUuid}_ at \`${text}\``,
+        return replyWithMarkdown(`Please confirm: _${thingyUuid}_ at \`${text}\``,
             Markup
                 .inlineKeyboard([
                     [ Markup.callbackButton('Seems correct ✅', CONFIRM_CALLBACK) ],
@@ -66,17 +65,17 @@ clScene.on('message', ({ replyWithMarkdown, reply, session, message }) => {
                 ])
                 .extra()
         );
-    } else {
-        session.thingyUuid = text;
-        reply(`Name the new place`,
-            Markup.forceReply()
-                .extra()
-        );
     }
+
+    session.thingyUuid = text;
+
+    return reply(`Name the new place`,
+        Markup.forceReply()
+            .extra()
+    );
 });
 
-// @ts-ignore
-clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQuery, reply, replyWithMarkdown, session, scene }) => {
+clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], async ({ callbackQuery, reply, replyWithMarkdown, session, scene }) => {
     const { data } = callbackQuery;
     switch (data) {
         case CONFIRM_CALLBACK:
@@ -85,22 +84,24 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
             thingyLocalization.setLocation(location);
             thingyLocalization.setThingyUuid(thingyUuid);
 
-            return setNewLocation(thingyLocalization)
-                .then(() =>
-                    reply('All good hear! It has been saved 💾')
-                        .then(() => scene.leave())
-                )
-                .catch(error => {
-                    console.error('Error while setting new location...');
-                    console.error(error);
+            try {
+                await setNewLocation(thingyLocalization);
+                await reply('All good hear! It has been saved 💾');
 
-                    // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
-                    return reply('Oups... got and error, let\'s try again! 🙃')
-                        .then(() => scene.reenter());
-                });
+                return scene.leave();
+            } catch (error) {
+                console.error('Error while setting new location...');
+                console.error(error);
+
+                // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
+                await reply('Oups... got and error, let\'s try again! 🙃');
+
+                return scene.reenter();
+            }
 
         case STOP_CALLBACK:
-            replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <thingy\'s place>]`');
+            await replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <thingy\'s place>]`');
+
             return scene.leave();
 
         case RESTART_CALLBACK:
@@ -110,7 +111,6 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], ({ callbackQ
 });
 
 // FIXME! Re-entrant infinite loop
-// @ts-ignore
 // clScene.leave(({ session, scene }, next) => {
 //     const { thingyUuid, thingiesUuid } = session;
 //     console.log('leaving configure', thingyUuid, thingiesUuid);

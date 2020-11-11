@@ -1,4 +1,6 @@
 import { Stage } from 'telegraf';
+import { SceneContextMessageUpdate } from 'telegraf/typings/stage';
+import { SceneSessionContext } from '../context';
 import { clScene } from './scenes/ConfigureLocalization';
 import { cplScene } from './scenes/ConfigurePendingLocalization';
 
@@ -6,40 +8,23 @@ const { leave } = Stage;
 
 export const stageManager = new Stage([cplScene, clScene]);
 
-stageManager.command('cancel', ctx => {
-    // @ts-ignore
+function clearSessionAndLeave (ctx: SceneSessionContext) : void {
     ctx.session = undefined;
     leave();
-});
-stageManager.command('exit', ctx => {
-    // @ts-ignore
-    ctx.session = undefined;
-    leave();
-});
-stageManager.command('stop', ctx => {
-    // @ts-ignore
-    ctx.session = undefined;
-    leave();
-});
-stageManager.command('status', ({ scene }) => {
-    console.log('Current scene: ', scene.current && scene.current.id);
+}
+
+const stageInterruptionCommands = [ 'cancel', 'exit', 'stop' ];
+
+stageInterruptionCommands.forEach((commands: string) => {
+    stageManager
+        .command(commands, clearSessionAndLeave)
+        .hears(commands, clearSessionAndLeave);
 });
 
-stageManager.hears('cancel', ctx => {
-    // @ts-ignore
-    ctx.session = undefined;
-    leave();
-});
-stageManager.hears('exit', ctx => {
-    // @ts-ignore
-    ctx.session = undefined;
-    leave();
-});
-stageManager.hears('stop', ctx => {
-    // @ts-ignore
-    ctx.session = undefined;
-    leave();
-});
-stageManager.hears('status', ({ scene }) => {
+function onStatus ({ scene }: SceneContextMessageUpdate): void {
     console.log('Current scene: ', scene.current && scene.current.id);
-});
+}
+
+stageManager
+    .command('status', onStatus)
+    .hears('status', onStatus);

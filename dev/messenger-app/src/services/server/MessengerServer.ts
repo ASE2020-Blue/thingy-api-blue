@@ -16,22 +16,28 @@ export class MessengerServer extends AbstractTelegramContext implements IMesseng
         super(telegram);
     }
 
-    public askNewLocation(call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): void {
+    public async askNewLocation (call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): Promise<void> {
         console.log(`${new Date().toISOString()}    askNewLocation`);
-        const thingyUudi = call.request.getThingyUuid();
-        console.log(`\t"${thingyUudi}"`);
+        const thingyUuid = call.request.getThingyUuid();
+        console.log(`\t"${thingyUuid}"`);
 
-        askIfUserWantsToConfigure(this.telegram, thingyUudi);
-
-        callback(undefined, new Empty());
+        try {
+            await askIfUserWantsToConfigure(this.telegram, thingyUuid);
+            callback(undefined, new Empty());
+        } catch (error) {
+            callback(error, undefined);
+        }
     }
 
-    public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
+    public async sendTestMessage (call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): Promise<void> {
         console.log(`${new Date().toISOString()}    sendTestMessage`);
         console.log(`\t"${call.request.getText()}"`);
 
-        this.telegram.sendMessage(process.env.DEV_ID, call.request.getText())
-            .then(() => callback(undefined, new Empty()))
-            .catch(error => callback(error, undefined));
+        try {
+            await this.telegram.sendMessage(process.env.DEV_ID, call.request.getText());
+            callback(undefined, new Empty());
+        } catch (error) {
+            callback(error, undefined);
+        }
     }
 }
