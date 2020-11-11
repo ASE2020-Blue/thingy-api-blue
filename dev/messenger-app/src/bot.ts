@@ -123,9 +123,24 @@ function setlocationHandler ({ message, session, reply, scene }) {
 }
 
 bot.command('setlocation', setlocationHandler);
+// position ~ location
 bot.command('setposition', setlocationHandler);
 
-
+/*
+ * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:
+ *
+ *      setcommands
+ *
+ * then
+ *
+ *      help - show help menu with commands
+ *      setlocation - change the location of a Thingy
+ *
+ * following the format:
+ *
+ *      command1 - Description
+ *      command2 - Another description
+ */
 bot.help(({ replyWithMarkdown }) =>
     replyWithMarkdown(
         `Looking for help? No problem, we got you covered with this few tricks 😉

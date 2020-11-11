@@ -4,6 +4,7 @@ import { cplScene } from './scenes/ConfigurePendingLocalization';
 
 const { leave } = Stage;
 
+// FIXME: avoid listening for help or setlocation command
 export const stageManager = new Stage([cplScene, clScene]);
 
 stageManager.command('cancel', ctx => {
