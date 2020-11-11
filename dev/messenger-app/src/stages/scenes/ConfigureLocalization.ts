@@ -100,7 +100,7 @@ clScene.action([CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK], async ({ cal
             }
 
         case STOP_CALLBACK:
-            await replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <thingy\'s place>]`');
+            await replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <new location>]`');
 
             return scene.leave();
 
