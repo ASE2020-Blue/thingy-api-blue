@@ -123,10 +123,44 @@ function setlocationHandler ({ message, session, reply, scene }) {
 }
 
 bot.command('setlocation', setlocationHandler);
+// position ~ location
 bot.command('setposition', setlocationHandler);
 
-bot.help((ctx) => ctx.reply('Send me a sticker'));
-bot.hears('echo', (ctx) => ctx.reply('Hey there mister'));
+/*
+ * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:
+ *
+ *      setcommands
+ *
+ * then
+ *
+ *      help - show help menu with commands
+ *      setlocation - change the location of a Thingy
+ *
+ * following the format:
+ *
+ *      command1 - Description
+ *      command2 - Another description
+ */
+bot.help(({ replyWithMarkdown }) =>
+    replyWithMarkdown(
+        `Looking for help? No problem, we got you covered with this few tricks 😉
+
+1\\.  We are hear to assist you with the configuration of your different Thingy ⚙️
+2\\.  You can request a new location by **double clicking** on the Thingy you want to move 📍
+
+🔹 *Expert mode* 🧞
+If you are an expert and know what you are doing, you can also use the following commands:
+\\-   \`/setlocation [[<thingy-name>] <new-location>]\`: to set the new location of a Thingy, like if you double clicked on one\\.
+
+🔹 *_Work in progress_* \\- 👩🏻‍💻👨🏼‍🔧🥵
+1\\.  We will send you alerts we a Thingy records a value trespassing the configured thresholds 📈📉
+2\\.  For good news, we will send you periodic detailed reports to follow those curves to keep an eye on your places 🧐
+3\\.  Finally, to shut all those noisy notifications, you can *un*\\-mute us 🤐`,
+        {
+            parse_mode: 'MarkdownV2'
+        }
+    )
+);
 
 bot.launch()
     .then(() => createServer(bot.telegram));

@@ -39,9 +39,9 @@
     - [X] Username: _[@ASEBlueBot](t.me/ASEBlueBot)_
     - [X] Name: _ASE-Blue_
 - [X] env variable to set to who to text
-- [ ] Global commands: `/start, /help, /settings`
-- [ ] Set help commands with `/setcommands` to the _BotFather_
-- [ ] Use keyboards and/or inline keyboards ([examples](https://core.telegram.org/bots#keyboards))
+- [X] Global commands: `/start, /help`
+- [X] Set help commands with `/setcommands` to the _BotFather_
+- [X] Use keyboards and/or inline keyboards ([examples](https://core.telegram.org/bots#keyboards))
 - [ ] Add [deep linking](https://core.telegram.org/bots#deep-linking)?
 - [ ] Add [inline results](https://core.telegram.org/bots/inline#inline-results)
 
