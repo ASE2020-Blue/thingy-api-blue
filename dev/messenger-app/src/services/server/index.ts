@@ -1,7 +1,8 @@
-const { MessengerService } = require('../../proto/messenger_grpc_pb');
 import { Server, ServerCredentials } from '@grpc/grpc-js';
 import { Telegram } from 'telegraf';
 
+import { MessengerService } from '../../proto/messenger_grpc_pb';
+import { extractAndBind } from '../../utils/MethodExtractor';
 import { MessengerServer } from './MessengerServer';
 
 const { MESS_GRPC_BIND_HOST, MESS_GRPC_BIND_PORT } = process.env;
@@ -16,7 +17,8 @@ export function createServer (telegram: Telegram) {
     // server.addService(MessengerService, new MessengerServer(telegram));
 
     // simplest solution found to the previously described problematic
-    const { askNewLocation, sendTestMessage } = new MessengerServer(telegram);
+    const messengerServer = new MessengerServer(telegram);
+    const [ askNewLocation, sendTestMessage ] = extractAndBind(messengerServer, ['askNewLocation', 'sendTestMessage']);
     server.addService(MessengerService, { askNewLocation, sendTestMessage });
 
     server.bindAsync(

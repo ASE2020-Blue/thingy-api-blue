@@ -5,15 +5,16 @@ import { Telegram } from 'telegraf';
 import { IMessengerServer } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
 import { askIfUserWantsToConfigure } from '../../stages/scenes/ConfigureLocalization';
-import { AbstractTelegramContext } from './AbstractTelegramContext';
 
 /**
  * TODO document
  */
-export class MessengerServer extends AbstractTelegramContext implements IMessengerServer {
+export class MessengerServer implements IMessengerServer {
+
+    private telegram: Telegram;
 
     constructor(telegram: Telegram) {
-        super(telegram);
+        this.telegram = telegram;
     }
 
     public async askNewLocation (call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): Promise<void> {
