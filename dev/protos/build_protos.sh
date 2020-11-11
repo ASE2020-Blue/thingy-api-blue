@@ -90,20 +90,22 @@ fi
 
 
 # 3. Build js and ts
+# https://developers.google.com/protocol-buffers/docs/reference/javascript-generated
+# https://github.com/agreatfool/grpc_tools_node_protoc_ts
 echo
 echo "Building js files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
+  --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
   --js_out="import_style=commonjs,binary:$JS_OUT" \
   --grpc_out=grpc_js:"$JS_OUT" \
-  --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
   -I "$DIR" \
   $BUILD_FILES
 
 echo
-
 echo "Building ts files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
-  --ts_out=import_style=commonjs,grpc_js:"$TS_OUT" \
+  --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
   --plugin=protoc-gen-ts="$DIR/node_modules/.bin/protoc-gen-ts" \
+  --ts_out="grpc_js:${TS_OUT}" \
   -I "$DIR" \
   $BUILD_FILES
