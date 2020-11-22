@@ -121,9 +121,9 @@ async function setLocationHandler ({ message, session, reply, scene }: BotSceneS
     return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
 }
 
-bot.command('setlocation', setlocationHandler);
+bot.command('setlocation', setLocationHandler);
 // position ~ location
-bot.command('setposition', setlocationHandler);
+bot.command('setposition', setLocationHandler);
 
 /*
  * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:
