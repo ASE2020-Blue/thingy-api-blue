@@ -19,11 +19,11 @@ async function getAllThingies(ctx) {
 async function getThingy(ctx) {
   let t = await thingy.findOne({
     where: {
-      uuid: ctx.params.uuid
-    }
+      uuid: ctx.params.uuid,
+    },
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
-  ctx.body = t
+  ctx.body = t;
   ctx.status = 200;
 }
 
@@ -35,7 +35,6 @@ async function getThingyLocations(ctx) {
     include: [
       {
         model: locationHistory,
-        required: true,
       },
     ],
   });
@@ -65,8 +64,8 @@ async function createThingy(ctx) {
   if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
   ctx.status = 200;
 
-  let updatedThingy = await thingy.upsert(body)
-  ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])) // to retrieve only data of thingy
+  let updatedThingy = await thingy.upsert(body);
+  ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])); // to retrieve only data of thingy
 
   return updatedThingy;
 }
@@ -76,8 +75,8 @@ async function createThingy(ctx) {
 async function deleteThingy(ctx) {
   const t = await thingy.findOne({
     where: {
-      uuid: ctx.params.uuid
-    }
+      uuid: ctx.params.uuid,
+    },
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
   ctx.status = 200;
