@@ -15,7 +15,7 @@ createGRpcServer();
 // create grpc client
 const { BACKEND_GRPC_BIND_PORT } = process.env;
 const persistLocalizationClient = new PersistLocalizationClient(
-  `backend:${BACKEND_GRPC_BIND_PORT}`,
+  `backend-test:${BACKEND_GRPC_BIND_PORT}`,
   grpc.credentials.createInsecure()
 );
 
