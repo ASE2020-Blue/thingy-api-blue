@@ -1,14 +1,3 @@
-import * as dotenv from 'dotenv';
-
-/**
- * Get the key-values of the `.env` file, and place then in the `process.env` variable
- *
- * Special notices to:
- *  - TELEGRAM_TOKEN
- *  - DEV_ID
- */
-dotenv.config();
-
 import { Telegraf } from 'telegraf';
 
 import { BotSceneSessionContext } from './context';

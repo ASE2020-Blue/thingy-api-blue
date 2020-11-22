@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
-    "dotenv": "^8.2.0",
     "telegraf": "^3.38.0",
     "telegraf-session-redis": "^5.1.0"
   },
