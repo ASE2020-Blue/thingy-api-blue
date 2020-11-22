@@ -1,9 +1,8 @@
-import Repository from './repository';
+import Repository from "./repository";
 
-const resource = '/thingy';
+const resource = "/thingy";
 export default {
-
   getAllThingies() {
     return Repository.get(`${resource}`);
-  },
+  }
 };
