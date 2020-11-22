@@ -65,7 +65,10 @@ async function createThingy(ctx) {
   if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
   ctx.status = 200;
 
-  return thingy.upsert(body);
+  let updatedThingy = await thingy.upsert(body)
+  ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])) // to retrieve only data of thingy
+
+  return updatedThingy;
 }
 
 // TODO review: Really? We want to expose such route?
