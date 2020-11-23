@@ -44,6 +44,7 @@
 - [X] Use keyboards and/or inline keyboards ([examples](https://core.telegram.org/bots#keyboards))
 - [ ] Add [deep linking](https://core.telegram.org/bots#deep-linking)?
 - [ ] Add [inline results](https://core.telegram.org/bots/inline#inline-results)
+- [ ] [Type doc](https://typedoc.org/)
 
 
 ### Project commands
