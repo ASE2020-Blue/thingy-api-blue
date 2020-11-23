@@ -47,7 +47,8 @@
     </v-row>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="6">
-        <Graphic />
+        <Graphic v-if="envValues.length > 0" />
+        <h3 v-else>No data.</h3>
       </v-col>
     </v-row>
   </v-container>
@@ -75,11 +76,7 @@ export default {
   watch: {
     selectedThingy(value) {
       this.selectedThingy = value;
-      Thingies.getEnvironmentValues(value.uuid)
-        .then((res) => {
-          this.envValues = res.data;
-        })
-        .catch((err) => console.error(err));
+      this.loadEnvParamValues();
     },
     selectedEnvParam(value) {
       // TODO
@@ -98,7 +95,29 @@ export default {
       })
       .catch((err) => console.error(err));
   },
+  methods: {
+    loadEnvParamValues() {
+      const params = {
+        dateFrom: new Date(),
+        dateTo: new Date(),
+        envParam: this.selectedEnvParam,
+      };
+      Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
+        .then((res) => {
+          this.envValues = res.data;
+          /*let result = this.envValues.reduce(function(map, obj) {
+              map[obj.key] = obj.val;
+              return map;
+            }, {});*/
+        })
+        .catch((err) => console.error(err));
+    },
+  },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-container {
+  max-width: 70%;
+}
+</style>
