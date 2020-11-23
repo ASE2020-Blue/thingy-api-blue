@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn run db:migrate && nodemon src/serve.js",
-    "test-dev": "yarn run db:migrate && yarn run db:seed && jest tests/*",
+    "test-dev": "yarn run db:migrate && yarn run db:seed && jest --coverage tests/*",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all"
   },
