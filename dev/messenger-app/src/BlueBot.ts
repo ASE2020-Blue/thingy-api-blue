@@ -7,17 +7,8 @@ import { BotSceneSessionContext } from './context';
 import { ThingyLocalization } from './proto/thingy_pb';
 import { getPendingLocation, setNewLocation } from './services/client/persistLocalizationClient';
 
-import {
-    SCENE_ID as CONFIGURE_LOCATION_SCENE_ID,
-    USER_ACCEPT_SETTING_NEW_LOCATION,
-    USER_REFUSE_SETTING_NEW_LOCATION
-} from './stages/scenes/ConfigureLocalization';
-import {
-    askIfUserWantsToConfigure as askUserPendingLocation,
-    SCENE_ID as CONFIGURE_PENDING_LOCATION_SCENE_ID,
-    USER_ACCEPT_PENDING_CONFIGURATION,
-    USER_REFUSE_PENDING_CONFIGURATION
-} from './stages/scenes/ConfigurePendingLocalization';
+import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
+import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
 
 import { fgRed, reset } from './utils/consoleColors';
 
@@ -47,6 +38,8 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         this.start(this.onStart);
         this.help(this.onHelp);
 
+        const { USER_REFUSE_SETTING_NEW_LOCATION } = ConfigureLocalizationScene;
+        const { USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocalizationScene;
         this.action([USER_REFUSE_PENDING_CONFIGURATION, USER_REFUSE_SETTING_NEW_LOCATION], this.onRefuseActions);
         this.on('callback_query', this.onCallbackQuery);
 
@@ -72,7 +65,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         try {
             const thingies: Array<ThingyLocalization> = await getPendingLocation();
 
-            return await askUserPendingLocation(ctx, thingies);
+            return await ConfigurePendingLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(ctx, thingies);
         } catch (error) {
             console.error('Error while requesting pending locations', error);
 
@@ -90,10 +83,10 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
      */
     private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown }: TContext) {
         switch (data) {
-            case USER_REFUSE_PENDING_CONFIGURATION:
+            case ConfigurePendingLocalizationScene.USER_REFUSE_PENDING_CONFIGURATION:
                 return reply('No pressure 👍\nYou can configure them any them');
 
-            case USER_REFUSE_SETTING_NEW_LOCATION:
+            case ConfigureLocalizationScene.USER_REFUSE_SETTING_NEW_LOCATION:
                 return replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
         }
 
@@ -109,16 +102,16 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
      * @private
      */
     private onCallbackQuery ({ callbackQuery: { data }, scene, session }: TContext) {
-        if (data.startsWith(USER_ACCEPT_PENDING_CONFIGURATION)) {
-            session.thingiesUuid = data.replace(new RegExp(USER_ACCEPT_PENDING_CONFIGURATION), '')
+        if (data.startsWith(ConfigurePendingLocalizationScene.USER_ACCEPT_PENDING_CONFIGURATION)) {
+            session.thingiesUuid = data.replace(new RegExp(ConfigurePendingLocalizationScene.USER_ACCEPT_PENDING_CONFIGURATION), '')
                 .split('/');
 
-            return scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID);
+            return scene.enter(ConfigurePendingLocalizationScene.ID);
 
-        } else if (data.startsWith(USER_ACCEPT_SETTING_NEW_LOCATION)) {
-            session.thingyUuid = data.replace(new RegExp(USER_ACCEPT_SETTING_NEW_LOCATION), '');
+        } else if (data.startsWith(ConfigureLocalizationScene.USER_ACCEPT_SETTING_NEW_LOCATION)) {
+            session.thingyUuid = data.replace(new RegExp(ConfigureLocalizationScene.USER_ACCEPT_SETTING_NEW_LOCATION), '');
 
-            return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
+            return scene.enter(ConfigureLocalizationScene.ID);
         }
 
         debugger;
@@ -151,7 +144,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         // Even if it is empty, set it in the session, to make sure we will ask the name or not reuse a previous name
         session.thingyUuid = thingyUuid;
 
-        return scene.enter(CONFIGURE_LOCATION_SCENE_ID);
+        return scene.enter(ConfigureLocalizationScene.ID);
     }
 
     private onHelp ({ replyWithMarkdown }: TContext): Promise<Message> {

@@ -4,7 +4,7 @@ import { Telegram } from 'telegraf';
 
 import { IMessengerServer } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
-import { askIfUserWantsToConfigure } from '../../stages/scenes/ConfigureLocalization';
+import { ConfigureLocalizationScene } from '../../stage/scenes/ConfigureLocalizationScene';
 
 /**
  * TODO document
@@ -23,7 +23,7 @@ export class MessengerServer implements IMessengerServer {
         console.log(`\t"${thingyUuid}"`);
 
         try {
-            await askIfUserWantsToConfigure(this.telegram, thingyUuid);
+            await ConfigureLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(this.telegram, thingyUuid);
             callback(undefined, new Empty());
         } catch (error) {
             callback(error, undefined);

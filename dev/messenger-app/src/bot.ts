@@ -3,7 +3,9 @@ import { BlueBot } from './BlueBot';
 
 import { BotSceneSessionContext } from './context';
 import { createServer } from './services/server';
-import { stageManager } from './stages/stageManager';
+import { BlueStageManager } from './stage/BlueStageManager';
+import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
+import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
 
 const session = new (require('telegraf-session-redis'))({
     store: {
@@ -12,7 +14,11 @@ const session = new (require('telegraf-session-redis'))({
     }
 });
 
-const bot = new BlueBot<BotSceneSessionContext>(process.env.TELEGRAM_TOKEN, session, stageManager);
+const blueStageManager = new BlueStageManager([
+    new ConfigureLocalizationScene(),
+    new ConfigurePendingLocalizationScene()
+]);
+const bot = new BlueBot<BotSceneSessionContext>(process.env.TELEGRAM_TOKEN, session, blueStageManager);
 bot.use(Telegraf.log());
 
 bot.launch()
