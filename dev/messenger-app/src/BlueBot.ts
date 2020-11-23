@@ -78,21 +78,26 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
     /**
      * Handle callback actions defined in the triggers array passed as argument.
      *
+     * Will only get into this method for the trigger attached with the action method
+     *
      * @param callbackQuery
      * @param reply
      * @param replyWithMarkdown
      * @private
+     *
+     * TODO improve to combine in an object the key to bind the action and the action to be done
      */
-    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown }: TContext) {
+    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown }: TContext): Promise<Message> {
         switch (data) {
             case ConfigurePendingLocalizationScene.USER_REFUSE_PENDING_CONFIGURATION:
                 return reply('No pressure 👍\nYou can configure them any them');
 
             case ConfigureLocalizationScene.USER_REFUSE_SETTING_NEW_LOCATION:
                 return replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
-        }
 
-        debugger;
+            default:
+                return Promise.reject(new Error(`Not supposed to get here! Missing a 'case' clause for ${data}`));
+        }
     }
 
     /**
@@ -115,8 +120,6 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
 
             return scene.enter(ConfigureLocalizationScene.ID);
         }
-
-        debugger;
     }
 
     private async setLocationHandler ({ message: { text }, session, reply, scene, persistLocalizationClient }: TContext): Promise<any> {

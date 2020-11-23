@@ -45,8 +45,6 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
     }
 
     public enterHandler = async ({ session, scene, reply }: TContext) : Promise<Message> => {
-        console.log('thingiesUuid:', session.thingiesUuid);
-
         const { thingiesUuid } = session;
         if (! thingiesUuid)
             return scene.leave();
