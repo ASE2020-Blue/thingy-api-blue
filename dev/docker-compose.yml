@@ -77,6 +77,8 @@ services:
             - .secrets.env
         depends_on:
             - redis
+        ports:
+            - "9249:9229"
         volumes:
             # Avoid shadowing the node_modules folder
             # https://stackoverflow.com/a/32785014/3771148

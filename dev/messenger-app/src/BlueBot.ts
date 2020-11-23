@@ -5,7 +5,7 @@ import { Message } from 'telegraf/typings/telegram-types';
 import { BotSceneSessionContext } from './context';
 
 import { ThingyLocalization } from './proto/thingy_pb';
-import { getPendingLocation, setNewLocation } from './services/client/persistLocalizationClient';
+import { IPersistLocalizationClient } from './services/client/IPersistLocalizationClient';
 
 import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
 import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
@@ -30,8 +30,10 @@ import { fgRed, reset } from './utils/consoleColors';
 export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<TContext> {
 
     constructor(token: string, sessionMiddleware: Middleware<TContext>, stageManagerMiddleware: Middleware<TContext>,
-                options? : TelegrafOptions) {
+                persistLocalizationClient: IPersistLocalizationClient, options? : TelegrafOptions) {
         super(token, options);
+
+        this.context.persistLocalizationClient = persistLocalizationClient;
 
         this.use(sessionMiddleware, stageManagerMiddleware);
 
@@ -48,7 +50,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
     }
 
     private async onStart (ctx: TContext): Promise<Message | any> {
-        const { reply, from } = ctx;
+        const { reply, from, persistLocalizationClient } = ctx;
 
         await reply('Welcome on the Telegram bot of group 🔷🥳');
 
@@ -63,7 +65,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         }
 
         try {
-            const thingies: Array<ThingyLocalization> = await getPendingLocation();
+            const thingies: Array<ThingyLocalization> = await persistLocalizationClient.getPendingLocation();
 
             return await ConfigurePendingLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(ctx, thingies);
         } catch (error) {
@@ -117,7 +119,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         debugger;
     }
 
-    private async setLocationHandler ({ message: { text }, session, reply, scene }: TContext): Promise<any> {
+    private async setLocationHandler ({ message: { text }, session, reply, scene, persistLocalizationClient }: TContext): Promise<any> {
         const [ thingyUuid, ...splitLocation ] = text.replace(/\/\w+\s*/, '')
             .split(' ');
         const location = splitLocation.join(' ');
@@ -129,8 +131,10 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
             thingyLocalization.setThingyUuid(thingyUuid);
 
             try {
-                await setNewLocation(thingyLocalization)
+                await persistLocalizationClient.setNewLocation(thingyLocalization);
                 await reply('All good hear! It has been saved 💾');
+
+                return;
             } catch (error) {
                 console.error('Error while setting new location...');
                 console.error(error);

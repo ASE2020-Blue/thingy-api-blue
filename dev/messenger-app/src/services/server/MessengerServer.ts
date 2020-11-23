@@ -1,17 +1,19 @@
-import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
+import { sendUnaryData, ServerUnaryCall, ServiceDefinition, UntypedServiceImplementation } from '@grpc/grpc-js';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Telegram } from 'telegraf';
 
-import { IMessengerServer } from '../../proto/messenger_grpc_pb';
+import { IMessengerServer, MessengerService } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
 import { ConfigureLocalizationScene } from '../../stage/scenes/ConfigureLocalizationScene';
+import { extractAndBind } from '../../utils/MethodExtractor';
+import { IServiceProvider } from './IServiceProvider';
 
 /**
  * TODO document
  */
-export class MessengerServer implements IMessengerServer {
+export class MessengerServer implements IMessengerServer, IServiceProvider {
 
-    private telegram: Telegram;
+    private readonly telegram: Telegram;
 
     constructor(telegram: Telegram) {
         this.telegram = telegram;
@@ -40,5 +42,16 @@ export class MessengerServer implements IMessengerServer {
         } catch (error) {
             callback(error, undefined);
         }
+    }
+
+    public getServiceDefinition(): ServiceDefinition {
+        return MessengerService;
+    }
+
+    public getUntypedServiceImplementation(): UntypedServiceImplementation {
+        // simplest solution found to the previously described problematic
+        const [ askNewLocation, sendTestMessage ] = extractAndBind(this, ['askNewLocation', 'sendTestMessage']);
+
+        return { askNewLocation, sendTestMessage };
     }
 }

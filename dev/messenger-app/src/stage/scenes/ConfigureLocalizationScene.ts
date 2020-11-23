@@ -4,7 +4,6 @@ import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
 import { ThingyLocalization } from '../../proto/thingy_pb';
-import { setNewLocation } from '../../services/client/persistLocalizationClient';
 
 // FIXME! Re-entrant infinite loop
 // clScene.leave(({ session, scene }, next) => {
@@ -67,7 +66,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
                     ]
                 )
                 .extra({
-                    parse_mode: 'Markdown' // not v2, car char '-' is reserved, to render lists
+                    parse_mode: 'Markdown' // not v2, because char '-' is reserved, to render lists
                 })
         );
     }
@@ -110,7 +109,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
         );
     }
 
-    private async onCallbackAction ({ callbackQuery: { data }, reply, replyWithMarkdown, session: { location, thingyUuid }, scene }: TContext) : Promise<any> {
+    private async onCallbackAction ({ callbackQuery: { data }, reply, replyWithMarkdown, session: { location, thingyUuid }, scene, persistLocalizationClient }: TContext) : Promise<any> {
         switch (data) {
             case ConfigureLocalizationScene.CONFIRM_CALLBACK:
                 const thingyLocalization = new ThingyLocalization();
@@ -118,7 +117,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
                 thingyLocalization.setThingyUuid(thingyUuid);
 
                 try {
-                    await setNewLocation(thingyLocalization);
+                    await persistLocalizationClient.setNewLocation(thingyLocalization);
                     await reply('All good hear! It has been saved 💾');
 
                     return scene.leave();

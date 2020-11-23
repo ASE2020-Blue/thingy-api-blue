@@ -5,7 +5,6 @@ import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
 import { ThingyId } from '../../proto/messenger_pb';
-import { ConfigureLocalizationScene } from './ConfigureLocalizationScene';
 
 export class ConfigurePendingLocalizationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
 
@@ -17,7 +16,7 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
     public static readonly USER_REFUSE_PENDING_CONFIGURATION = 'configure_pending_location_no';
 
     constructor(options?: Partial<BaseSceneOptions<TContext>>) {
-        super(ConfigureLocalizationScene.ID, options);
+        super(ConfigurePendingLocalizationScene.ID, options);
 
         // Continue to iterate like when entered the scene
         this.on('message', this.enterHandler);
@@ -46,9 +45,12 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
     }
 
     public enterHandler = async ({ session, scene, reply }: TContext) : Promise<Message> => {
-        console.log(session.thingiesUuid);
+        console.log('thingiesUuid:', session.thingiesUuid);
 
         const { thingiesUuid } = session;
+        if (! thingiesUuid)
+            return scene.leave();
+
         const [ firstThingyUuid ] = thingiesUuid;
         if (! firstThingyUuid)
             return scene.leave();
@@ -57,6 +59,6 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
 
         session.thingyUuid = firstThingyUuid;
 
-        return scene.enter(ConfigureLocalizationScene.ID);
+        return scene.enter(ConfigurePendingLocalizationScene.ID);
     }
 }
