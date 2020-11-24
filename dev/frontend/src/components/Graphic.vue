@@ -35,7 +35,7 @@
                 v-if="param[0].data.length > 0"
                 width="500"
                 type="line"
-                :options="getChartOptions(param)"
+                :options="getChartOptions(param, index)"
                 :series="param"
               />
               <p v-else>No data.</p>
@@ -64,6 +64,8 @@ export default {
       xaxis: [],
       dateFrom: new Date(),
       dateTo: new Date(),
+      min: [],
+      max: [],
     };
   },
   watch: {
@@ -77,7 +79,6 @@ export default {
       this.seriesChart = [];
       this.series.forEach((serie, index) => {
         const values = [];
-
         let data = {
           name: this.envParams[index].value,
           data: [],
@@ -86,15 +87,14 @@ export default {
           data.data.push(envParamValue.value);
           this.xaxis.push(envParamValue.createdAt);
         });
+        this.min.push(data.data.length > 0 ? Math.min(...data.data) : 0);
+        this.max.push(data.data.length > 0 ? Math.max(...data.data) : 0);
         values.push(data);
         this.seriesChart.push(values);
       });
-
-      // this.chartOptions.xaxis.title += this.series[0].envParam
       this.isLoading = false;
     },
-    getChartOptions(param) {
-      console.log(this.dateFrom);
+    getChartOptions(param, index) {
       return {
         chart: {
           height: 350,
@@ -137,8 +137,8 @@ export default {
           title: {
             text: param[0].name,
           },
-          min: 5,
-          max: 40,
+          min: this.min[index] - 5,
+          max: this.max[index] + 5,
         },
         legend: {
           position: "top",
