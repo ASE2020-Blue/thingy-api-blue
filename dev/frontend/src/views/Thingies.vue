@@ -1,57 +1,72 @@
 <template>
-  <v-container>
-    <v-row align="center" justify="center">
-      <v-col cols="8" sm="6" md="4">
-        <v-select
-          :items="thingies"
-          item-text="uuid"
-          item-value="uuid"
-          label="Available thingies"
-          v-model="selectedThingy"
-          outlined
-          return-object
-        />
-      </v-col>
-      <v-col cols="8" sm="6" md="4">
-        <v-select
-          :items="envParams"
-          item-text="value"
-          item-value="value"
-          label="Environment parameter"
-          v-model="selectedEnvParam"
-          outlined
-          return-object
-        />
-      </v-col>
-    </v-row>
-    <v-row align="center" justify="center">
-      <v-col cols="8" sm="6" md="4">
-        <v-radio-group v-model="selectedPeriod" max="1">
-          <v-radio
-            v-for="reportPeriod in reportPeriods"
-            :key="reportPeriod"
-            :label="`${reportPeriod} report`"
-            :value="reportPeriod"
-          ></v-radio>
-        </v-radio-group>
-      </v-col>
-      <v-col cols="8" sm="6" md="4"></v-col>
-      <!--<v-spacer></v-spacer>-->
-    </v-row>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="6">
-        <h3 v-for="envVal in envValues" :key="`envVal-${envVal.id}`">
-          {{ envVal }}
-        </h3>
-      </v-col>
-    </v-row>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="6">
-        <Graphic v-if="envValues.length > 0" />
-        <h3 v-else>No data.</h3>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div>
+    <v-container v-if="isLoading">
+      <v-row>
+        <v-col
+          :class="{ 'text-center': true }"
+          col="12"
+          align-self="center"
+          justify-self="center"
+        >
+          <v-progress-circular
+            :size="100"
+            :width="10"
+            color="primary"
+            indeterminate
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container v-else>
+      <v-row align="center" justify="center">
+        <v-col cols="8" sm="6" md="4">
+          <v-select
+            :items="thingies"
+            item-text="uuid"
+            item-value="uuid"
+            label="Available thingies"
+            v-model="selectedThingy"
+            outlined
+            return-object
+          />
+        </v-col>
+        <v-col cols="8" sm="6" md="4">
+          <v-select
+            :items="envParams"
+            item-text="value"
+            item-value="value"
+            label="Environment parameter"
+            v-model="selectedEnvParam"
+            outlined
+            return-object
+          />
+        </v-col>
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-col cols="8" sm="6" md="4">
+          <v-radio-group v-model="selectedPeriod" max="1">
+            <v-radio
+              v-for="reportPeriod in reportPeriods"
+              :key="reportPeriod"
+              :label="`${reportPeriod} report`"
+              :value="reportPeriod"
+            ></v-radio>
+          </v-radio-group>
+        </v-col>
+        <v-col cols="8" sm="6" md="4"></v-col>
+      </v-row>
+      <!--
+     TODO
+     <v-row>
+        <v-col>
+            <v-checkbox v-for="(envParam, index) in envParams" :key="`checkbox-param-${index}`"
+                :label="`${envParam.value}`"
+            />
+        </v-col>
+      </v-row>-->
+      <Graphic v-bind:envParams="envParams" v-bind:series="graphSeries" />
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -66,11 +81,13 @@ export default {
     return {
       thingies: undefined,
       selectedThingy: undefined,
-      reportPeriods: ["weekly", "monthly"],
+      reportPeriods: ["this week", "this month"],
       selectedPeriod: undefined,
       envValues: [],
       envParams: [],
       selectedEnvParam: undefined,
+      graphSeries: [],
+      isLoading: true,
     };
   },
   watch: {
@@ -80,6 +97,7 @@ export default {
     },
     selectedEnvParam(value) {
       // TODO
+      this.loadEnvParamValues();
       value.toString();
     },
   },
@@ -92,26 +110,47 @@ export default {
         this.thingies = res.data;
         this.thingies.sort((a, b) => (a.uuid > b.uuid ? 1 : -1));
         if (this.thingies.length > 0) this.selectedThingy = this.thingies[0];
+
+        // this.createEnvParamValues()
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally((this.isLoading = false));
   },
   methods: {
     loadEnvParamValues() {
-      const params = {
-        dateFrom: new Date(),
-        dateTo: new Date(),
-        envParam: this.selectedEnvParam,
-      };
-      Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
-        .then((res) => {
-          this.envValues = res.data;
-          /*let result = this.envValues.reduce(function(map, obj) {
-              map[obj.key] = obj.val;
-              return map;
-            }, {});*/
-        })
-        .catch((err) => console.error(err));
+      if (this.selectedThingy) {
+        const promises = [];
+        this.envParams.forEach((envParam) => {
+          const params = {
+            dateFrom: new Date(),
+            dateTo: new Date(),
+            envParam: envParam.value,
+          };
+          promises.push(
+            Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
+          );
+        });
+        Promise.all(promises)
+          .then((resAll) => {
+            this.graphSeries = resAll;
+          })
+          .catch((err) => console.error(err));
+        /* Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
+           .then((res) => {
+             this.envValues = res.data;
+             console.log(this.envValues)
+           })
+           .catch((err) => console.error(err));*/
+      }
     },
+    /*createEnvParamValues() { // TODO remove
+      let params = {
+        uuid: this.selectedThingy.uuid,
+        value: 22,
+        envParam: ENV_PARAMETERS[0].value
+      }
+      Thingies.createEnvironmentValues(params)
+    }*/
   },
 };
 </script>
