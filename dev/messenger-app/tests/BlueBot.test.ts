@@ -1,37 +1,34 @@
 import ava, { TestInterface } from 'ava';
 
-import { session } from 'telegraf';
-import { Message, Update } from 'telegraf/typings/telegram-types';
-import * as TypeMoq from 'typemoq';
+import { session } from './helpers/MyLocalSession';
 
 import { BlueBot } from '../src/BlueBot';
 import { BotSceneSessionContext } from '../src/context';
 import { IAvaContext } from './fixtures/context';
+import { CallApi, setSimpleReturnContextTypeOption } from './helpers/context';
+import { createCommandMessage } from './helpers/messageFactories';
 import { successResult } from './helpers/PromiseMockResult';
 import { SimplePersistLocalizationClient } from './helpers/services/client/SimplePersistLocalizationClient';
 import { emptyStageManager } from './helpers/stage/emptyStageManager';
-import { TestTelegrafContext } from './helpers/TestTelegrafContext';
 
 const test = <TestInterface<IAvaContext<BotSceneSessionContext>>> ava;
-
-const baseMessage = { chat: { id: 1 }, from: { id: 42, username: 'telegraf' } };
 
 test.before('Setup mocked bot', ({ context }) => {
     const sessionMiddleware = session<BotSceneSessionContext>();
     const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
-    // @ts-ignore
-    const bot = new BlueBot(undefined, sessionMiddleware, emptyStageManager, simplePersistLocalizationClient, { contextType: TestTelegrafContext });
+    const bot = new BlueBot(undefined, sessionMiddleware, emptyStageManager, simplePersistLocalizationClient);
 
     context.sessionMiddleware = sessionMiddleware;
     context.simplePersistLocalizationClient = simplePersistLocalizationClient;
     context.bot = bot;
 });
 
-test('Showing help', async ({ pass, fail, context: { bot } }) => {
-    const update = TypeMoq.Mock.ofType<Update>();
-    const message = TypeMoq.Mock.ofType<Message>();
-    message.setup(m => m.chat).returns(() => ({ id: 1, type: 'private' }));
+test('Showing help', async ({ is, assert, context: { bot } }) => {
 
-    const answer = await bot.handleUpdate({ message: { text: '/help', entities: [{ type: 'bot_command', offset: 0, length: 5 }], ...message.object }, ...update.object });
-    pass(message.object.message_id.toString());
+    setSimpleReturnContextTypeOption(bot.options);
+
+    const promiseData = <CallApi<{ text:string }>> await bot.handleUpdate(createCommandMessage('/help').toUpdate());
+    const { method, data } = promiseData;
+    is(method, 'sendMessage');
+    assert(data.text.split('\n').length > 0);
 });
