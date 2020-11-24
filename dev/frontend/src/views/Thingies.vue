@@ -40,15 +40,15 @@
             :value="envParam.value"
             v-model="selectedEnvParams"
             hide-details
-            @click="clickEnvParam"
           />
         </v-col>
         <v-col cols="8" sm="6" md="4">
+          <h2>Report period</h2>
           <v-radio-group v-model="selectedPeriod" max="1">
             <v-radio
               v-for="reportPeriod in reportPeriods"
               :key="reportPeriod"
-              :label="`${reportPeriod} report`"
+              :label="`last ${reportPeriod} days`"
               :value="reportPeriod"
             ></v-radio>
           </v-radio-group>
@@ -68,6 +68,7 @@ import Thingies from "@/api/Thingies";
 import { ENV_PARAMETERS } from "@/helpers/environmentParameters";
 import Graphic from "@/components/Graphic";
 
+const today = new Date();
 export default {
   name: "Thingies",
   components: { Graphic },
@@ -75,7 +76,7 @@ export default {
     return {
       thingies: undefined,
       selectedThingy: undefined,
-      reportPeriods: ["this week", "this month"],
+      reportPeriods: [7, 30],
       selectedPeriod: undefined,
       envValues: [],
       envParams: [],
@@ -83,6 +84,8 @@ export default {
       graphSeries: [],
       isLoading: true,
       selectedEnvParams: [],
+      dateFrom: undefined,
+      dateTo: today,
     };
   },
   watch: {
@@ -90,10 +93,13 @@ export default {
       this.selectedThingy = value;
       this.loadEnvParamValues();
     },
-    selectedEnvParam(value) {
-      // TODO
+    selectedPeriod(value) {
+      this.selectedPeriod = value;
+      this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
       this.loadEnvParamValues();
-      value.toString();
+    },
+    selectedEnvParam() {
+      this.loadEnvParamValues();
     },
   },
   created() {
@@ -105,8 +111,6 @@ export default {
         this.thingies = res.data;
         this.thingies.sort((a, b) => (a.uuid > b.uuid ? 1 : -1));
         if (this.thingies.length > 0) this.selectedThingy = this.thingies[0];
-
-        // this.createEnvParamValues()
       })
       .catch((err) => console.error(err))
       .finally((this.isLoading = false));
@@ -117,8 +121,8 @@ export default {
         const promises = [];
         this.envParams.forEach((envParam) => {
           const params = {
-            dateFrom: new Date(),
-            dateTo: new Date(),
+            dateFrom: this.dateFrom,
+            dateTo: this.dateTo,
             envParam: envParam.value,
           };
           promises.push(
@@ -132,14 +136,6 @@ export default {
           .catch((err) => console.error(err));
       }
     },
-    /*createEnvParamValues() { // TODO remove
-      let params = {
-        uuid: this.selectedThingy.uuid,
-        value: 22,
-        envParam: ENV_PARAMETERS[0].value
-      }
-      Thingies.createEnvironmentValues(params)
-    }*/
   },
 };
 </script>

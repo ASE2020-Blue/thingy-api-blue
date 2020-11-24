@@ -30,20 +30,20 @@
               sm="6"
               v-if="selectedEnvParams.includes(param[0].name)"
             >
-              Report for {{ param[0].name }}
+              <h3>Report for {{ param[0].name }}</h3>
               <chart
                 v-if="param[0].data.length > 0"
                 width="500"
                 type="line"
-                :options="chartOptions"
+                :options="getChartOptions(param)"
                 :series="param"
               />
-              <h3 v-else>No data.</h3>
+              <p v-else>No data.</p>
             </v-col>
           </div>
         </div>
         <v-col cols="12" sm="6" v-else-if="selectedEnvParams.length === 0">
-          <h3 class="text-center">No selected environment parameter</h3>
+          <h4 class="text-center">No selected environment parameter</h4>
         </v-col>
         <v-col cols="12" sm="6" v-else>
           <h3 class="text-center">No data.</h3>
@@ -61,7 +61,41 @@ export default {
     return {
       isLoading: true,
       seriesChart: [],
-      chartOptions: {
+      xaxis: [],
+      dateFrom: new Date(),
+      dateTo: new Date(),
+    };
+  },
+  watch: {
+    series() {
+      this.loadData();
+    },
+  },
+  methods: {
+    loadData() {
+      this.isLoading = true;
+      this.seriesChart = [];
+      this.series.forEach((serie, index) => {
+        const values = [];
+
+        let data = {
+          name: this.envParams[index].value,
+          data: [],
+        };
+        serie.data.forEach((envParamValue) => {
+          data.data.push(envParamValue.value);
+          this.xaxis.push(envParamValue.createdAt);
+        });
+        values.push(data);
+        this.seriesChart.push(values);
+      });
+
+      // this.chartOptions.xaxis.title += this.series[0].envParam
+      this.isLoading = false;
+    },
+    getChartOptions(param) {
+      console.log(this.dateFrom);
+      return {
         chart: {
           height: 350,
           type: "line",
@@ -95,15 +129,13 @@ export default {
           size: 1,
         },
         xaxis: {
-          // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-          categories: [],
-          title: {
-            text: "Month",
-          },
+          categories: this.xaxis,
+          // min: this.dateFrom.toDateString(),
+          // max: this.dateTo.toDateString()
         },
         yaxis: {
           title: {
-            text: "Temperature",
+            text: param[0].name,
           },
           min: 5,
           max: 40,
@@ -115,35 +147,7 @@ export default {
           offsetY: -25,
           offsetX: -5,
         },
-      },
-    };
-  },
-  watch: {
-    series() {
-      this.loadData();
-    },
-  },
-  methods: {
-    loadData() {
-      this.isLoading = true;
-      this.seriesChart = [];
-      this.series.forEach((serie, index) => {
-        const values = [];
-
-        let data = {
-          name: this.envParams[index].value,
-          data: [],
-        };
-        serie.data.forEach((envParamValue) => {
-          data.data.push(envParamValue.value);
-        });
-        values.push(data);
-        this.seriesChart.push(values);
-      });
-
-      // this.chartOptions.xaxis.title += this.series[0].envParam
-      this.chartOptions.xaxis.categories = this.series.map((e) => e.createdAt);
-      this.isLoading = false;
+      };
     },
   },
   created() {

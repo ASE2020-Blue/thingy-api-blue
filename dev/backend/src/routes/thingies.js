@@ -5,6 +5,7 @@ const {
   locationHistory,
   environmentParamsValue,
 } = require("../models");
+const { Op } = require("sequelize");
 
 const baseRoute = "/thingy";
 router
@@ -61,15 +62,23 @@ async function getThingyParamValues(ctx) {
         model: environmentParamsValue,
         where: {
           envParam: ctx.query.envParam,
+          createdAt: {
+            [Op.between]: [
+              new Date(ctx.query.dateFrom),
+              new Date(ctx.query.dateTo),
+            ],
+          },
         },
         required: false,
       },
     ],
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
-
+  //let validValues = t.environmentParamsValues.filter(e => e.createdAt >= new Date(ctx.query.dateFrom) && e.createdAt <= new Date(ctx.query.dateTo))
+  ctx.body = t.environmentParamsValues.sort((a, b) =>
+    new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
+  );
   ctx.status = 200;
-  ctx.body = t.environmentParamsValues;
 }
 
 // async function getAllPendingThingies(ctx) {
