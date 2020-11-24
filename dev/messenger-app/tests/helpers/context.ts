@@ -14,6 +14,7 @@ interface TContextCtor {
  * {@link Telegram} which will extend {@link ApiClient} and get the {@link ApiClient#callApi} method.
  */
 export type CallApiImpl<D> = (method: string, data: D) => Promise<unknown>;
+export type VoidCallApiImpl<D> = (method: string, data: D) => void;
 
 export interface CallApi<D> {
     method: string; // TODO specify more clearly
@@ -38,7 +39,17 @@ export function prepareHookedTelegramContext<D>(callApiImpl: CallApiImpl<D>): TC
 }
 
 export function setSimpleReturnContextTypeOption (options: TOptions): void {
-    setContextTypeOption(options, (method, data) => Promise.resolve({ method, data }));
+    setReturningContextTypeOption(options, (method, data) => Promise.resolve({ method, data }));
+}
+
+export function setContextTypeOption<D> (options: TOptions, callApiImpl: VoidCallApiImpl<D>): void {
+    setReturningContextTypeOption<D>(
+        options,
+        (method, data) => {
+            callApiImpl(method, data);
+            return Promise.resolve({ method, data });
+        }
+    );
 }
 
 /**
@@ -48,7 +59,7 @@ export function setSimpleReturnContextTypeOption (options: TOptions): void {
  * @param options
  * @param callApiImpl
  */
-export function setContextTypeOption<D> (options: TOptions, callApiImpl: CallApiImpl<D>): void {
+export function setReturningContextTypeOption<D> (options: TOptions, callApiImpl: CallApiImpl<D>): void {
     // @ts-ignore
     options.contextType = prepareHookedTelegramContext(callApiImpl);
 }
