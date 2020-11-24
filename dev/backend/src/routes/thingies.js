@@ -1,6 +1,10 @@
 const Router = require("koa-router");
 const router = new Router();
-const { thingy, locationHistory } = require("../models");
+const {
+  thingy,
+  locationHistory,
+  environmentParamsValue,
+} = require("../models");
 
 const baseRoute = "/thingy";
 router
@@ -8,6 +12,7 @@ router
   // .get(baseRoute + "/pending", getAllPendingThingies)
   .get(baseRoute + "/:uuid", getThingy)
   .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
+  .get(baseRoute + "/:uuid/environmentParamsValues", getThingyParamValues)
   .put(baseRoute, createThingy)
   .delete(baseRoute + "/:uuid", deleteThingy);
 
@@ -42,6 +47,29 @@ async function getThingyLocations(ctx) {
 
   ctx.status = 200;
   ctx.body = t.locationHistories;
+}
+
+async function getThingyParamValues(ctx) {
+  if (!ctx.query.envParam)
+    ctx.throw(400, { error: '"envParam" is a required field' });
+  let t = await thingy.findOne({
+    where: {
+      uuid: ctx.params.uuid,
+    },
+    include: [
+      {
+        model: environmentParamsValue,
+        where: {
+          envParam: ctx.query.envParam,
+        },
+        required: false,
+      },
+    ],
+  });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
+
+  ctx.status = 200;
+  ctx.body = t.environmentParamsValues;
 }
 
 // async function getAllPendingThingies(ctx) {
