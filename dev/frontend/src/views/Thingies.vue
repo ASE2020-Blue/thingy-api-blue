@@ -30,19 +30,19 @@
             return-object
           />
         </v-col>
+      </v-row>
+      <v-row justify="center">
         <v-col cols="8" sm="6" md="4">
-          <v-select
-            :items="envParams"
-            item-text="value"
-            item-value="value"
-            label="Environment parameter"
-            v-model="selectedEnvParam"
-            outlined
-            return-object
+          <v-checkbox
+            v-for="(envParam, index) in envParams"
+            :key="`checkbox-param-${index}`"
+            :label="envParam.value"
+            :value="envParam.value"
+            v-model="selectedEnvParams"
+            hide-details
+            @click="clickEnvParam"
           />
         </v-col>
-      </v-row>
-      <v-row align="center" justify="center">
         <v-col cols="8" sm="6" md="4">
           <v-radio-group v-model="selectedPeriod" max="1">
             <v-radio
@@ -53,18 +53,12 @@
             ></v-radio>
           </v-radio-group>
         </v-col>
-        <v-col cols="8" sm="6" md="4"></v-col>
       </v-row>
-      <!--
-     TODO
-     <v-row>
-        <v-col>
-            <v-checkbox v-for="(envParam, index) in envParams" :key="`checkbox-param-${index}`"
-                :label="`${envParam.value}`"
-            />
-        </v-col>
-      </v-row>-->
-      <Graphic v-bind:envParams="envParams" v-bind:series="graphSeries" />
+      <Graphic
+        v-bind:envParams="envParams"
+        v-bind:series="graphSeries"
+        v-bind:selectedEnvParams="selectedEnvParams"
+      />
     </v-container>
   </div>
 </template>
@@ -88,6 +82,7 @@ export default {
       selectedEnvParam: undefined,
       graphSeries: [],
       isLoading: true,
+      selectedEnvParams: [],
     };
   },
   watch: {
@@ -135,12 +130,6 @@ export default {
             this.graphSeries = resAll;
           })
           .catch((err) => console.error(err));
-        /* Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
-           .then((res) => {
-             this.envValues = res.data;
-             console.log(this.envValues)
-           })
-           .catch((err) => console.error(err));*/
       }
     },
     /*createEnvParamValues() { // TODO remove
