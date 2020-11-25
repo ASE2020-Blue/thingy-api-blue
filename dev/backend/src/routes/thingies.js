@@ -1,6 +1,11 @@
 const Router = require("koa-router");
 const router = new Router();
-const { thingy, locationHistory } = require("../models");
+const {
+  thingy,
+  locationHistory,
+  environmentParamsValue,
+} = require("../models");
+const { Op } = require("sequelize");
 
 const baseRoute = "/thingy";
 router
@@ -8,6 +13,7 @@ router
   // .get(baseRoute + "/pending", getAllPendingThingies)
   .get(baseRoute + "/:uuid", getThingy)
   .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
+  .get(baseRoute + "/:uuid/environmentParamsValues", getThingyParamValues)
   .put(baseRoute, createThingy)
   .delete(baseRoute + "/:uuid", deleteThingy);
 
@@ -19,11 +25,11 @@ async function getAllThingies(ctx) {
 async function getThingy(ctx) {
   let t = await thingy.findOne({
     where: {
-      uuid: ctx.params.uuid
-    }
+      uuid: ctx.params.uuid,
+    },
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
-  ctx.body = t
+  ctx.body = t;
   ctx.status = 200;
 }
 
@@ -35,7 +41,6 @@ async function getThingyLocations(ctx) {
     include: [
       {
         model: locationHistory,
-        required: true,
       },
     ],
   });
@@ -43,6 +48,37 @@ async function getThingyLocations(ctx) {
 
   ctx.status = 200;
   ctx.body = t.locationHistories;
+}
+
+async function getThingyParamValues(ctx) {
+  if (!ctx.query.envParam)
+    ctx.throw(400, { error: '"envParam" is a required field' });
+  let t = await thingy.findOne({
+    where: {
+      uuid: ctx.params.uuid,
+    },
+    include: [
+      {
+        model: environmentParamsValue,
+        where: {
+          envParam: ctx.query.envParam,
+          createdAt: {
+            [Op.between]: [
+              new Date(ctx.query.dateFrom),
+              new Date(ctx.query.dateTo),
+            ],
+          },
+        },
+        required: false,
+      },
+    ],
+  });
+  if (!t) ctx.throw(404, { error: "thingy not found" });
+  //let validValues = t.environmentParamsValues.filter(e => e.createdAt >= new Date(ctx.query.dateFrom) && e.createdAt <= new Date(ctx.query.dateTo))
+  ctx.body = t.environmentParamsValues.sort((a, b) =>
+    new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
+  );
+  ctx.status = 200;
 }
 
 // async function getAllPendingThingies(ctx) {
@@ -65,8 +101,8 @@ async function createThingy(ctx) {
   if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
   ctx.status = 200;
 
-  let updatedThingy = await thingy.upsert(body)
-  ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])) // to retrieve only data of thingy
+  let updatedThingy = await thingy.upsert(body);
+  ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])); // to retrieve only data of thingy
 
   return updatedThingy;
 }
@@ -76,8 +112,8 @@ async function createThingy(ctx) {
 async function deleteThingy(ctx) {
   const t = await thingy.findOne({
     where: {
-      uuid: ctx.params.uuid
-    }
+      uuid: ctx.params.uuid,
+    },
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
   ctx.status = 200;

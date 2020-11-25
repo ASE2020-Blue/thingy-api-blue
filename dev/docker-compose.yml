@@ -82,7 +82,22 @@ services:
             # But for dev, install dependencies locally
             - ./messenger-app:/root/app
             - /root/app/node_modules
-
+    frontend:
+        build:
+            context: .
+            dockerfile: docker/frontend/Dockerfile
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "8081:8080"
+        volumes:
+            # Avoid shadowing the node_modules folder
+            # https://stackoverflow.com/a/32785014/3771148
+            # Install is necessary for CI purposes for example
+            # But for dev, install dependencies locally
+            - ./frontend:/root/app
+            - /root/app/node_modules
 
 volumes:
     pgdata:

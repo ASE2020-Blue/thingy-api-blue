@@ -26,7 +26,9 @@ app.use(async (ctx, next) => {
 
 app
   .use(bodyParser())
-  .use(cors())
+  .use(cors({
+    credentials: true
+  }))
   .use(router.routes())
   .use(router.allowedMethods())
   .use(thingies.routes())
