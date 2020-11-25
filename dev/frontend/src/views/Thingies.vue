@@ -128,6 +128,10 @@ export default {
       .finally((this.isLoading = false));
   },
   methods: {
+    clearData() {
+      this.envValues = [];
+      this.graphSeries = [];
+    },
     loadEnvParamValues() {
       if (this.selectedThingy) {
         const promises = [];

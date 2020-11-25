@@ -33,7 +33,7 @@
               <h3>Report for {{ param[0].name }}</h3>
               <chart
                 v-if="param[0].data.length > 0"
-                width="500"
+                width="800"
                 type="line"
                 :options="getChartOptions(param, index)"
                 :series="param"
