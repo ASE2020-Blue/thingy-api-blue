@@ -1,5 +1,12 @@
 <template>
   <div>
+    <v-container>
+      <v-row>
+        <v-col :class="{ 'text-center': true }">
+          <h1>Your report</h1>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-container v-if="isLoading">
       <v-row>
         <v-col
@@ -18,9 +25,10 @@
       </v-row>
     </v-container>
     <v-container v-else>
-      <v-row align="center" justify="center">
-        <v-col cols="8" sm="6" md="4">
+      <v-row class="d-flex  justify-space-between mb-3">
+        <v-col cols="8" sm="4" class="pa-2">
           <v-select
+            style="padding-top: 20px"
             :items="thingies"
             item-text="uuid"
             item-value="uuid"
@@ -30,20 +38,24 @@
             return-object
           />
         </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="8" sm="6" md="4">
-          <v-checkbox
-            v-for="(envParam, index) in envParams"
-            :key="`checkbox-param-${index}`"
-            :label="envParam.value"
-            :value="envParam.value"
-            v-model="selectedEnvParams"
-            hide-details
-          />
-        </v-col>
-        <v-col cols="8" sm="6" md="4">
-          <h2>Report period</h2>
+
+        <div cols="8" sm="4" class="pa-2">
+          <v-col>
+            <v-checkbox
+              v-for="(envParam, index) in envParams"
+              :key="`checkbox-param-${index}`"
+              :label="envParam.value"
+              :value="envParam.value"
+              v-model="selectedEnvParams"
+              hide-details
+            />
+          </v-col>
+        </div>
+
+        <v-col cols="8" sm="4" class="pa-2">
+          <p class="text-body-1" style="padding-top: 20px">
+            Show report of the
+          </p>
           <v-radio-group v-model="selectedPeriod" max="1">
             <v-radio
               v-for="reportPeriod in reportPeriods"
