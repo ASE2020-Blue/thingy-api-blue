@@ -6,20 +6,18 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SCRIPT_NAME=`basename "$0"`
 
 # Arguments:
-# 1. path to js files output
-# [2. path to typescript files output]
-##    Otherwise, will be the same as the js output
-# [3. file to build]
+# 1. path to js/ts files output
+# [2. file to build]
 ##    Otherwise, will build all proto file like: `*.proto`
 
 
 # 0. Help
 if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "help" ]; then
-  echo "Usage: $SCRIPT_NAME js_out_path [ts_out_path] [proto_filter]"
+  echo "Usage: $SCRIPT_NAME OUT_path [proto_filter]"
   echo
   echo "Examples:"
   echo "\t../protos/$SCRIPT_NAME ./src/proto/"
-  echo "\t../protos/$SCRIPT_NAME ./src/proto/js/ ./src/proto/ts/ messenger.proto"
+  echo "\t../protos/$SCRIPT_NAME ./src/proto/ messenger.proto"
   echo
   echo "\t(Note: '..' for like if we run this command from a different working directory)"
   exit
@@ -38,7 +36,7 @@ if ! [ -d "$DIR/node_modules" ]; then
       yarn --cwd "$DIR" install
       echo
   else
-    >&2 echo "Existing..."
+    >&2 echo "Exiting..."
     exit 1
   fi
 fi
@@ -46,64 +44,82 @@ fi
 
 
 # 2. Collect arguments
-JS_OUT="$1"
+## 2.1. Get output folder
+OUT="$1"
 shift
-if [ "$JS_OUT" = "" ]; then
+
+if [ "$OUT" = "" ]; then
   >&2 echo "Missing at least the js output path argument!"
   exit 1
 fi
 
-TS_OUT="$1"
-if [ "$TS_OUT" = "" ] || ! [ -d "$TS_OUT" ]; then
-  echo "Choosing same output for typescript!"
-  TS_OUT="$JS_OUT"
-else
+if ! [ -d "$OUT" ]; then
+  >&2 echo "The target directory has to exist first"
+  exit 1
+fi
+
+### 2.1.1 Check if the path is absolute
+# To fix if relative path, as it has the path has to be passed absolute, as we change
+# The current working directory with invoking the yarn script
+if [[ "$OUT" != /* ]]; then
+  OUT="$(pwd)/$OUT"
+fi
+
+
+
+## 2.2. Get the proto files to compile
+BUILD_FILES=()
+while [ "$1" != "" ]; do
+  # https://stackoverflow.com/a/6364244/3771148
+
+  # 1. trust the user and check if any file exists
+  if compgen -G "$1" > /dev/null; then
+    BUILD_FILES+=("$1")
+
+  # 2. try prefixing with the proto directory
+  elif compgen -G "$DIR/$1" > /dev/null; then
+    BUILD_FILES+=("$DIR/$1")
+
+  # 3. partially trust the user and add proto extension
+  elif compgen -G "$1.proto" > /dev/null; then
+    BUILD_FILES+=("$1.proto")
+
+  # 4. try prefixing with the proto directory and suffixing the proto extension
+  elif compgen -G "$DIR/$1.proto" > /dev/null; then
+    BUILD_FILES+=("$DIR/$1.proto")
+
+  # 3. fail
+  else
+    >&2 echo "Couldn't match any file with argument $1"
+    exit 1
+  fi
+
   shift
+done
+
+if [ "${#BUILD_FILES[@]}" = "0" ]; then
+  echo "Compiling all the proto files"
+  BUILD_FILES=("$DIR/*.proto")
 fi
-
-## Prefix the path with the user's current working directory
-JS_OUT="$(pwd)/$JS_OUT"
-TS_OUT="$(pwd)/$TS_OUT"
-
-# ------------
-# FIXME
-# ------------
-FIRST_BUILD_FILE="$1" # TODO improve with that
-BUILD_FILES="$@"
-if [ "$BUILD_FILES" = "" ]; then
-  echo "Building all proto files!"
-  BUILD_FILES="$DIR"/*.proto
-fi
-
-# ------------
-# FIXME
-# ------------
-## Trying fixing it by prefixing the directory
-#if ! [ -e "$BUILD_FILES" ]; then
-#  BUILD_FILES="$DIR/"$BUILD_FILES
-#fi
-#if ! [ -e "$BUILD_FILES" ]; then
-#  >&2 echo "No target proto files found with: $BUILD_FILES"
-#  exit 1
-#fi
-
 
 
 # 3. Build js and ts
+# https://developers.google.com/protocol-buffers/docs/reference/javascript-generated
+# https://github.com/agreatfool/grpc_tools_node_protoc_ts
 echo
 echo "Building js files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
-  --js_out="import_style=commonjs,binary:$JS_OUT" \
-  --grpc_out=grpc_js:"$JS_OUT" \
   --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
+  --js_out="import_style=commonjs,binary:$OUT" \
+  --grpc_out=grpc_js:"$OUT" \
   -I "$DIR" \
-  $BUILD_FILES
+  ${BUILD_FILES[@]}
 
 echo
-
 echo "Building ts files..."
 yarn --cwd "$DIR" run grpc_tools_node_protoc \
-  --ts_out=import_style=commonjs,grpc_js:"$TS_OUT" \
+  --plugin=protoc-gen-grpc="$DIR/node_modules/.bin/grpc_tools_node_protoc_plugin" \
   --plugin=protoc-gen-ts="$DIR/node_modules/.bin/protoc-gen-ts" \
+  --ts_out="grpc_js:$OUT" \
   -I "$DIR" \
-  $BUILD_FILES
+  ${BUILD_FILES[@]}

@@ -1,37 +1,57 @@
-import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
+import { sendUnaryData, ServerUnaryCall, ServiceDefinition, UntypedServiceImplementation } from '@grpc/grpc-js';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { Telegram } from 'telegraf';
 
-import { IMessengerServer } from '../../proto/messenger_grpc_pb';
+import { IMessengerServer, MessengerService } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
-import { askIfUserWantsToConfigure } from '../../stages/scenes/ConfigureLocalization';
-import { AbstractTelegramContext } from './AbstractTelegramContext';
+import { ConfigureLocalizationScene } from '../../stage/scenes/ConfigureLocalizationScene';
+import { extractAndBind } from '../../utils/MethodExtractor';
+import { IServiceProvider } from './IServiceProvider';
 
 /**
  * TODO document
  */
-export class MessengerServer extends AbstractTelegramContext implements IMessengerServer {
+export class MessengerServer implements IMessengerServer, IServiceProvider {
+
+    private readonly telegram: Telegram;
 
     constructor(telegram: Telegram) {
-        super(telegram);
+        this.telegram = telegram;
     }
 
-    public askNewLocation(call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): void {
+    public async askNewLocation (call: ServerUnaryCall<ThingyId, Empty>, callback: sendUnaryData<Empty>): Promise<void> {
         console.log(`${new Date().toISOString()}    askNewLocation`);
-        const thingyUudi = call.request.getThingyUuid();
-        console.log(`\t"${thingyUudi}"`);
+        const thingyUuid = call.request.getThingyUuid();
+        console.log(`\t"${thingyUuid}"`);
 
-        askIfUserWantsToConfigure(this.telegram, thingyUudi);
-
-        callback(undefined, new Empty());
+        try {
+            await ConfigureLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(this.telegram, thingyUuid);
+            callback(undefined, new Empty());
+        } catch (error) {
+            callback(error, undefined);
+        }
     }
 
-    public sendTestMessage(call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): void {
+    public async sendTestMessage (call: ServerUnaryCall<TestMessageRequest, Empty>, callback: sendUnaryData<Empty>): Promise<void> {
         console.log(`${new Date().toISOString()}    sendTestMessage`);
         console.log(`\t"${call.request.getText()}"`);
 
-        this.telegram.sendMessage(process.env.DEV_ID, call.request.getText())
-            .then(() => callback(undefined, new Empty()))
-            .catch(error => callback(error, undefined));
+        try {
+            await this.telegram.sendMessage(process.env.DEV_ID, call.request.getText());
+            callback(undefined, new Empty());
+        } catch (error) {
+            callback(error, undefined);
+        }
+    }
+
+    public getServiceDefinition(): ServiceDefinition {
+        return MessengerService;
+    }
+
+    public getUntypedServiceImplementation(): UntypedServiceImplementation {
+        // simplest solution found to the previously described problematic
+        const [ askNewLocation, sendTestMessage ] = extractAndBind(this, ['askNewLocation', 'sendTestMessage']);
+
+        return { askNewLocation, sendTestMessage };
     }
 }
