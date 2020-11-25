@@ -57,6 +57,7 @@ async function getThingyParamValues(ctx) {
     where: {
       uuid: ctx.params.uuid,
     },
+    order: [ environmentParamsValue, 'createdAt' ],
     include: [
       {
         model: environmentParamsValue,
@@ -75,9 +76,7 @@ async function getThingyParamValues(ctx) {
   });
   if (!t) ctx.throw(404, { error: "thingy not found" });
   //let validValues = t.environmentParamsValues.filter(e => e.createdAt >= new Date(ctx.query.dateFrom) && e.createdAt <= new Date(ctx.query.dateTo))
-  ctx.body = t.environmentParamsValues.sort((a, b) =>
-    new Date(a.createdAt) > new Date(b.createdAt) ? 1 : -1
-  );
+  ctx.body = t.environmentParamsValues;
   ctx.status = 200;
 }
 
