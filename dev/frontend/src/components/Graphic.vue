@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import { getFormattedDatetime } from "@/helpers/date";
+
 export default {
   name: "Graphic",
   props: ["series", "envParams", "selectedEnvParams"],
@@ -83,10 +85,13 @@ export default {
           name: this.envParams[index].value,
           data: [],
         };
+
+        const xaxis = [];
         serie.data.forEach((envParamValue) => {
           data.data.push(envParamValue.value);
-          this.xaxis.push(envParamValue.createdAt);
+          xaxis.push(getFormattedDatetime(envParamValue.createdAt));
         });
+        this.xaxis.push(xaxis);
         this.min.push(data.data.length > 0 ? Math.min(...data.data) : 0);
         this.max.push(data.data.length > 0 ? Math.max(...data.data) : 0);
         values.push(data);
@@ -112,9 +117,6 @@ export default {
           },
         },
         colors: ["#77B6EA", "#545454"],
-        dataLabels: {
-          enabled: true,
-        },
         stroke: {
           curve: "smooth",
         },
@@ -125,13 +127,11 @@ export default {
             opacity: 0.5,
           },
         },
-        markers: {
-          size: 1,
-        },
         xaxis: {
-          categories: this.xaxis,
-          // min: this.dateFrom.toDateString(),
-          // max: this.dateTo.toDateString()
+          labels: {
+            show: false,
+          },
+          categories: this.xaxis[index],
         },
         yaxis: {
           title: {
