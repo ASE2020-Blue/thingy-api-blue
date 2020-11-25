@@ -10,7 +10,7 @@ import { IPersistLocalizationClient } from './services/client/IPersistLocalizati
 import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
 import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
 
-import { fgRed, reset } from './utils/consoleColors';
+import { fgRed, reset } from './helpers/consoleColors';
 
 /**
  * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:

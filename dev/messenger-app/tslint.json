@@ -1,6 +1,6 @@
 {
     "defaultSeverity": "error",
-    "extends": "tslint-microsoft-contrib",
+    "extends": "tslint-microsoft-contrib/recommended",
     "jsRules": {},
     "rules": {
         "no-implicit-dependencies": [
@@ -27,5 +27,5 @@
         "no-submodule-imports": false,
         "switch-default": false
     },
-    "rulesDirectory": []
+    "rulesDirectory": ["node_modules/tslint-microsoft-contrib"]
 }

@@ -5,7 +5,7 @@ import { Telegram } from 'telegraf';
 import { IMessengerServer, MessengerService } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
 import { ConfigureLocalizationScene } from '../../stage/scenes/ConfigureLocalizationScene';
-import { extractAndBind } from '../../utils/MethodExtractor';
+import { extractAndBind } from '../../helpers/MethodExtractor';
 import { IServiceProvider } from './IServiceProvider';
 
 /**

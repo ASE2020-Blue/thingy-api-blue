@@ -1,7 +1,7 @@
 {
   "name": "messenger-app",
   "version": "0.1.0",
-  "main": "node $NODE_OPTIONS .dist/bot.js",
+  "main": "node $MESS_NODE_OPTIONS .dist/bot.js",
   "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
   "author": "Alain Schaller",
   "license": "MIT",
@@ -13,18 +13,42 @@
     "build": "tsc",
     "build-proto": "../protos/build_protos.sh ./src/proto ./src/@types/proto && echo && echo Build proto successful",
     "watch": "tsc -w",
-    "validate": "node node_modules/app.json/index.js validate"
+    "test:coverage:run": "nyc ava",
+    "test:coverage:run:verbose": "nyc ava --verbose",
+    "test:coverage:report:text": "nyc report --reporter text",
+    "test:coverage:report:text-summary": "nyc report --reporter text-summary",
+    "test:coverage:report:html": "nyc report --reporter html --report-dir coverage/html"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
+    "debug": "^4.3.1",
     "telegraf": "^3.38.0",
     "telegraf-session-redis": "^5.1.0"
   },
   "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "ava": "^3.13.0",
     "google-protobuf": "^3.13.0",
     "nodemon": "^2.0.6",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "tslint-microsoft-contrib": "^6.2.0",
+    "typemoq": "^2.1.0",
     "typescript": "^4.0.5"
+  },
+  "nyc": {
+    "exclude": [
+      "src/proto/*",
+      "tests/**/*"
+    ]
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }
