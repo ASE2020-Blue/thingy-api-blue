@@ -1,6 +1,6 @@
 {
   "name": "node-red-notifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "settings.js",
   "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
   "author": "Alain Schaller",
