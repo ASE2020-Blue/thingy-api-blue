@@ -1,1 +1,684 @@
-[{"id":"522f6bba.b3f424","type":"tab","label":"Flow 1","disabled":false,"info":""},{"id":"8316d426.c53568","type":"grpc-server","port":"5001","name":"Messenger-gRPC-Server","server":"messenger","protoFile":"syntax = \"proto3\";\n\nimport \"google/protobuf/empty.proto\";\n\n\n/**\n * Services that the bot service provides to the rest of the infrastructure\n *\n * # Setting new location\n * 1. Node-Red get button trigger (2 clicks)\n * 2. Ask messenger to ask for location\n * 3. Messenger, tells backend which location to store\n */\nservice Messenger {\n  rpc AskNewLocation (ThingyId) returns (google.protobuf.Empty);\n\n  rpc SendTestMessage (TestMessageRequest) returns (google.protobuf.Empty);\n}\n\n\nmessage ThingyId {\n  string thingy_uuid = 1;\n}\n\nmessage TestMessageRequest {\n  string text = 1;\n}\n\n/**\n * Not used yet\n */\nenum MessageType {\n  PLAIN = 0;\n  MARKDOWN = 1;\n}\n","ca":"","chain":"","key":"","mutualTls":false,"localServer":false},{"id":"b2fc11be.a3bc5","type":"mqtt-broker","name":"ASE-Broker","broker":"mqtt.thing.zone","port":"1894","clientid":"","usetls":false,"compatmode":false,"keepalive":"60","cleansession":true,"birthTopic":"","birthQos":"0","birthPayload":"","closeTopic":"","closeQos":"0","closePayload":"","willTopic":"","willQos":"0","willPayload":""},{"id":"efde9282.c49a1","type":"grpc-server","port":"5001","name":"Backend gRPC Server","server":"backend","protoFile":"syntax = \"proto3\";\n\nimport \"google/protobuf/empty.proto\";\n\n/**\n * # New user start conversation with bot\n * 1. Messenger asks the backed for missing location\n * 2. If some thingy are missing locations, return to the messenger the uuids\n * 3. Like 'new location' scenario (of messenger), starting from point 2\n */\n\n/**\n * Implemented by the backend\n */\nservice PersistLocalization {\n    rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);\n    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);\n}\n\n\nmessage ThingyLocalization {\n    string thingy_uuid = 1;\n    string location = 2;\n}\n","ca":"","chain":"","key":"","mutualTls":false,"localServer":true},{"id":"a250d435.7e6168","type":"grpc-call","z":"522f6bba.b3f424","name":"SendTestMessage","server":"8316d426.c53568","service":"Messenger","method":"SendTestMessage","chain":"","key":"","x":630,"y":120,"wires":[["f09a480b.67beb8"]]},{"id":"9caea6af.30b148","type":"inject","z":"522f6bba.b3f424","name":"","props":[{"p":"payload"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\"chatId\": \"Alain'sId\", \"text\": \"Hello my MAN!!\"}","payloadType":"json","x":250,"y":120,"wires":[["a250d435.7e6168"]]},{"id":"f09a480b.67beb8","type":"debug","z":"522f6bba.b3f424","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":950,"y":120,"wires":[]},{"id":"3fb2dcf9.a9c1f4","type":"mqtt in","z":"522f6bba.b3f424","name":"Thingy update","topic":"$(THINGY_MQTT_TOPIC)","qos":"0","datatype":"json","broker":"b2fc11be.a3bc5","x":90,"y":320,"wires":[["dba2d53f.2daf48"]]},{"id":"b38d3378.f69cb","type":"debug","z":"522f6bba.b3f424","name":"Only button event","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":790,"y":240,"wires":[]},{"id":"b87495f6.afbac8","type":"switch","z":"522f6bba.b3f424","name":"Filter button event","property":"payload.appId","propertyType":"msg","rules":[{"t":"eq","v":"BUTTON","vt":"str"}],"checkall":"true","repair":false,"outputs":1,"x":610,"y":320,"wires":[["b38d3378.f69cb","e61b07fc.12aca8"]]},{"id":"c056685e.deeeb8","type":"debug","z":"522f6bba.b3f424","name":"All thingy update","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":410,"y":240,"wires":[]},{"id":"e61b07fc.12aca8","type":"button-events","z":"522f6bba.b3f424","name":"","outputs":2,"inputField":"payload.data","inputFieldType":"msg","outputField":"payload.btnEvent","outputFieldType":"msg","downValue":"1","downValueType":"str","upValue":"0","upValueType":"str","idleValue":"1","clickedInterval":200,"pressedInterval":200,"debounceInterval":30,"events":[{"type":"clicked"},{"type":"double_clicked"}],"x":980,"y":320,"wires":[["6027f4b4.6c30ec"],["5d0a6e58.1865","46c32b75.2d4694"]]},{"id":"5d0a6e58.1865","type":"debug","z":"522f6bba.b3f424","name":"Double click debug","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":1210,"y":240,"wires":[]},{"id":"6027f4b4.6c30ec","type":"debug","z":"522f6bba.b3f424","name":"Click debug","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":1130,"y":200,"wires":[]},{"id":"dba2d53f.2daf48","type":"function","z":"522f6bba.b3f424","name":"Change topic to uuid","func":"// things/+/shadow/update\nconst topicConfig = env.get('THINGY_MQTT_TOPIC');\n\n\nfunction get_matches (topicConfig, topic) {\n    let groupCaptureRegex = topicConfig\n        .replace(/\\+/g, \"(.+)\") // replace + wildcard level\n        .replace(/#$/, \"(.+)$\"); // replace # ending wildcard\n\n    return (topic.match(new RegExp(groupCaptureRegex)) || [null])\n        .slice(1); // skip entire match at index 0\n}\n\nmsg.topic = get_matches(topicConfig, msg.topic)[0];\n\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","x":300,"y":320,"wires":[["c056685e.deeeb8","b87495f6.afbac8","939f09c5.8ffea8"]]},{"id":"bb9b9ef2.9b342","type":"grpc-call","z":"522f6bba.b3f424","name":"Send AskNewLocation","server":"8316d426.c53568","service":"Messenger","method":"AskNewLocation","chain":"","key":"","x":1660,"y":320,"wires":[["83c20796.25d0b8"]]},{"id":"83c20796.25d0b8","type":"debug","z":"522f6bba.b3f424","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":1870,"y":320,"wires":[]},{"id":"dfc0f2e1.b728b","type":"inject","z":"522f6bba.b3f424","name":"Inject request rainbow-12","props":[{"p":"payload"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\"thingy_uuid\": \"rainbow-12\"}","payloadType":"json","x":1410,"y":380,"wires":[["bb9b9ef2.9b342"]]},{"id":"46c32b75.2d4694","type":"function","z":"522f6bba.b3f424","name":"","func":"\nreturn {\n    payload: {\n        \"thingy_uuid\": msg.topic\n    }\n};","outputs":1,"noerr":0,"initialize":"","finalize":"","x":1320,"y":320,"wires":[["bb9b9ef2.9b342","4fe4e2a.510351c"]]},{"id":"4fe4e2a.510351c","type":"debug","z":"522f6bba.b3f424","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":1470,"y":240,"wires":[]},{"id":"3ff0d779.ac2dd8","type":"inject","z":"522f6bba.b3f424","name":"","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"","payloadType":"date","x":300,"y":600,"wires":[["9fc85b6f.37b858"]]},{"id":"9fc85b6f.37b858","type":"grpc-call","z":"522f6bba.b3f424","name":"GetPendingLocation ","server":"efde9282.c49a1","service":"PersistLocalization","method":"GetPendingLocation","chain":"","key":"","x":580,"y":620,"wires":[["f19181f7.a0216"]]},{"id":"f19181f7.a0216","type":"debug","z":"522f6bba.b3f424","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":880,"y":600,"wires":[]},{"id":"814eb902.4fbdf8","type":"grpc-call","z":"522f6bba.b3f424","name":"SetNewLocation ","server":"efde9282.c49a1","service":"PersistLocalization","method":"SetNewLocation","chain":"","key":"","x":540,"y":740,"wires":[["7b691849.5ee738"]]},{"id":"24394361.3314ec","type":"inject","z":"522f6bba.b3f424","name":"Unknow uuid","props":[{"p":"payload"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\"thingy_uuid\": \"magic-red\", \"location\": \"confined at home\"}","payloadType":"json","x":310,"y":760,"wires":[["814eb902.4fbdf8"]]},{"id":"7b691849.5ee738","type":"debug","z":"522f6bba.b3f424","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":780,"y":760,"wires":[]},{"id":"1b1f626d.92d92e","type":"inject","z":"522f6bba.b3f424","name":"Red-22","props":[{"p":"payload"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\"thingy_uuid\": \"red-22\", \"location\": \"confined at home\"}","payloadType":"json","x":290,"y":840,"wires":[["814eb902.4fbdf8"]]},{"id":"939f09c5.8ffea8","type":"switch","z":"522f6bba.b3f424","name":"FIlter to send to backend","property":"payload.appId","propertyType":"msg","rules":[{"t":"regex","v":"TEMP|HUMID|AIR_QUAL|AIR_PRESS|CO2_EQUIV|LIGHT","vt":"str","case":false}],"checkall":"true","repair":false,"outputs":1,"x":610,"y":460,"wires":[["10d6f420.c2c29c","c987cd58.abe2b"]]},{"id":"10d6f420.c2c29c","type":"debug","z":"522f6bba.b3f424","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":810,"y":400,"wires":[]},{"id":"849af02e.6bc4d","type":"http request","z":"522f6bba.b3f424","name":"Send value to backend","method":"PUT","ret":"txt","paytoqs":"ignore","url":"backend:8080/environmentParamsValue","tls":"","persist":false,"proxy":"","authType":"","x":1430,"y":460,"wires":[["ffa2c867.020328"]]},{"id":"ccbb2af9.a308e8","type":"function","z":"522f6bba.b3f424","name":"Prepare request body","func":"\nreturn {\n    topic: msg.topic,\n    payload: {\n        value: parseFloat(msg.payload.data),\n        envParam: msg.payload.appId,\n        uuid: msg.topic\n    }\n};","outputs":1,"noerr":0,"initialize":"","finalize":"","x":1160,"y":460,"wires":[["849af02e.6bc4d"]]},{"id":"c987cd58.abe2b","type":"change","z":"522f6bba.b3f424","name":"Adapt value type for backend","rules":[{"t":"change","p":"payload.appId","pt":"msg","from":"TEMP","fromt":"str","to":"TEMPERATURE","tot":"str"},{"t":"change","p":"payload.appId","pt":"msg","from":"HUMID","fromt":"str","to":"HUMIDITY","tot":"str"},{"t":"change","p":"payload.appId","pt":"msg","from":"AIR_QUAL","fromt":"str","to":"AIR_QUALITY","tot":"str"},{"t":"change","p":"payload.appId","pt":"msg","from":"AIR_PRESS","fromt":"str","to":"AIR_PRESSURE","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":890,"y":460,"wires":[["ccbb2af9.a308e8"]]},{"id":"ffa2c867.020328","type":"debug","z":"522f6bba.b3f424","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":1650,"y":460,"wires":[]}]
+[
+  {
+    "id": "522f6bba.b3f424",
+    "type": "tab",
+    "label": "Flow 1",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "8316d426.c53568",
+    "type": "grpc-server",
+    "port": "$(MESS_GRPC_BIND_PORT)",
+    "name": "Messenger-gRPC-Server",
+    "server": "$(MESS_GRPC_HOST)",
+    "protoFile": "$(MESSENGER_PROTO)",
+    "ca": "",
+    "chain": "",
+    "key": "",
+    "mutualTls": false,
+    "localServer": false
+  },
+  {
+    "id": "b2fc11be.a3bc5",
+    "type": "mqtt-broker",
+    "name": "ASE-Broker",
+    "broker": "$(THINGY_MQTT_HOST)",
+    "port": "$(THINGY_MQTT_PORT)",
+    "clientid": "",
+    "usetls": false,
+    "compatmode": false,
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": ""
+  },
+  {
+    "id": "efde9282.c49a1",
+    "type": "grpc-server",
+    "port": "$(BACKEND_GRPC_BIND_PORT)",
+    "name": "Backend gRPC Server",
+    "server": "$(BACKEND_GRPC_HOST)",
+    "protoFile": "$(THINGY_PROTO)",
+    "ca": "",
+    "chain": "",
+    "key": "",
+    "mutualTls": false,
+    "localServer": true
+  },
+  {
+    "id": "a250d435.7e6168",
+    "type": "grpc-call",
+    "z": "522f6bba.b3f424",
+    "name": "SendTestMessage",
+    "server": "8316d426.c53568",
+    "service": "Messenger",
+    "method": "SendTestMessage",
+    "chain": "",
+    "key": "",
+    "x": 630,
+    "y": 120,
+    "wires": [
+      [
+        "f09a480b.67beb8"
+      ]
+    ]
+  },
+  {
+    "id": "9caea6af.30b148",
+    "type": "inject",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"chatId\": \"Alain'sId\", \"text\": \"Hello my MAN!!\"}",
+    "payloadType": "json",
+    "x": 250,
+    "y": 120,
+    "wires": [
+      [
+        "a250d435.7e6168"
+      ]
+    ]
+  },
+  {
+    "id": "f09a480b.67beb8",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 950,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "3fb2dcf9.a9c1f4",
+    "type": "mqtt in",
+    "z": "522f6bba.b3f424",
+    "name": "Thingy update",
+    "topic": "$(THINGY_MQTT_TOPIC)",
+    "qos": "0",
+    "datatype": "json",
+    "broker": "b2fc11be.a3bc5",
+    "x": 250,
+    "y": 360,
+    "wires": [
+      [
+        "dba2d53f.2daf48"
+      ]
+    ]
+  },
+  {
+    "id": "b38d3378.f69cb",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "Only button event",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 950,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "b87495f6.afbac8",
+    "type": "switch",
+    "z": "522f6bba.b3f424",
+    "name": "Filter button event",
+    "property": "payload.appId",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "eq",
+        "v": "BUTTON",
+        "vt": "str"
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 1,
+    "x": 770,
+    "y": 360,
+    "wires": [
+      [
+        "b38d3378.f69cb",
+        "e61b07fc.12aca8"
+      ]
+    ]
+  },
+  {
+    "id": "c056685e.deeeb8",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "All thingy update",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 570,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "e61b07fc.12aca8",
+    "type": "button-events",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "outputs": 2,
+    "inputField": "payload.data",
+    "inputFieldType": "msg",
+    "outputField": "payload.btnEvent",
+    "outputFieldType": "msg",
+    "downValue": "1",
+    "downValueType": "str",
+    "upValue": "0",
+    "upValueType": "str",
+    "idleValue": "1",
+    "clickedInterval": 200,
+    "pressedInterval": 200,
+    "debounceInterval": 30,
+    "events": [
+      {
+        "type": "clicked"
+      },
+      {
+        "type": "double_clicked"
+      }
+    ],
+    "x": 1140,
+    "y": 360,
+    "wires": [
+      [
+        "6027f4b4.6c30ec"
+      ],
+      [
+        "5d0a6e58.1865",
+        "46c32b75.2d4694"
+      ]
+    ]
+  },
+  {
+    "id": "5d0a6e58.1865",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "Double click debug",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1370,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "6027f4b4.6c30ec",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "Click debug",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1290,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "dba2d53f.2daf48",
+    "type": "function",
+    "z": "522f6bba.b3f424",
+    "name": "Change topic to uuid",
+    "func": "// things/+/shadow/update\nconst topicConfig = env.get('THINGY_MQTT_TOPIC');\n\n\nfunction get_matches (topicConfig, topic) {\n    let groupCaptureRegex = topicConfig\n        .replace(/\\+/g, \"(.+)\") // replace + wildcard level\n        .replace(/#$/, \"(.+)$\"); // replace # ending wildcard\n\n    return (topic.match(new RegExp(groupCaptureRegex)) || [null])\n        .slice(1); // skip entire match at index 0\n}\n\nmsg.topic = get_matches(topicConfig, msg.topic)[0];\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 460,
+    "y": 360,
+    "wires": [
+      [
+        "c056685e.deeeb8",
+        "b87495f6.afbac8",
+        "939f09c5.8ffea8"
+      ]
+    ]
+  },
+  {
+    "id": "bb9b9ef2.9b342",
+    "type": "grpc-call",
+    "z": "522f6bba.b3f424",
+    "name": "Send AskNewLocation",
+    "server": "8316d426.c53568",
+    "service": "Messenger",
+    "method": "AskNewLocation",
+    "chain": "",
+    "key": "",
+    "x": 1820,
+    "y": 360,
+    "wires": [
+      [
+        "83c20796.25d0b8"
+      ]
+    ]
+  },
+  {
+    "id": "83c20796.25d0b8",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 2030,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "dfc0f2e1.b728b",
+    "type": "inject",
+    "z": "522f6bba.b3f424",
+    "name": "Inject request rainbow-12",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"thingy_uuid\": \"rainbow-12\"}",
+    "payloadType": "json",
+    "x": 1570,
+    "y": 420,
+    "wires": [
+      [
+        "bb9b9ef2.9b342"
+      ]
+    ]
+  },
+  {
+    "id": "46c32b75.2d4694",
+    "type": "function",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "func": "\nreturn {\n    payload: {\n        \"thingy_uuid\": msg.topic\n    }\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 1480,
+    "y": 360,
+    "wires": [
+      [
+        "bb9b9ef2.9b342",
+        "4fe4e2a.510351c"
+      ]
+    ]
+  },
+  {
+    "id": "4fe4e2a.510351c",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1630,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "3ff0d779.ac2dd8",
+    "type": "inject",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 220,
+    "y": 660,
+    "wires": [
+      [
+        "9fc85b6f.37b858"
+      ]
+    ]
+  },
+  {
+    "id": "9fc85b6f.37b858",
+    "type": "grpc-call",
+    "z": "522f6bba.b3f424",
+    "name": "GetPendingLocation ",
+    "server": "efde9282.c49a1",
+    "service": "PersistLocalization",
+    "method": "GetPendingLocation",
+    "chain": "",
+    "key": "",
+    "x": 500,
+    "y": 680,
+    "wires": [
+      [
+        "f19181f7.a0216"
+      ]
+    ]
+  },
+  {
+    "id": "f19181f7.a0216",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 800,
+    "y": 660,
+    "wires": []
+  },
+  {
+    "id": "814eb902.4fbdf8",
+    "type": "grpc-call",
+    "z": "522f6bba.b3f424",
+    "name": "SetNewLocation ",
+    "server": "efde9282.c49a1",
+    "service": "PersistLocalization",
+    "method": "SetNewLocation",
+    "chain": "",
+    "key": "",
+    "x": 460,
+    "y": 800,
+    "wires": [
+      [
+        "7b691849.5ee738"
+      ]
+    ]
+  },
+  {
+    "id": "24394361.3314ec",
+    "type": "inject",
+    "z": "522f6bba.b3f424",
+    "name": "Unknow uuid",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"thingy_uuid\": \"magic-red\", \"location\": \"confined at home\"}",
+    "payloadType": "json",
+    "x": 230,
+    "y": 820,
+    "wires": [
+      [
+        "814eb902.4fbdf8"
+      ]
+    ]
+  },
+  {
+    "id": "7b691849.5ee738",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 700,
+    "y": 820,
+    "wires": []
+  },
+  {
+    "id": "1b1f626d.92d92e",
+    "type": "inject",
+    "z": "522f6bba.b3f424",
+    "name": "Red-22",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"thingy_uuid\": \"red-22\", \"location\": \"confined at home\"}",
+    "payloadType": "json",
+    "x": 210,
+    "y": 900,
+    "wires": [
+      [
+        "814eb902.4fbdf8"
+      ]
+    ]
+  },
+  {
+    "id": "939f09c5.8ffea8",
+    "type": "switch",
+    "z": "522f6bba.b3f424",
+    "name": "FIlter to send to backend",
+    "property": "payload.appId",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "regex",
+        "v": "TEMP|HUMID|AIR_QUAL|AIR_PRESS|CO2_EQUIV|LIGHT",
+        "vt": "str",
+        "case": false
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 1,
+    "x": 770,
+    "y": 500,
+    "wires": [
+      [
+        "10d6f420.c2c29c",
+        "c987cd58.abe2b"
+      ]
+    ]
+  },
+  {
+    "id": "10d6f420.c2c29c",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 970,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "849af02e.6bc4d",
+    "type": "http request",
+    "z": "522f6bba.b3f424",
+    "name": "Send value to backend",
+    "method": "PUT",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "backend:8080/environmentParamsValue",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "authType": "",
+    "x": 1590,
+    "y": 500,
+    "wires": [
+      [
+        "ffa2c867.020328"
+      ]
+    ]
+  },
+  {
+    "id": "ccbb2af9.a308e8",
+    "type": "function",
+    "z": "522f6bba.b3f424",
+    "name": "Prepare request body",
+    "func": "\nreturn {\n    topic: msg.topic,\n    payload: {\n        value: parseFloat(msg.payload.data),\n        envParam: msg.payload.appId,\n        uuid: msg.topic\n    }\n};",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "x": 1320,
+    "y": 500,
+    "wires": [
+      [
+        "849af02e.6bc4d"
+      ]
+    ]
+  },
+  {
+    "id": "c987cd58.abe2b",
+    "type": "change",
+    "z": "522f6bba.b3f424",
+    "name": "Adapt value type for backend",
+    "rules": [
+      {
+        "t": "change",
+        "p": "payload.appId",
+        "pt": "msg",
+        "from": "TEMP",
+        "fromt": "str",
+        "to": "TEMPERATURE",
+        "tot": "str"
+      },
+      {
+        "t": "change",
+        "p": "payload.appId",
+        "pt": "msg",
+        "from": "HUMID",
+        "fromt": "str",
+        "to": "HUMIDITY",
+        "tot": "str"
+      },
+      {
+        "t": "change",
+        "p": "payload.appId",
+        "pt": "msg",
+        "from": "AIR_QUAL",
+        "fromt": "str",
+        "to": "AIR_QUALITY",
+        "tot": "str"
+      },
+      {
+        "t": "change",
+        "p": "payload.appId",
+        "pt": "msg",
+        "from": "AIR_PRESS",
+        "fromt": "str",
+        "to": "AIR_PRESSURE",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 1050,
+    "y": 500,
+    "wires": [
+      [
+        "ccbb2af9.a308e8"
+      ]
+    ]
+  },
+  {
+    "id": "ffa2c867.020328",
+    "type": "debug",
+    "z": "522f6bba.b3f424",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1810,
+    "y": 500,
+    "wires": []
+  }
+]

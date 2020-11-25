@@ -1,18 +1,20 @@
 {
   "name": "backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "src/serve.js",
   "repository": "https://github.com/ASE2020-Blue/thingy-api-blue",
   "author": "Yael Iseli, Alain Schaller, Jérôme Vonlanthen",
   "license": "MIT",
   "scripts": {
     "start": "yarn run db:migrate && nodemon src/serve.js",
+    "test-dev": "yarn run db:migrate && yarn run db:seed && jest --coverage tests/*",
     "db:migrate": "sequelize db:migrate",
-    "db:seed": "sequelize db:seed:all --debug"
+    "db:seed": "sequelize db:seed:all"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
     "@koa/cors": "^3.1.0",
+    "dotenv": "^8.2.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
@@ -22,8 +24,10 @@
   },
   "devDependencies": {
     "google-protobuf": "^3.13.0",
+    "jest": "^26.6.3",
     "mocha": "^8.2.0",
     "nodemon": "^2.0.6",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "supertest": "^6.0.1"
   }
 }

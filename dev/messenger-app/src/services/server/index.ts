@@ -1,25 +1,24 @@
-const grpc = require('@grpc/grpc-js');
-const { MessengerService } = require('../../proto/messenger_grpc_pb');
+import { Server, ServerCredentials } from '@grpc/grpc-js';
 import { Telegram } from 'telegraf';
 
-import { MessengerServer } from './MessengerServer';
+import { IServiceProvider } from './IServiceProvider';
 
-const { MESS_GRPC_BIND_HOST, MESS_GRPC_BIND_PORT } = process.env;
+export function createServer (host: string, port: number, serviceProviders: Array<IServiceProvider>) {
+    const server = new Server();
 
-export function createServer (telegram: Telegram) {
-    const server = new grpc.Server();
-
-    server.addService(MessengerService, new MessengerServer(telegram));
+    for (const serviceProvider of serviceProviders) {
+        server.addService(serviceProvider.getServiceDefinition(), serviceProvider.getUntypedServiceImplementation());
+    }
 
     server.bindAsync(
-        `${MESS_GRPC_BIND_HOST}:${MESS_GRPC_BIND_PORT}`,
-        grpc.ServerCredentials.createInsecure(),
+        `${host}:${port}`,
+        ServerCredentials.createInsecure(),
         (error, port) => {
             if (error)
                 throw error;
 
             server.start();
-            console.log(`Started gRPC: ${MESS_GRPC_BIND_HOST}:${port}`);
+            console.log(`Started gRPC: ${host}:${port}`);
         }
     );
 }

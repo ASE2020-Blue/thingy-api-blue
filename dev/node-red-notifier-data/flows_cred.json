@@ -1,1 +1,6 @@
-{"$":"3a38603482d212c9c354be78d6d7c05eSvCYvAP8PoihMNerfWZqUwNmpaa3hq2bQJNPcH910fZEnieyw+E1k5D7Z488xqOgtR5kYrFD+QTh5k8+6XSDErslH2gpxq0pAermhQEU"}
+{
+  "b2fc11be.a3bc5": {
+    "user": "$(THINGY_MQTT_USERNAME)",
+    "password": "$(THINGY_MQTT_PASSWORD)"
+  }
+}

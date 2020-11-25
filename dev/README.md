@@ -1,7 +1,7 @@
 # Project requirements
 [Durand doc](https://duranda.github.io/ase2020-docs/project-2020)
 
-## GPS
+# GPS
 Took 75 seconds to get
 
     {

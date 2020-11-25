@@ -61,8 +61,6 @@
     },
     "exclude": [
         "node_modules",
-        "podsearch_bot",
-        "dist",
-        "__tests__"
+        "dist"
     ]
 }
