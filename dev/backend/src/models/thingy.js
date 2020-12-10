@@ -27,20 +27,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   thingy.init({
-    id: {
-      primaryKey: true,
-      type: DataTypes.INTEGER},
     uuid: DataTypes.STRING,
-    createdAt: {
-      allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP(3)'),
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP(3)'),
-      type: DataTypes.DATE
-    },
   }, {
     sequelize,
     modelName: 'thingy',

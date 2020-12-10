@@ -12,8 +12,6 @@ module.exports = (sequelize, DataTypes) => {
   locationHistory.init({
     thingyId: DataTypes.INTEGER,
     locationName: DataTypes.STRING,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'locationHistory',

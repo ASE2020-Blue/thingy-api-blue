@@ -5,12 +5,18 @@ module.exports = {
     await queryInterface.bulkInsert('thingy', [
       {
         uuid: 'rainbow-22',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         uuid: 'red-22',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         uuid: 'unicorn-22',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
     ], {});
   },
