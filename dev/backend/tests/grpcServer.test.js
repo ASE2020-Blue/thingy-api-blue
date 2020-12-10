@@ -1,31 +1,51 @@
 const request = require('supertest')
-const app = require('../src/server/server')
-
 const grpc = require('@grpc/grpc-js');
+const { Empty } = require('google-protobuf/google/protobuf/empty_pb');
+
+const { initTestDb } = require("./helpers/childProcessDbInitialization");
 const { createGRpcServer } = require('../src/services/server');
 const { PersistLocalizationClient } =require('../src/proto/thingy_grpc_pb');
 const { ThingyLocalization } = require('../src/proto/thingy_pb');
-const { Empty } = require('google-protobuf/google/protobuf/empty_pb');
-
-// init servers
-const PORT = process.env.PORT || 8084;
-app.listen(PORT);
-createGRpcServer();
-
-// create grpc client
-const { BACKEND_GRPC_BIND_PORT } = process.env;
-const persistLocalizationClient = new PersistLocalizationClient(
-  `backend-test:${BACKEND_GRPC_BIND_PORT}`,
-  grpc.credentials.createInsecure()
-);
+const { sequelize, thingy } = require("../src/models");
 
 const uuid = "uuid123"
 
 describe('Test thingy server', () => {
-  it('getPendingLocation', async () => {
-    const thingy = await request(app.callback()).put(/thingy/).send({uuid: uuid});
-    expect(thingy.status).toBe(200)
+  let app;
+  let server;
+  let persistLocalizationClient;
+  let grpcServer;
 
+  beforeAll(async (done) => {
+    await initTestDb();
+
+    // init servers
+    const PORT = process.env.PORT || 8084;
+    app = require('../src/server/server');
+    server = app.listen(PORT);
+    grpcServer = await createGRpcServer();
+
+    // create grpc client
+    const { BACKEND_GRPC_BIND_PORT } = process.env;
+    persistLocalizationClient = new PersistLocalizationClient(
+          `127.0.0.1:${BACKEND_GRPC_BIND_PORT}`,
+        grpc.credentials.createInsecure()
+    );
+
+    // Adding reference thingy into db
+    const thingyRecord = await thingy.create({ uuid });
+    expect(thingyRecord).not.toBeNull();
+    expect(thingyRecord.id).toBeGreaterThan(0);
+    done();
+  });
+
+  afterAll(async () => {
+    grpcServer.forceShutdown();
+    server.close();
+    await sequelize.close();
+  });
+
+  it('getPendingLocation', async () => {
     const promise =  new Promise((resolve, reject) => {
       const thingies = [];
       const pendingLocationStream = persistLocalizationClient.getPendingLocation(new Empty());
@@ -40,15 +60,11 @@ describe('Test thingy server', () => {
     let pendingThingies = await promise;
     pendingThingies = pendingThingies.map(e => e.array[0])
     expect(pendingThingies.length).toBeGreaterThan(0);
-    expect(pendingThingies).toContain(thingy.body.uuid)
-    await request(app.callback()).delete("/thingy/" + uuid)
+    expect(pendingThingies).toContain(uuid)
   })
 
   it('setNewLocation - existing uuid', async () => {
-    const thingy = await request(app.callback()).put(/thingy/).send({uuid: uuid});
-    expect(thingy.status).toBe(200)
-
-    const locationName = "home"
+    const locationName = "test location"
     const thingyLocation = new ThingyLocalization()
     thingyLocation.setThingyUuid(uuid)
     thingyLocation.setLocation(locationName)
@@ -66,8 +82,6 @@ describe('Test thingy server', () => {
     let locations = await request(app.callback()).get("/locationHistory/");
     locations = locations.body.map(location => location.locationName)// .map(locationName);
     expect(locations).toContain(locationName);
-
-    await request(app.callback()).delete("/thingy/" + uuid)
   })
 
   it('setNewLocation - non existing uuid', async () => {

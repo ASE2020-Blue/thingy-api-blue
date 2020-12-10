@@ -11,7 +11,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
 
     getPendingLocation(call /** @type {ServerWritableStream<Empty, ThingyLocalization>} */) {
         console.log(`${new Date().toISOString()}    getPendingLocation`);
-        // Aggree, await are great, but don't want to tree to set this method as async for now
+        // Agree, await are great, but don't want to tree to set this method as async for now
         thingy
             .findAll({
                 include: [
@@ -51,7 +51,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
             })
             .then(foundThingy => {
                 if ( ! foundThingy)
-                    callback(new Error('NotFound, no corresponding uuid'));
+                    callback(new Error('NotFound, no corresponding uuid: ' + thingyUuid));
                 else
                     locationHistory.upsert({
                         locationName: thingyLocation,
