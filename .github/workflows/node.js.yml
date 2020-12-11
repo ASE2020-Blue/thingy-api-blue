@@ -28,6 +28,5 @@ jobs:
 
     - name: Run tests
       working-directory: ./dev/backend
-      uses: actions/setup-node@v1
       run: |
-        yarn run test
+        source ../.env && yarn run test
