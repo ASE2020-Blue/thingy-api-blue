@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Backend Node.js CI
+name: Blue Team Node.js CI
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  build:
-
+  backend_tests:
+    name: Backend tests
     runs-on: ubuntu-latest
 
     strategy:
@@ -31,4 +31,27 @@ jobs:
       # https://stackoverflow.com/a/43267603/3771148
       #   set -a: automatically export all variables
       run: |
-        set -a && source ../.env && set +a && echo $BACKEND_GRPC_BIND_HOST && yarn run test
+        set -a && source ../.env && set +a && yarn run test
+
+  messenger_tests:
+    name: Messenger tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 12.x ]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      working-directory: ./dev/messenger
+      run: |
+        yarn install --frozen-lockfile
+
+    - name: Run tests
+      working-directory: ./dev/messenger
+      # https://stackoverflow.com/a/43267603/3771148
+      #   set -a: automatically export all variables
+      run: |
+        set -a && source ../.env && set +a && yarn run test:coverage:run
