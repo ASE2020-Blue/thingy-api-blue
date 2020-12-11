@@ -1,3 +1,4 @@
+import * as Debug from 'debug';
 import { BaseScene, Markup } from 'telegraf';
 import { TelegrafContext } from 'telegraf/typings/context';
 import { BaseSceneOptions } from 'telegraf/typings/stage';
@@ -5,6 +6,8 @@ import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
 import { ThingyId } from '../../proto/messenger_pb';
+
+const debug = Debug('messenger:scene:ConfigurePendingLocalizationScene');
 
 export class ConfigurePendingLocalizationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
 
@@ -24,7 +27,7 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
 
     public static ASK_IF_USER_WANTS_TO_CONFIGURE ({ reply }: TelegrafContext, thingies: Array<ThingyId>): Promise<Message | any> {
         if (thingies.length === 0) {
-            console.log('No pending thingies!');
+            debug('No pending thingies!');
 
             return Promise.resolve();
         }

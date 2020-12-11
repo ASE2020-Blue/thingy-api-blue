@@ -1,10 +1,12 @@
-const grpc = require('@grpc/grpc-js');
+import { credentials } from '@grpc/grpc-js';
+import * as Debug from 'debug';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
+
 import { PersistLocalizationClient } from '../../proto/thingy_grpc_pb';
 import { ThingyLocalization } from '../../proto/thingy_pb';
 import { IPersistLocalizationClient } from './IPersistLocalizationClient';
 
-const { BACKEND_GRPC_BIND_PORT } = process.env;
+const debug = Debug('messenger:grpc:client:PersistLocalizationClient');
 
 export class GrpcPersistLocalizationClient implements IPersistLocalizationClient {
 
@@ -13,7 +15,7 @@ export class GrpcPersistLocalizationClient implements IPersistLocalizationClient
     constructor(host: string, port: number) {
         this.grpcClient = new PersistLocalizationClient(
             `${host}:${port}`,
-            grpc.credentials.createInsecure()
+            credentials.createInsecure()
         );
     }
 
@@ -25,7 +27,7 @@ export class GrpcPersistLocalizationClient implements IPersistLocalizationClient
                 thingies.push(thingy);
             });
             pendingLocationStream.on('end', () => {
-                console.log('Got pending thingies by grpc:', thingies);
+                debug('Got pending thingies by grpc: %o', thingies);
                 resolve(thingies);
             });
             pendingLocationStream.on('error', reject);
@@ -38,7 +40,7 @@ export class GrpcPersistLocalizationClient implements IPersistLocalizationClient
                 if (error) {
                     reject(error);
                 } else {
-                    console.log('Successfully persisted location through grpc');
+                    debug('Successfully persisted location through grpc');
                     resolve();
                 }
             });

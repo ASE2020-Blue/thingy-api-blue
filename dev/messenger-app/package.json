@@ -47,6 +47,9 @@
     "extensions": [
       "ts"
     ],
+    "__environmentVariables": {
+      "DEBUG": "*"
+    },
     "require": [
       "ts-node/register"
     ]

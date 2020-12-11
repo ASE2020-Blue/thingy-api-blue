@@ -1,6 +1,9 @@
+import * as Debug from 'debug';
 import { Stage } from 'telegraf';
 import { Scene, StageOptions } from 'telegraf/typings/stage';
 import { SceneSessionContext } from '../context';
+
+const debug = Debug('messenger:BlueStageManager');
 
 // FIXME: avoid listening for help or setlocation command
 export class BlueStageManager<TContext extends SceneSessionContext> extends Stage<TContext> {
@@ -27,6 +30,6 @@ export class BlueStageManager<TContext extends SceneSessionContext> extends Stag
     }
 
     private logOnStatus ({ scene: { current } }: TContext) : void {
-        console.log('Current scene: ', current && current.id);
+        debug('Current scene: ', current && current.id);
     }
 }

@@ -1,6 +1,7 @@
 import { Middleware, Telegraf } from 'telegraf';
 import { TelegrafOptions } from 'telegraf/typings/telegraf';
 import { Message } from 'telegraf/typings/telegram-types';
+import * as Debug from 'debug';
 
 import { BotSceneSessionContext } from './context';
 
@@ -11,6 +12,8 @@ import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalization
 import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
 
 import { fgRed, reset } from './helpers/consoleColors';
+
+const debug = Debug('messenger:BlueBot');
 
 /**
  * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:
@@ -55,13 +58,10 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         await reply('Welcome on the Telegram bot of group 🔷🥳');
 
         const chatId = from.id;
-        console.log(
-            `Started talking with: ${from.first_name} ${from.last_name}` +
-            `(@${from.username} - ${chatId})`
-        );
+        debug(`Started talking with: ${from.first_name} ${from.last_name} (@${from.username} - ${chatId})`);
         if (! process.env.DEV_ID) {
             process.env.DEV_ID = chatId.toString();
-            console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
+            debug(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
         }
 
         try {
@@ -69,7 +69,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
 
             return await ConfigurePendingLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(ctx, thingies);
         } catch (error) {
-            console.error('Error while requesting pending locations', error);
+            debug(`${fgRed}Error while requesting pending locations:${reset} %O`, error);
 
             return Promise.reject(error);
         }
@@ -139,8 +139,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
 
                 return;
             } catch (error) {
-                console.error('Error while setting new location...');
-                console.error(error);
+                debug(`${fgRed}Error while setting new location...${reset} %O`, error);
                 // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
                 await reply('Oups... got and error, let\'s try again! 🙃');
 

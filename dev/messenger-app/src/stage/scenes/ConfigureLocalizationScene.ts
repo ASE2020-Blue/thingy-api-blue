@@ -1,14 +1,18 @@
+import * as Debug from 'debug';
 import { BaseScene, Markup, Telegram } from 'telegraf';
 import { BaseSceneOptions } from 'telegraf/typings/stage';
 import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
+import { fgRed, reset } from '../../helpers/consoleColors';
 import { ThingyLocalization } from '../../proto/thingy_pb';
+
+const debug = Debug('messenger:scene:ConfigureLocalizationScene');
 
 // FIXME! Re-entrant infinite loop
 // clScene.leave(({ session, scene }, next) => {
 //     const { thingyUuid, thingiesUuid } = session;
-//     console.log('leaving configure', thingyUuid, thingiesUuid);
+//     debug('leaving configure', thingyUuid, thingiesUuid);
 //
 //     if (thingiesUuid) {
 //         const uuidIndex = thingiesUuid.indexOf(thingyUuid);
@@ -49,7 +53,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
 
     public static ASK_IF_USER_WANTS_TO_CONFIGURE (telegram: Telegram, thingyUuid: string): Promise<Message | any> {
         if (!thingyUuid) {
-            console.log('Dropping request after asking location for an empty uuid...');
+            debug('Dropping request after asking location for an empty uuid...');
 
             return Promise.resolve();
         }
@@ -122,8 +126,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
 
                     return scene.leave();
                 } catch (error) {
-                    console.error('Error while setting new location...');
-                    console.error(error);
+                    debug(`${fgRed}Error while setting new location...${reset} %O`, error);
 
                     // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
                     await reply('Oups... got and error, let\'s try again! 🙃');

@@ -75,6 +75,9 @@ services:
         env_file:
             - .env
             - .secrets.env
+        environment:
+            # https://www.npmjs.com/package/debug
+            - "DEBUG=messenger:*"
         depends_on:
             - redis
         ports:
