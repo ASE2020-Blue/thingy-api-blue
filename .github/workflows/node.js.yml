@@ -28,5 +28,7 @@ jobs:
 
     - name: Run tests
       working-directory: ./dev/backend
+      # https://stackoverflow.com/a/43267603/3771148
+      #   set -a: automatically export all variables
       run: |
-        source ../.env && yarn run test
+        set -a && source ../.env && set +a && echo $BACKEND_GRPC_BIND_HOST && yarn run test
