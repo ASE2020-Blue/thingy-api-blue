@@ -45,12 +45,17 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
-      working-directory: ./dev/messenger
+      working-directory: ./dev/messenger-app
       run: |
         yarn install --frozen-lockfile
 
+    - name: Build source
+      working-directory: ./dev/messenger-app
+      run: |
+        yarn run build
+
     - name: Run tests
-      working-directory: ./dev/messenger
+      working-directory: ./dev/messenger-app
       # https://stackoverflow.com/a/43267603/3771148
       #   set -a: automatically export all variables
       run: |
