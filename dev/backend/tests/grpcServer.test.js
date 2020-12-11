@@ -6,7 +6,7 @@ const { initTestDb } = require("./helpers/childProcessDbInitialization");
 const { createGRpcServer } = require('../src/services/server');
 const { PersistLocalizationClient } =require('../src/proto/thingy_grpc_pb');
 const { ThingyLocalization } = require('../src/proto/thingy_pb');
-const { sequelize, thingy } = require("../src/models");
+const { sequelize, Thingy } = require("../src/models");
 
 const uuid = "uuid123"
 
@@ -33,7 +33,7 @@ describe('Test thingy server', () => {
     );
 
     // Adding reference thingy into db
-    const thingyRecord = await thingy.create({ uuid });
+    const thingyRecord = await Thingy.create({ uuid });
     expect(thingyRecord).not.toBeNull();
     expect(thingyRecord.id).toBeGreaterThan(0);
     done();

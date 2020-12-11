@@ -1,6 +1,6 @@
 const Router = require("koa-router");
 const router = new Router();
-const { locationHistory, thingy } = require("../models");
+const { LocationHistory } = require("../models");
 
 const baseRoute = "/locationHistory"
 router.get(baseRoute, getAllLocationHistory)
@@ -8,7 +8,7 @@ router.get(baseRoute, getAllLocationHistory)
   .delete(baseRoute  + "/:id", deleteLocationHistory)
 
 async function getAllLocationHistory(ctx) {
-  ctx.body = await locationHistory.findAll()
+  ctx.body = await LocationHistory.findAll()
   ctx.status = 200;
 }
 

@@ -5,15 +5,15 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class thingy extends Model {
+  class Thingy extends Model {
     static associate(models) {
       this.hasMany(models.locationHistory, {
         foreignKey: 'thingyId',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       });
       this.hasMany(models.environmentParamsValue, {
         foreignKey: 'thingyId',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       });
     }
 
@@ -26,12 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  thingy.init({
+  Thingy.init({
     uuid: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'thingy',
-    freezeTableName: true,
+    modelName: 'thingy'
   });
-  return thingy;
+  return Thingy;
 };
