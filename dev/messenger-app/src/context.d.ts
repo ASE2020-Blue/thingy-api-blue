@@ -6,6 +6,7 @@ export declare interface IMessengerSession {
     thingyUuid: string | undefined;
     location: string | undefined;
     thingiesUuid: Array<string> | undefined;
+    ongoingPendingLocationConfiguration: boolean | undefined;
 }
 
 export declare interface ISessionContext {

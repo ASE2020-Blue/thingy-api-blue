@@ -18,9 +18,10 @@ const session = new (require('telegraf-session-redis'))({
     }
 });
 
+const configureLocalizationScene = new ConfigureLocalizationScene();
 const blueStageManager = new BlueStageManager([
-    new ConfigureLocalizationScene(),
-    new ConfigurePendingLocalizationScene()
+    configureLocalizationScene,
+    new ConfigurePendingLocalizationScene(configureLocalizationScene)
 ]);
 
 const grpcPersistLocalizationClient = new GrpcPersistLocalizationClient(BACKEND_GRPC_HOST, parseInt(BACKEND_GRPC_BIND_PORT, 10));

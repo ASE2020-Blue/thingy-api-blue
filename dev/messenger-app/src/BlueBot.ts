@@ -87,10 +87,11 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
      *
      * TODO improve to combine in an object the key to bind the action and the action to be done
      */
-    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown }: TContext): Promise<Message> {
+    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown, session }: TContext): Promise<Message> {
         switch (data) {
             case ConfigurePendingLocalizationScene.USER_REFUSE_PENDING_CONFIGURATION:
-                return reply('No pressure 👍\nYou can configure them any them');
+                session.thingiesUuid = undefined;
+                return reply('No pressure 👍\nYou can configure them any time');
 
             case ConfigureLocalizationScene.USER_REFUSE_SETTING_NEW_LOCATION:
                 return replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');

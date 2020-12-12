@@ -9,26 +9,6 @@ import { ThingyLocalization } from '../../proto/thingy_pb';
 
 const debug = Debug('messenger:scene:ConfigureLocalizationScene');
 
-// FIXME! Re-entrant infinite loop
-// clScene.leave(({ session, scene }, next) => {
-//     const { thingyUuid, thingiesUuid } = session;
-//     debug('leaving configure', thingyUuid, thingiesUuid);
-//
-//     if (thingiesUuid) {
-//         const uuidIndex = thingiesUuid.indexOf(thingyUuid);
-//         if (uuidIndex >= 0) {
-//             thingiesUuid.splice(uuidIndex, 1);
-//         }
-//
-//         session.thingiesUuid = thingiesUuid; // Not sure if it is necessary
-//         const [ nextUuid ] = thingiesUuid;
-//         session.thingyUuid = nextUuid; // Not sure if it is necessary
-//
-//         return next()
-//             .then(() => scene.enter(CONFIGURE_PENDING_LOCATION_SCENE_ID));
-//     }
-// });
-
 export class ConfigureLocalizationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
 
     public static readonly ID = 'configure-localization';
@@ -38,9 +18,9 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
     // TODO doc
     public static readonly USER_REFUSE_SETTING_NEW_LOCATION = 'configure_new_location_no';
 
-    private static readonly CONFIRM_CALLBACK = 'configure_new_location_confirm';
-    private static readonly RESTART_CALLBACK = 'configure_new_location_restart';
-    private static readonly STOP_CALLBACK = 'configure_new_location_stop';
+    public static readonly CONFIRM_CALLBACK = 'configure_new_location_confirm';
+    public static readonly RESTART_CALLBACK = 'configure_new_location_restart';
+    public static readonly STOP_CALLBACK = 'configure_new_location_stop';
 
     constructor(options?: Partial<BaseSceneOptions<TContext>>) {
         super(ConfigureLocalizationScene.ID, options);
@@ -113,15 +93,18 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
         );
     }
 
-    private async onCallbackAction ({ callbackQuery: { data }, reply, replyWithMarkdown, session: { location, thingyUuid }, scene, persistLocalizationClient }: TContext) : Promise<any> {
+    private async onCallbackAction ({ callbackQuery: { data }, reply, replyWithMarkdown, session, scene, persistLocalizationClient }: TContext) : Promise<any> {
         switch (data) {
             case ConfigureLocalizationScene.CONFIRM_CALLBACK:
                 const thingyLocalization = new ThingyLocalization();
+                const { location, thingyUuid } = session;
                 thingyLocalization.setLocation(location);
                 thingyLocalization.setThingyUuid(thingyUuid);
 
                 try {
                     await persistLocalizationClient.setNewLocation(thingyLocalization);
+                    session.location = session.thingyUuid = undefined;
+
                     await reply('All good hear! It has been saved 💾');
 
                     return scene.leave();
@@ -135,6 +118,8 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
                 }
 
             case ConfigureLocalizationScene.STOP_CALLBACK:
+                session.location = session.thingyUuid = undefined;
+
                 await replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <new location>]`');
 
                 return scene.leave();
