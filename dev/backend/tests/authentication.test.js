@@ -5,7 +5,6 @@ const { sequelize, User } = require("../src/models");
 describe('thingies Endpoints', () => {
     let app;
     let server;
-    let user;
 
     beforeAll(async () => {
         await initTestDb();
@@ -15,7 +14,7 @@ describe('thingies Endpoints', () => {
         app = require('../src/server/server');
         server = app.listen(PORT);
 
-        user = await User.create({
+        await User.create({
             firstname: 'blue',
             lastname: 'dark',
             email: 'blue@unifr.ch',
@@ -29,7 +28,10 @@ describe('thingies Endpoints', () => {
     });
 
     it('Local unauthorized login', async () => {
-        const res = await request(app.callback()).post("/auth/login").type("form").send({ email: 'red@unifr.ch', password: 'red-1' });
+        const res = await request(app.callback()).post("/auth/login").type("form").send({
+            email: 'red@unifr.ch',
+            password: 'red-1'
+        });
         expect(res.status).toBe(401);
     });
 
@@ -37,7 +39,7 @@ describe('thingies Endpoints', () => {
         const res = await request(app.callback())
             .post("/auth/login")
             .type("form")
-            .send({ email: 'blue@unifr.ch', password: 'blue-3' });
+            .send({email: 'blue@unifr.ch', password: 'blue-3'});
         expect(res.status).toBe(200);
         expect(res.headers).toHaveProperty('set-cookie');
         // TODO find the proper way to test with a predicate that one element of the array starts with koa session key
@@ -53,7 +55,7 @@ describe('thingies Endpoints', () => {
         const agent = request.agent(app.callback());
         const loginResponse = await agent.post("/auth/login")
             .type("form")
-            .send({ email: 'blue@unifr.ch', password: 'blue-3' });
+            .send({email: 'blue@unifr.ch', password: 'blue-3'});
         expect(loginResponse.status).toBe(200);
 
         const res = await agent.get("/thingy");
@@ -65,7 +67,7 @@ describe('thingies Endpoints', () => {
         const agent = request.agent(app.callback());
         const loginResponse = await agent.post("/auth/login")
             .type("form")
-            .send({ email: 'blue@unifr.ch', password: 'blue-3' });
+            .send({email: 'blue@unifr.ch', password: 'blue-3'});
         expect(loginResponse.status).toBe(200);
 
         const logoutRes = await agent.get("/auth/logout");
@@ -79,14 +81,14 @@ describe('thingies Endpoints', () => {
         const loginResponse = await request(app.callback()).post("/auth/login")
             .accept('json')
             // send as json
-            .send({ email: 'blue@unifr.ch', password: 'blue-3' });
+            .send({email: 'blue@unifr.ch', password: 'blue-3'});
         expect(loginResponse.status).toBe(200);
         expect(loginResponse.body).toHaveProperty('bearerToken');
 
-        const { bearerToken } = loginResponse.body;
+        const {bearerToken} = loginResponse.body;
         const apiRes = await request(app.callback())
             .get("/thingy")
-            .auth(bearerToken, { type: 'bearer' });
+            .auth(bearerToken, {type: 'bearer'});
         expect(apiRes.status).toBe(200);
         expect(apiRes.body.length).toBeGreaterThan(0);
     });

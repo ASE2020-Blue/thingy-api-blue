@@ -71,3 +71,15 @@ const jwtLogin = new JwtStrategy({
 
 passport.use(localLogin.name, localLogin);
 passport.use(jwtLogin.name, jwtLogin);
+
+/**
+ * To retrieve the user: `const { user } = ctx.req;`
+ */
+module.exports.localOrJwtAuth = async function (ctx, next) {
+    if (ctx.isAuthenticated())
+        // already authenticated in the session (using the local strategy and the cookies of the request
+        await next();
+    else {
+        await passport.authenticate('jwt')(ctx, next);
+    }
+}

@@ -6,9 +6,6 @@ const router = new Router({
     prefix: '/auth'
 });
 
-/**
- * To retrieve the user: `const { user } = ctx.req;`
- */
 const localAuth = passport.authenticate('local');
 
 router.post('/login', localAuth, (ctx) => {
