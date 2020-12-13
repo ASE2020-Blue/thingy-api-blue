@@ -1,5 +1,7 @@
 const Router = require("koa-router");
-const router = new Router();
+const router = new Router({
+  prefix: "/thingy"
+});
 const {
   Thingy,
   LocationHistory,
@@ -7,15 +9,14 @@ const {
 } = require("../models");
 const { Op } = require("sequelize");
 
-const baseRoute = "/thingy";
 router
-  .get(baseRoute, getAllThingies)
-  // .get(baseRoute + "/pending", getAllPendingThingies)
-  .get(baseRoute + "/:uuid", getThingy)
-  .get(baseRoute + "/:uuid/locationHistories", getThingyLocations)
-  .get(baseRoute + "/:uuid/environmentParamsValues", getThingyParamValues)
-  .put(baseRoute, createThingy)
-  .delete(baseRoute + "/:uuid", deleteThingy);
+  .get("/", getAllThingies)
+  // .get("/pending", getAllPendingThingies)
+  .get("/:uuid", getThingy)
+  .get("/:uuid/locationHistories", getThingyLocations)
+  .get("/:uuid/environmentParamsValues", getThingyParamValues)
+  .put("/", createThingy)
+  .delete("/:uuid", deleteThingy);
 
 async function getAllThingies(ctx) {
   ctx.body = await Thingy.findAll();

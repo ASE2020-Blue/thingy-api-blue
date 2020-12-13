@@ -1,8 +1,13 @@
 const Koa = require('koa');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser');
+const passport = require('koa-passport');
 const cors = require('@koa/cors');
 
+// Initialize passport strategies
+require("../controllers/authentication");
+
+const authenticate = require("../routes/authenticate");
 const thingies = require("../routes/thingies");
 const historyLocations = require("../routes/locationHistories");
 const environmentParamsValues = require("../routes/environmentParamsValues");
@@ -31,6 +36,9 @@ app
   }))
   .use(router.routes())
   .use(router.allowedMethods())
+  .use(passport.initialize({}))
+  .use(passport.session({}))
+  .use(authenticate.routes())
   .use(thingies.routes())
   .use(historyLocations.routes())
   .use(environmentParamsValues.routes());
