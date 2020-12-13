@@ -1,0 +1,93 @@
+version: '3.8'
+
+
+services:
+    postgres:
+        build:
+            context: ./docker/postgres/
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "5432:5432"
+        volumes:
+            # Use named volume, see at the end of the file
+            - pgdata:/var/lib/postgresql/data
+
+    backend:
+        build:
+            context: .
+            dockerfile: docker/backend/Dockerfile.prod
+        depends_on:
+            - postgres
+        env_file:
+            - .env
+            - .env.prod
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./backend:/root/app
+            # Avoid shadowing the node_modules folder
+            # https://stackoverflow.com/a/32785014/3771148
+            # Install is necessary for CI purposes for example
+            # But for dev, install dependencies locally
+            - /root/app/node_modules
+
+    node-red-notifier:
+        build:
+            context: .
+            dockerfile: docker/node-red-notifier/Dockerfile
+        env_file:
+            - .env
+            - .secrets.env
+        restart: always
+        ports:
+            - "1880:1880"
+        volumes:
+            - ./node-red-notifier-data:/data
+
+    # For persisting sessions related elements, like in the messenger app
+    redis:
+        image: redis:6.0-alpine
+        command: redis-server --appendonly yes # Persists the data in docker
+        env_file:
+            - .env
+
+    messenger:
+        build:
+            context: .
+            dockerfile: docker/messenger/Dockerfile
+        env_file:
+            - .env
+            - .secrets.env
+        depends_on:
+            - redis
+        ports:
+            - "9249:9229"
+        volumes:
+            # Avoid shadowing the node_modules folder
+            # https://stackoverflow.com/a/32785014/3771148
+            # Install is necessary for CI purposes for example
+            # But for dev, install dependencies locally
+            - ./messenger-app:/root/app
+            - /root/app/node_modules
+    nginx:
+      image: nginx:1.15-alpine
+      build:
+        context: .
+        dockerfile: docker/frontend/Dockerfile.prod
+      restart: unless-stopped
+      volumes:
+        - ./frontend:/root/app
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./frontend/dist:/usr/share/nginx/html/app/dist
+      ports:
+        - "80:80"
+
+volumes:
+    pgdata:
+        # Let docker handle internally the storage of this volume
+        # to prune the volume and start new with the database, use:
+        #   `docker volume prune ase-blue-pgdata-prod`
+        name: ase-blue-pgdata-prod
