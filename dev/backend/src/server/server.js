@@ -36,6 +36,7 @@ app.use(async (ctx, next) => {
 });
 
 app
+    // make koa support and handle sessions/cookies
     .use(session(app))
     .use(bodyParser())
     .use(cors({
@@ -43,10 +44,13 @@ app
     }))
     .use(router.routes())
     .use(router.allowedMethods())
+    // initialize in the ctx the different helper function of passport
+    // like: `logIn`, `logOut`, `isAuthenticated()` etc.
+    // see passport's doc and the koa-passport doc (source is more informative)
     .use(passport.initialize({}))
+    // middleware to restore a user from the session/cookie, if any
     .use(passport.session({}))
     .use(authenticate.routes())
-    // TODO protect routes
     .use(thingies.routes())
     .use(historyLocations.routes())
     .use(environmentParamsValues.routes());
