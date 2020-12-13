@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('environmentParamsValue', {
+    await queryInterface.createTable('environmentParamsValues', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
         onDelete: 'CASCADE',
         references: {
-          model: 'thingy',
+          model: 'thingies',
           key: 'id'
         },
         type: Sequelize.INTEGER
@@ -26,18 +26,16 @@ module.exports = {
         type: Sequelize.ENUM("TEMPERATURE", "HUMIDITY", "AIR_QUALITY", "AIR_PRESSURE", "CO2_EQUIV", "LIGHT")
       },
       createdAt: {
-        defaultValue: Sequelize.NOW,
         allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
-        defaultValue: Sequelize.NOW,
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('environmentParamsValue');
+    await queryInterface.dropTable('environmentParamsValues');
   }
 };
