@@ -1,5 +1,6 @@
 const Router = require("koa-router");
 const passport = require("koa-passport");
+const { generateJwt } = require("../controllers/authentication");
 
 const router = new Router({
     prefix: '/auth'
@@ -8,10 +9,15 @@ const router = new Router({
 /**
  * To retrieve the user: `const { user } = ctx.req;`
  */
-const authMiddleware = passport.authenticate(['local', 'jwt']);
+const localAuth = passport.authenticate('local');
 
-router.post('/login', authMiddleware, (ctx) => {
+router.post('/login', localAuth, (ctx) => {
     ctx.status = 200
+    // have to explicitly specify json as accepted response to get a token back
+    if ('accept' in ctx.req.headers && ctx.accepts("json"))
+        ctx.body = {
+            bearerToken: generateJwt(ctx.req.user)
+        };
 });
 
 router.get('/logout', (ctx) => {

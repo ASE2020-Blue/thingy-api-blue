@@ -23,10 +23,10 @@ describe('thingies Endpoints', () => {
         });
     });
 
-    // afterAll(async () => {
-    //     // server.close();
-    //     // await sequelize.close();
-    // });
+    afterAll(async () => {
+        server.close();
+        await sequelize.close();
+    });
 
     it('Local unauthorized login', async () => {
         const res = await request(app.callback()).post("/auth/login").type("form").send({ email: 'red@unifr.ch', password: 'red-1' });
@@ -74,13 +74,20 @@ describe('thingies Endpoints', () => {
         const unauthorizedRes = await agent.get("/thingy");
         expect(unauthorizedRes.unauthorized).toBe(true);
     });
-    //
-    // it('Jwt login', async () => {
-    // });
-    //
-    // it('Jwt call api', async () => {
-    // });
-    //
-    // it('Jwt logout', async () => {
-    // });
+
+    it('Jwt call api', async () => {
+        const loginResponse = await request(app.callback()).post("/auth/login")
+            .accept('json')
+            // send as json
+            .send({ email: 'blue@unifr.ch', password: 'blue-3' });
+        expect(loginResponse.status).toBe(200);
+        expect(loginResponse.body).toHaveProperty('bearerToken');
+
+        const { bearerToken } = loginResponse.body;
+        const apiRes = await request(app.callback())
+            .get("/thingy")
+            .auth(bearerToken, { type: 'bearer' });
+        expect(apiRes.status).toBe(200);
+        expect(apiRes.body.length).toBeGreaterThan(0);
+    });
 })

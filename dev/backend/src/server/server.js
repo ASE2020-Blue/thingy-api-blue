@@ -46,7 +46,7 @@ app
     .use(passport.initialize({}))
     .use(passport.session({}))
     .use(authenticate.routes())
-    // protect routes
+    // TODO protect routes
     .use(thingies.routes())
     .use(historyLocations.routes())
     .use(environmentParamsValues.routes());

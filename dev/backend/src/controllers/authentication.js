@@ -17,8 +17,8 @@ const secret = "nXCoRWQoxLEVH0/ZRQmDDw==";
  */
 const expiresIn = 3600;
 
-function generateJwt (user /** @type User */) {
-    return jwt.sign(user, secret, { expiresIn });
+module.exports.generateJwt = function generateJwt ({ id } /** @type User */) {
+    return jwt.sign({ id }, secret, { expiresIn });
 }
 
 passport.serializeUser((user /** @type User */, done) => done(null, user.id));
@@ -59,7 +59,7 @@ const jwtLogin = new JwtStrategy({
     },
     async (payload, done) => {
         try {
-            const user = await User.findByPk(payload.id_user)
+            const user = await User.findByPk(payload.id)
             if (user)
                 done(null, user);
             else
