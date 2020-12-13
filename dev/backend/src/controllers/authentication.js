@@ -25,12 +25,11 @@ passport.serializeUser((user /** @type User */, done) => done(null, user.id));
 
 passport.deserializeUser(async (id, done) => {
     try {
-        user = await User.findByPk(id);
-        if (user) {
-            done(null, user);
-        } else {
-            done(false);
-        }
+        const user = await User.findByPk(id);
+        if (!user)
+            return done(false);
+
+        done(null, user);
     } catch (e) {
         done(e);
     }
@@ -38,35 +37,37 @@ passport.deserializeUser(async (id, done) => {
 
 const localLogin = new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
     try {
+        /** @type User */
         const user = await User.findOne({ where: { email: email.toLowerCase() } });
 
         if (!user)
             return done(null, false);
 
         const okPassword = user.comparePassword(password);
-        if (okPassword)
-            done(null, user);
-        else
-            done(null, false);
+        if (!okPassword)
+            return done(null, false);
+
+        done(null, user);
     } catch (e) {
         done(e);
     }
 });
 
 const jwtLogin = new JwtStrategy({
-        jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: secret
     },
-    (payload, done) => {
-        User.findByPk(payload.id_user).then((user) => {
-                if (user)
-                    done(null, user);
-                else
-                    done(null, false);
-            })
-            .catch((error) => done(error, false));
-    }
-)
+    async (payload, done) => {
+        try {
+            const user = await User.findByPk(payload.id_user)
+            if (user)
+                done(null, user);
+            else
+                done(null, false);
+        } catch (e) {
+            done(error, false);
+        }
+});
 
 passport.use(localLogin.name, localLogin);
 passport.use(jwtLogin.name, jwtLogin);
