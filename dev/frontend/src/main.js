@@ -4,11 +4,11 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from "vue-apexcharts";
-import * as VeeValidate from "vee-validate";
+import {validate} from "vee-validate"
 
 Vue.config.productionTip = false;
 Vue.use(VueApexCharts);
-Vue.use(VeeValidate);
+Vue.use(validate);
 
 Vue.component("chart", VueApexCharts);
 
