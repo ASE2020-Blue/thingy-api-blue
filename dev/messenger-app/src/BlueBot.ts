@@ -29,13 +29,14 @@ import { fgRed, reset } from './helpers/consoleColors';
  */
 export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<TContext> {
 
-    constructor(token: string, sessionMiddleware: Middleware<TContext>, stageManagerMiddleware: Middleware<TContext>,
-                persistLocalizationClient: IPersistLocalizationClient, options? : TelegrafOptions) {
+    constructor(token: string, persistLocalizationClient: IPersistLocalizationClient,
+                middlewares?: Array<Middleware<TContext>>, options? : TelegrafOptions) {
         super(token, options);
 
         this.context.persistLocalizationClient = persistLocalizationClient;
 
-        this.use(sessionMiddleware, stageManagerMiddleware);
+        if (middlewares)
+            this.use(...middlewares);
 
         this.start(this.onStart);
         this.help(this.onHelp);

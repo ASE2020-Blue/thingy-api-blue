@@ -1,13 +1,17 @@
+require("../controllers/sentry").initSentryInProd();
+
 const Koa = require('koa');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
 
+const { addSentryMiddlewareInProd } = require("../controllers/sentry");
 const thingies = require("../routes/thingies");
 const historyLocations = require("../routes/locationHistories");
 const environmentParamsValues = require("../routes/environmentParamsValues");
 
 const app = new Koa();
+addSentryMiddlewareInProd(app);
 
 // logger
 app.use(async (ctx, next) => {

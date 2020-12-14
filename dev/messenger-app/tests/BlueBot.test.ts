@@ -24,7 +24,7 @@ const test = <TestInterface<IAvaContext<BotSceneSessionContext>>> ava;
 test.beforeEach('Setup mocked bot', ({ context }) => {
     const sessionMiddleware = session<BotSceneSessionContext>();
     const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
-    const bot = new BlueBot(undefined, sessionMiddleware, emptyStageManager, simplePersistLocalizationClient);
+    const bot = new BlueBot(undefined, simplePersistLocalizationClient, [sessionMiddleware, emptyStageManager]);
 
     context.sessionMiddleware = sessionMiddleware;
     context.simplePersistLocalizationClient = simplePersistLocalizationClient;
