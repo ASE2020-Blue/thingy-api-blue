@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@sentry/browser": "^5.29.0",
+    "@sentry/tracing": "^5.29.0",
+    "@sentry/vue": "^5.29.0",
     "apexcharts": "^3.22.2",
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
