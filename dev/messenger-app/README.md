@@ -33,6 +33,7 @@
 
 
 ## Todos
+Todo idea:
 
 - [X] Create bot with:
     - [X] Token
@@ -52,12 +53,30 @@
 - [ ] `/sleep, /mute`
 - [ ] `/awake, /wake, /unmute`
 - [ ] `/bind`
-- [ ] `/move`
+- [X] `/setlocation`
 - [ ] Quick web login?
 
 
 ## Telegram API
 [API documentation](https://core.telegram.org/bots/api/#replykeyboardmarkup)
+
+
+## Sentry
+[Sentry](sentry.io) is an open-source error tracking that is free for students.
+
+### Articles
+* Node: [Usage | Sentry Documentation](https://docs.sentry.io/clients/node/usage/)
+* [Express | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/express/)
+* [Koa | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/koa/)
+---
+More in depth doc:
+* [Transaction Summary | Sentry Documentation](https://docs.sentry.io/product/performance/transaction-summary/)
+* [Add Context for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/context/)
+* [Breadcrumbs for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/breadcrumbs/)
+* [Source Maps for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/sourcemaps/)
+* [TypeScript for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/typescript/)
+* [Integrations for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/configuration/integrations/)
+* [Performance Monitoring for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/performance/)
 
 
 ## Testing
@@ -83,7 +102,7 @@ For inspiration:
 ### Selection: [AVA](https://github.com/avajs/ava)
 * [ava/test-setup.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/recipes/test-setup.md)
 * [ava/typescript.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/recipes/typescript.md)
-** [GitHub - avajs/typescript: Rudimentary TypeScript support](https://github.com/avajs/typescript)
+    * [GitHub - avajs/typescript: Rudimentary TypeScript support](https://github.com/avajs/typescript)
 * [ava/06-configuration.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/06-configuration.md)
 * [ava/01-writing-tests.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/01-writing-tests.md)
 * [ava/03-assertions.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/03-assertions.md)
