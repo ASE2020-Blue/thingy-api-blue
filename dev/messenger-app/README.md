@@ -60,25 +60,6 @@ Todo idea:
 ## Telegram API
 [API documentation](https://core.telegram.org/bots/api/#replykeyboardmarkup)
 
-
-## Sentry
-[Sentry](sentry.io) is an open-source error tracking that is free for students.
-
-### Articles
-* Node: [Usage | Sentry Documentation](https://docs.sentry.io/clients/node/usage/)
-* [Express | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/express/)
-* [Koa | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/koa/)
----
-More in depth doc:
-* [Transaction Summary | Sentry Documentation](https://docs.sentry.io/product/performance/transaction-summary/)
-* [Add Context for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/context/)
-* [Breadcrumbs for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/breadcrumbs/)
-* [Source Maps for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/sourcemaps/)
-* [TypeScript for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/typescript/)
-* [Integrations for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/configuration/integrations/)
-* [Performance Monitoring for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/performance/)
-
-
 ## Testing
 
 ### Articles to select lib(s)
