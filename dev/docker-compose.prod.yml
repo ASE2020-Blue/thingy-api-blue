@@ -6,6 +6,9 @@ services:
         build:
             context: ./docker/postgres/
             dockerfile: Dockerfile
+
+        environment:
+            - NODE_ENV=production
         env_file:
             - .env
         restart: always
@@ -18,9 +21,11 @@ services:
     backend:
         build:
             context: .
-            dockerfile: docker/backend/Dockerfile
+            dockerfile: docker/backend/Dockerfile.prod
         depends_on:
             - postgres
+        environment:
+            - NODE_ENV=production
         env_file:
             - .env
         ports:
@@ -33,25 +38,12 @@ services:
             # But for dev, install dependencies locally
             - /root/app/node_modules
 
-    # auth:
-    #     build:
-    #         context: .
-    #         dockerfile: docker/authentication/Dockerfile
-    #     env_file:
-    #         .env
-    #     restart: always
-    #     volumes:
-    #         # Avoid shadowing the node_modules folder
-    #         # https://stackoverflow.com/a/32785014/3771148
-    #         # Install is necessary for CI purposes for example
-    #         # But for dev, install dependencies locally
-    #         - ./authentication:/root/app
-            - ./root/app/node_modules
-
     node-red-notifier:
         build:
             context: .
             dockerfile: docker/node-red-notifier/Dockerfile
+        environment:
+            - NODE_ENV=production
         env_file:
             - .env
             - .secrets.env
@@ -72,6 +64,8 @@ services:
         build:
             context: .
             dockerfile: docker/messenger/Dockerfile
+        environment:
+            - NODE_ENV=production
         env_file:
             - .env
             - .secrets.env
@@ -86,27 +80,29 @@ services:
             # But for dev, install dependencies locally
             - ./messenger-app:/root/app
             - /root/app/node_modules
-    frontend:
-        build:
-            context: .
-            dockerfile: docker/frontend/Dockerfile
-        env_file:
-            - .env
-            - .env.development
-        restart: always
-        ports:
-            - "8081:8080"
-        volumes:
-            # Avoid shadowing the node_modules folder
-            # https://stackoverflow.com/a/32785014/3771148
-            # Install is necessary for CI purposes for example
-            # But for dev, install dependencies locally
-            - ./frontend:/root/app
-            - /root/app/node_modules
+    nginx:
+      image: nginx:1.15-alpine
+      build:
+        context: .
+        dockerfile: docker/frontend/Dockerfile.prod
+      depends_on:
+        - backend
+      environment:
+        - NODE_ENV=production
+      env_file:
+        - .env
+      restart: unless-stopped
+      volumes:
+        - ./frontend:/root/app
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./frontend/dist:/usr/share/nginx/html/app/dist
+      ports:
+        - "80:80"
 
 volumes:
     pgdata:
         # Let docker handle internally the storage of this volume
         # to prune the volume and start new with the database, use:
-        #   `docker volume prune ase-blue-pgdata`
-        name: ase-blue-pgdata
+        #   `docker volume prune ase-blue-pgdata-prod`
+        # name: ase-blue-pgdata-prod
+        name: ase-blue-pgdata-prod

@@ -57,7 +57,7 @@ async function getThingyParamValues(ctx) {
     where: {
       uuid: ctx.params.uuid,
     },
-    order: [ environmentParamsValue, 'createdAt' ],
+    order: [ [environmentParamsValue, 'createdAt', "ASC"] ],
     include: [
       {
         model: environmentParamsValue,

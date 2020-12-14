@@ -6,7 +6,7 @@
 
 ### Articles
 * Node: [Usage | Sentry Documentation](https://docs.sentry.io/clients/node/usage/)
-* [Vue | Sentry Documentation](https://docs.sentry.io/platforms/javascript/guides/vue/#monitor-performance)
+* [Vue | Sentry Documentation](https://docs.sentry.io/platforms/javascript/guides/vue/)
     * Doesn't need to add middleware or what so ever. Does it all with the Vue ref already.
 * [Express | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/express/)
 * [Koa | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/koa/)
