@@ -4,8 +4,6 @@ import { PersistLocalizationClient } from '../../proto/thingy_grpc_pb';
 import { ThingyLocalization } from '../../proto/thingy_pb';
 import { IPersistLocalizationClient } from './IPersistLocalizationClient';
 
-const { BACKEND_GRPC_BIND_PORT } = process.env;
-
 export class GrpcPersistLocalizationClient implements IPersistLocalizationClient {
 
     private readonly grpcClient: PersistLocalizationClient;
