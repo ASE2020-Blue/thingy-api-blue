@@ -46,7 +46,6 @@ export function requestHandler<TContext extends TelegrafContext & SentryTransact
 
 export function tracingHandler<TContext extends TelegrafContext & SentryTransaction>(): MiddlewareFn<TContext> {
     return async (ctx: TContext, next: () => Promise<void>): Promise<void> => {
-        debugger;
         const transaction = Sentry.startTransaction({
             // name: extractTransactionName(ctx),
             // --> name: eg. GET /mountpoint/user/:id
