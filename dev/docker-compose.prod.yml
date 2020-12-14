@@ -77,6 +77,11 @@ services:
       build:
         context: .
         dockerfile: docker/frontend/Dockerfile.prod
+      depends_on:
+        - backend
+      env_file:
+        - .env
+        - .env.prod
       restart: unless-stopped
       volumes:
         - ./frontend:/root/app

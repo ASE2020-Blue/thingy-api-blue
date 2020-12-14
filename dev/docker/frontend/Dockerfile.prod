@@ -9,7 +9,7 @@ RUN yarn install
 
 COPY ./frontend /root/app
 
-RUN yarn build
+ RUN yarn build
 
 VOLUME [ "/root/app" ]
 

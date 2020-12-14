@@ -24,12 +24,29 @@ app.use(async (ctx, next) => {
   ctx.set("X-Response-Time", `${ms}ms`);
 });
 
+function verifyOrigin (ctx) {
+  // Get requesting origin hostname
+  let origin = ctx.headers.origin;
+
+  // List of valid origins
+  let validOrigins = ['http://localhost:8080', 'http://localhost', 'http://51.15.209.246'];
+
+  // Make sure it's a valid origin
+  if (validOrigins.indexOf(origin) !== -1 && process.env.NODE_ENV === "production") {
+    // Set the header to the requested origin
+    ctx.set('Access-Control-Allow-Origin', origin);
+    return origin;
+  }
+}
+
+
 const options = {
   credentials: true,
+  origin: verifyOrigin
 };
 
-if (process.env.NODE_ENV === "production")
-  options.origin = process.env.APP_BASE_URL;
+/*if (process.env.NODE_ENV === "production")
+  options.origin = process.env.APP_BASE_URL;*/
 
 app
   .use(bodyParser())
