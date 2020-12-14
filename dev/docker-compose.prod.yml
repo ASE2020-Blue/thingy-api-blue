@@ -95,4 +95,5 @@ volumes:
         # Let docker handle internally the storage of this volume
         # to prune the volume and start new with the database, use:
         #   `docker volume prune ase-blue-pgdata-prod`
+        # name: ase-blue-pgdata-prod
         name: ase-blue-pgdata-prod

@@ -4,12 +4,16 @@ FROM node:12-alpine as builder
 RUN mkdir /root/app
 WORKDIR /root/app
 
-COPY ./frontend/package.json /root/app
-RUN yarn install
+# in case you work locally
+# ENV VUE_APP_API_BASE_URL=http://localhost/api
+
+ENV VUE_APP_API_BASE_URL=http://51.15.209.246/api
 
 COPY ./frontend /root/app
 
- RUN yarn build
+RUN yarn install
+
+RUN yarn build
 
 VOLUME [ "/root/app" ]
 
@@ -17,10 +21,8 @@ FROM nginx:1.18.0-alpine as production-build
 
 RUN rm -rf /usr/share/nginx/html/*
 
-# COPY --from=builder /root/app/ /var/www
 COPY --from=builder /root/app/ /usr/share/nginx/html
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
