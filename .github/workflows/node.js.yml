@@ -5,7 +5,7 @@ name: Blue Team Node.js CI
 
 on:
   push:
-    branches: [ main, develop, feature/100_improvements_sprint2 ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
 
