@@ -52,6 +52,8 @@ function verifyOrigin(ctx) {
         // Set the header to the requested origin
         ctx.set('Access-Control-Allow-Origin', origin);
         return origin;
+    } else if (process.env.NODE_ENV !== "production") {
+        return origin;
     }
 }
 
