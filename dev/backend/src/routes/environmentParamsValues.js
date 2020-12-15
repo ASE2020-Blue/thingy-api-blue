@@ -1,7 +1,8 @@
 const Router = require("koa-router")
 
 const { localOrJwtAuth } = require("../controllers/authentication");
-const { EnvironmentParamsValue, Thingy } = require("../models")
+const { createEnvValue } = require("../controllers/thingy");
+const { EnvironmentParamsValue } = require("../models")
 
 const router = new Router({
     prefix: "/environmentParamsValue"
@@ -27,16 +28,12 @@ async function getValue(ctx) {
 }
 
 async function createValue(ctx) {
-    const body = ctx.request.body;
-    const { value, envParam, uuid } = body
-    if (!value || !envParam || !uuid) ctx.throw(400, { 'error': '"value,envParam,uuid" are required fields' });
-    let t = await Thingy.findOne({
-        where: { uuid }
-    });
-    if (!t)
-        t = await Thingy.upsert({ uuid });
+    const { value, envParam, uuid } = ctx.request.body;
+    if (!value || !envParam || !uuid)
+        ctx.throw(400, { 'error': '"value,envParam,uuid" are required fields' });
+
+    await createEnvValue(uuid, envParam, value);
     ctx.status = 200;
-    return EnvironmentParamsValue.upsert({ value: value, envParam: envParam, thingyId: t.id })
 }
 
 async function deleteValue(ctx) {

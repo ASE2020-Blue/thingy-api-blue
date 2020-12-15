@@ -1,5 +1,5 @@
 'use strict';
-const { ThingyLocalization } = require('../proto/thingy_pb');
+const { ThingyLocation } = require('../proto/thingy_pb');
 
 const {
     Model
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         getGRpcLocation() {
-            let thingyLocalization = new ThingyLocalization();
+            let thingyLocalization = new ThingyLocation();
             thingyLocalization.setThingyUuid(this.uuid);
             let location = this.locationHistory && this.locationHistory[1].locationName || undefined;
             thingyLocalization.setLocation(location);

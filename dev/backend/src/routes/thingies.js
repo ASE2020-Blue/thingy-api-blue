@@ -83,19 +83,6 @@ async function getThingyParamValues(ctx) {
     ctx.status = 200;
 }
 
-// async function getAllPendingThingies(ctx) {
-//   let thingies = await thingy.findAll({
-//     include: [
-//       {
-//         model: locationHistory,
-//       },
-//     ],
-//   });
-//
-//   ctx.body = thingies.filter((thingy) => thingy.locationHistories.length === 0);
-//   ctx.status = 200;
-// }
-
 // TODO review: Really? We want to expose such route?
 //  Somebody could fill our db for "nothing"
 async function createThingy(ctx) {
