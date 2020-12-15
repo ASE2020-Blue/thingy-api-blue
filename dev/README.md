@@ -1,7 +1,18 @@
 # Project requirements
 [Durand doc](https://duranda.github.io/ase2020-docs/project-2020)
 
-# Sentry articles/documentations
+# Error/Performance logging
+* [GitHub - cheeaun/javascript-error-logging: A collection of JavaScript error logging services, resources and shiny things.](https://github.com/cheeaun/javascript-error-logging)
+* [Sentry for Education | Sentry](https://sentry.io/for/education/)
+* [Pricing Plans — Stability and Error Monitoring  |  Bugsnag](https://www.bugsnag.com/pricing)
+* [Raygun Pricing](https://raygun.com/pricing)
+* [Priced For You - TrackJS](https://trackjs.com/pricing/)
+* [User feedback is priceless but ... | Usersnap Pricing](https://usersnap.com/pricing)
+
+**Choice**: [Sentry](sentry.io) as it is free for students, heard about it already (through ads, definitely worked),
+and also announced to be open-source (:shrug:).
+
+## Sentry articles/documentations
 [Sentry](sentry.io) is an open-source error tracking that is free for students.
 
 ### Articles
