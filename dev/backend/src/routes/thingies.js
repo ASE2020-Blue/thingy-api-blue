@@ -62,29 +62,20 @@ async function getThingyParamValues(ctx) {
         where: {
             uuid: ctx.params.uuid,
         },
-        order: [[EnvironmentParamsValue, 'createdAt', "ASC"]],
         include: [{
             model: EnvironmentParamsValue,
+            order: [EnvironmentParamsValue, 'createdAt', "ASC"],
             where: {
-                uuid: ctx.params.uuid,
-            },
-            order: [EnvironmentParamsValue, 'createdAt'],
-            include: [
-                {
-                    model: EnvironmentParamsValue,
-                    where: {
-                        envParam: ctx.query.envParam,
-                        createdAt: {
-                            [Op.between]: [
-                                new Date(ctx.query.dateFrom),
-                                new Date(ctx.query.dateTo),
-                            ],
-                        },
-                    },
-                    required: false,
+                envParam: ctx.query.envParam,
+                createdAt: {
+                    [Op.between]: [
+                        new Date(ctx.query.dateFrom),
+                        new Date(ctx.query.dateTo),
+                    ],
                 },
-            ],
-        }]
+            },
+            required: false,
+        }],
     });
     if (!t) ctx.throw(404, { error: "thingy not found" });
     //let validValues = t.environmentParamsValues.filter(e => e.createdAt >= new Date(ctx.query.dateFrom) && e.createdAt <= new Date(ctx.query.dateTo))
