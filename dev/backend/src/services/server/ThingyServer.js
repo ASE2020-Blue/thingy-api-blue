@@ -2,7 +2,7 @@ const { sendUnaryData, ServerWritableStream } = require('@grpc/grpc-js');
 const { Empty } = require('google-protobuf/google/protobuf/empty_pb');
 const { IPersistLocalizationServer } = require('../../proto/thingy_grpc_pb');
 
-const { thingy, locationHistory } = require("../../models");
+const { Thingy, LocationHistory } = require("../../models");
 
 class ThingyServer /** @implements IPersistLocalizationServer */ {
 
@@ -11,12 +11,12 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
 
     getPendingLocation(call /** @type {ServerWritableStream<Empty, ThingyLocalization>} */) {
         console.log(`${new Date().toISOString()}    getPendingLocation`);
-        // Aggree, await are great, but don't want to tree to set this method as async for now
-        thingy
+        // Agree, await are great, but don't want to tree to set this method as async for now
+        Thingy
             .findAll({
                 include: [
                     {
-                        model: locationHistory,
+                        model: LocationHistory,
                     },
                 ],
             })
@@ -25,7 +25,6 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
                     .filter(thingy => thingy.locationHistories.length === 0)
                     .map(thingy => thingy.getGRpcLocation())
                     .forEach(simpleThingy => {
-                        console.log(simpleThingy);
                         call.write(simpleThingy);
                     });
                 call.end();
@@ -43,7 +42,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
             return;
         }
 
-        thingy
+        Thingy
             .findOne({
                 where: {
                     uuid: thingyUuid
@@ -51,9 +50,9 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
             })
             .then(foundThingy => {
                 if ( ! foundThingy)
-                    callback(new Error('NotFound, no corresponding uuid'));
+                    callback(new Error('NotFound, no corresponding uuid: ' + thingyUuid));
                 else
-                    locationHistory.upsert({
+                    LocationHistory.upsert({
                         locationName: thingyLocation,
                         thingyId: foundThingy.id
                     })

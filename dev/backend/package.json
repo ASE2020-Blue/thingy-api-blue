@@ -8,7 +8,7 @@
   "scripts": {
     "start": "yarn run db:migrate && nodemon src/serve.js",
     "prod:start": "yarn run db:migrate && node src/serve.js",
-    "test-dev": "yarn run db:migrate && yarn run db:seed && jest --coverage tests/*",
+    "test": "jest -i --coverage tests/*",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all"
   },
@@ -29,6 +29,7 @@
     "mocha": "^8.2.0",
     "nodemon": "^2.0.6",
     "sequelize-cli": "^6.2.0",
+    "sqlite3": "^5.0.0",
     "supertest": "^6.0.1"
   }
 }

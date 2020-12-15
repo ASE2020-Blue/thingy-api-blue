@@ -1,9 +1,9 @@
 const Router = require("koa-router");
 const router = new Router();
 const {
-  thingy,
-  locationHistory,
-  environmentParamsValue,
+  Thingy,
+  LocationHistory,
+  EnvironmentParamsValue,
 } = require("../models");
 const { Op } = require("sequelize");
 
@@ -18,12 +18,12 @@ router
   .delete(baseRoute + "/:uuid", deleteThingy);
 
 async function getAllThingies(ctx) {
-  ctx.body = await thingy.findAll();
+  ctx.body = await Thingy.findAll();
   ctx.status = 200;
 }
 
 async function getThingy(ctx) {
-  let t = await thingy.findOne({
+  let t = await Thingy.findOne({
     where: {
       uuid: ctx.params.uuid,
     },
@@ -34,13 +34,13 @@ async function getThingy(ctx) {
 }
 
 async function getThingyLocations(ctx) {
-  let t = await thingy.findOne({
+  let t = await Thingy.findOne({
     where: {
       uuid: ctx.params.uuid,
     },
     include: [
       {
-        model: locationHistory,
+        model: LocationHistory,
       },
     ],
   });
@@ -53,14 +53,14 @@ async function getThingyLocations(ctx) {
 async function getThingyParamValues(ctx) {
   if (!ctx.query.envParam)
     ctx.throw(400, { error: '"envParam" is a required field' });
-  let t = await thingy.findOne({
+  let t = await Thingy.findOne({
     where: {
       uuid: ctx.params.uuid,
     },
     order: [ [environmentParamsValue, 'createdAt', "ASC"] ],
     include: [
       {
-        model: environmentParamsValue,
+        model: EnvironmentParamsValue,
         where: {
           envParam: ctx.query.envParam,
           createdAt: {
@@ -100,7 +100,7 @@ async function createThingy(ctx) {
   if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
   ctx.status = 200;
 
-  let updatedThingy = await thingy.upsert(body);
+  let updatedThingy = await Thingy.upsert(body);
   ctx.body = JSON.parse(JSON.stringify(updatedThingy[0])); // to retrieve only data of thingy
 
   return updatedThingy;
@@ -109,7 +109,7 @@ async function createThingy(ctx) {
 // TODO review: Really? We want to expose such route?
 //  Danger zone that open?
 async function deleteThingy(ctx) {
-  const t = await thingy.findOne({
+  const t = await Thingy.findOne({
     where: {
       uuid: ctx.params.uuid,
     },

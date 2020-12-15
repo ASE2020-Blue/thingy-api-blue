@@ -3,20 +3,19 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class environmentParamsValue extends Model {
+  class EnvironmentParamsValue extends Model {
     static associate(models) {
       this.belongsTo(models.thingy)
     }
   }
 
-  environmentParamsValue.init({
+  EnvironmentParamsValue.init({
     thingyId: DataTypes.INTEGER,
     value: DataTypes.FLOAT,
     envParam: DataTypes.ENUM("TEMPERATURE", "HUMIDITY", "AIR_QUALITY", "AIR_PRESSURE", "CO2_EQUIV", "LIGHT")
   }, {
     sequelize,
-    modelName: 'environmentParamsValue',
-    freezeTableName: true,
+    modelName: 'environmentParamsValue'
   });
-  return environmentParamsValue;
+  return EnvironmentParamsValue;
 };
