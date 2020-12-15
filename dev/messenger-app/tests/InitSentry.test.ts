@@ -15,19 +15,18 @@ import { setSimpleReturnContextTypeOption } from './helpers/context';
 import { createCommandMessage } from './helpers/messageFactories';
 import { session } from './helpers/MyLocalSession';
 import { errorResult, successResult } from './helpers/PromiseMockResult';
-import { SimplePersistLocalizationClient } from './helpers/services/client/SimplePersistLocalizationClient';
+import { SimpleThingyPersistenceClient } from './helpers/services/client/SimpleThingyPersistenceClient';
 import { emptyStageManager } from './helpers/stage/stageManagers';
 
 const test = <TestInterface<IAvaContext<BotSceneSessionContext>>> ava;
 
 test('Caught error and ask if error should be reported', async ({ plan, pass }) => {
-    process.env.DEBUG_SENTRY = 'true';
     initSentry();
 
     plan(2);
 
     const sessionMiddleware = session<BotSceneSessionContext>();
-    const simplePersistLocalizationClient = new SimplePersistLocalizationClient(errorResult("Trigger Sentry"), successResult(undefined));
+    const simplePersistLocalizationClient = new SimpleThingyPersistenceClient(errorResult("Trigger Sentry"), successResult(undefined));
     const middlewares = [requestHandler(), tracingHandler(), sessionMiddleware, emptyStageManager];
     const bot = new BlueBot<BotSceneSessionContext & SentryTransaction>(undefined, simplePersistLocalizationClient, middlewares);
 
@@ -46,13 +45,12 @@ test('Caught error and ask if error should be reported', async ({ plan, pass }) 
 });
 
 test('Seamless Sentry', async ({ fail, plan, pass }) => {
-    process.env.DEBUG_SENTRY = 'true';
     initSentry();
 
     plan(1);
 
     const sessionMiddleware = session<BotSceneSessionContext>();
-    const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
+    const simplePersistLocalizationClient = new SimpleThingyPersistenceClient(successResult([]), successResult(undefined));
     const middlewares = [requestHandler(), tracingHandler(), sessionMiddleware, emptyStageManager];
     const bot = new BlueBot<BotSceneSessionContext & SentryTransaction>(undefined, simplePersistLocalizationClient, middlewares);
 
@@ -81,7 +79,7 @@ test.skip('Throw TypeScript error', async ({ pass, plan }) => {
     plan(2);
 
     const sessionMiddleware = session<BotSceneSessionContext>();
-    const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
+    const simplePersistLocalizationClient = new SimpleThingyPersistenceClient(successResult([]), successResult(undefined));
     const middlewares = [requestHandler(), tracingHandler(), sessionMiddleware, emptyStageManager];
     const bot = new BlueBot<BotSceneSessionContext & SentryTransaction>(undefined, simplePersistLocalizationClient, middlewares);
 

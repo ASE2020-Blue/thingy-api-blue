@@ -6,23 +6,23 @@ import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
 import { ThingyId } from '../../proto/messenger_pb';
-import { ConfigureLocalizationScene } from './ConfigureLocalizationScene';
+import { ConfigureLocationScene } from './ConfigureLocationScene';
 
-const debug = Debug('messenger:scene:ConfigurePendingLocalizationScene');
+const debug = Debug('messenger:scene:ConfigurePendingLocationScene');
 
-export class ConfigurePendingLocalizationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
+export class ConfigurePendingLocationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
 
-    public static readonly ID = 'configure-pending-localization';
+    public static readonly ID = 'configure-pending-location';
 
     // TODO doc
     public static readonly USER_ACCEPT_PENDING_CONFIGURATION = 'configure_pending_location_yes/';
     // TODO doc
     public static readonly USER_REFUSE_PENDING_CONFIGURATION = 'configure_pending_location_no';
 
-    private readonly configScene: ConfigureLocalizationScene<TContext>;
+    private readonly configScene: ConfigureLocationScene<TContext>;
 
-    constructor(configScene: ConfigureLocalizationScene<TContext>, options?: Partial<BaseSceneOptions<TContext>>) {
-        super(ConfigurePendingLocalizationScene.ID, options);
+    constructor(configScene: ConfigureLocationScene<TContext>, options?: Partial<BaseSceneOptions<TContext>>) {
+        super(ConfigurePendingLocationScene.ID, options);
 
         this.configScene = configScene;
 
@@ -42,7 +42,7 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
 
         const thingiesUuids = thingies.map(t => t.getThingyUuid());
 
-        const { USER_ACCEPT_PENDING_CONFIGURATION, USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocalizationScene;
+        const { USER_ACCEPT_PENDING_CONFIGURATION, USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocationScene;
 
         return reply(
             'We started collecting data for one or more thingy, do you want to configure where you placed them?',
@@ -70,7 +70,7 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
         session.ongoingPendingLocationConfiguration = true;
         session.thingyUuid = firstThingyUuid;
 
-        return scene.enter(ConfigureLocalizationScene.ID);
+        return scene.enter(ConfigureLocationScene.ID);
     }
 
     private listenConfigScenePredicate ({ session: { ongoingPendingLocationConfiguration } }: TContext) : boolean {
@@ -89,7 +89,7 @@ export class ConfigurePendingLocalizationScene<TContext extends SceneSessionCont
                 ? ''
                 : ` (and ${thingiesUuid.length} more)`;
 
-        const { USER_ACCEPT_PENDING_CONFIGURATION, USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocalizationScene;
+        const { USER_ACCEPT_PENDING_CONFIGURATION, USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocationScene;
 
         return replyWithMarkdown(
             `Continue with setting location of \`${nextThingyUuid}\`${additionalThingiesCount}`,

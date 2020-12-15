@@ -2,8 +2,8 @@ import ava, { LikeAssertion, TestInterface, TruthyAssertion } from 'ava';
 import { InlineKeyboardMarkup } from 'telegraf/typings/telegram-types';
 import { BlueBot } from '../../../src/BlueBot';
 import { BotSceneSessionContext } from '../../../src/context';
-import { ConfigureLocalizationScene } from '../../../src/stage/scenes/ConfigureLocalizationScene';
-import { ConfigurePendingLocalizationScene } from '../../../src/stage/scenes/ConfigurePendingLocalizationScene';
+import { ConfigureLocationScene } from '../../../src/stage/scenes/ConfigureLocationScene';
+import { ConfigurePendingLocationScene } from '../../../src/stage/scenes/ConfigurePendingLocationScene';
 import { PartialReplyApiData } from '../../fixtures/ApiData';
 import { IAvaContext } from '../../fixtures/context';
 import { setContextTypeOption } from '../../helpers/context';
@@ -16,16 +16,16 @@ import {
 import { session } from '../../helpers/MyLocalSession';
 import { successResult } from '../../helpers/PromiseMockResult';
 import { ThingyFactory } from '../../helpers/proto/ThingyFactory';
-import { SimplePersistLocalizationClient } from '../../helpers/services/client/SimplePersistLocalizationClient';
+import { SimpleThingyPersistenceClient } from '../../helpers/services/client/SimpleThingyPersistenceClient';
 import { srcStageManager } from '../../helpers/stage/stageManagers';
 
 const test = <TestInterface<IAvaContext<BotSceneSessionContext>>> ava;
 
-const { createThingyLocalization } = ThingyFactory.instance;
+const { createThingyLocation } = ThingyFactory.instance;
 
 test.beforeEach('Setup mocked bot', ({ context }) => {
     const sessionMiddleware = session<BotSceneSessionContext>();
-    const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
+    const simplePersistLocalizationClient = new SimpleThingyPersistenceClient(successResult([]), successResult(undefined));
     const bot = new BlueBot(undefined, simplePersistLocalizationClient, [sessionMiddleware, srcStageManager]);
 
     context.sessionMiddleware = sessionMiddleware;
@@ -48,7 +48,7 @@ test('No pending thingy', async ({ is, truthy, plan, context: { bot } }) => {
 });
 
 test('Starting with pending location', async ({ is, truthy, like, plan, context: { simplePersistLocalizationClient, bot } }) => {
-    simplePersistLocalizationClient.setPendingLocationResult(successResult([ createThingyLocalization('rainbow-2') ]));
+    simplePersistLocalizationClient.setPendingLocationResult(successResult([ createThingyLocation('rainbow-2') ]));
 
     plan(7);
 
@@ -73,7 +73,7 @@ test.todo('Refuse to set pending thingies');
 test('Iterate through pending thingies', async ({ is, plan, truthy, like, context: { bot, simplePersistLocalizationClient } }) => {
     let callbackQuery: SimpleCallbackQuery = undefined;
 
-    simplePersistLocalizationClient.setPendingLocationResult(successResult([createThingyLocalization('rainbow-22'), createThingyLocalization('blue-3')]));
+    simplePersistLocalizationClient.setPendingLocationResult(successResult([createThingyLocation('rainbow-22'), createThingyLocation('blue-3')]));
 
     // 7 when starting
     // 3 for callback query data
@@ -99,7 +99,7 @@ test('Iterate through pending thingies', async ({ is, plan, truthy, like, contex
     await bot.handleUpdate(createCommandMessage('/start').toUpdate());
 
     const { data } = callbackQuery;
-    truthy(data.startsWith(ConfigurePendingLocalizationScene.USER_ACCEPT_PENDING_CONFIGURATION));
+    truthy(data.startsWith(ConfigurePendingLocationScene.USER_ACCEPT_PENDING_CONFIGURATION));
     truthy(data.includes('rainbow-22'));
     truthy(data.includes('blue-3'));
 
@@ -143,7 +143,7 @@ test('Iterate through pending thingies', async ({ is, plan, truthy, like, contex
 
     const botAskingConfirmation1 = createMessage('Please confirm: _rainbow-22_ at `Location 1 (rainbow)`', botUser);
     await bot.handleUpdate(
-        createCallbackQuery(botAskingConfirmation1, ConfigureLocalizationScene.CONFIRM_CALLBACK).toUpdate()
+        createCallbackQuery(botAskingConfirmation1, ConfigureLocationScene.CONFIRM_CALLBACK).toUpdate()
     );
 
     setContextTypeOption<PartialReplyApiData>(bot.options, (method, { text, reply_markup }) => {
@@ -173,7 +173,7 @@ test('Iterate through pending thingies', async ({ is, plan, truthy, like, contex
 
     const botAskingConfirmation2 = createMessage('Please confirm: _blue-3_ at `Location 2 (blue)`', botUser);
     await bot.handleUpdate(
-        createCallbackQuery(botAskingConfirmation2, ConfigureLocalizationScene.CONFIRM_CALLBACK).toUpdate()
+        createCallbackQuery(botAskingConfirmation2, ConfigureLocationScene.CONFIRM_CALLBACK).toUpdate()
     );
 });
 

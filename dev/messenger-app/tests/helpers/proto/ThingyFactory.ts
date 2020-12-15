@@ -1,4 +1,4 @@
-import { ThingyLocalization } from '../../../src/proto/thingy_pb';
+import { ThingyLocation } from '../../../src/proto/thingy_pb';
 
 export class ThingyFactory {
     public static instance = new ThingyFactory();
@@ -6,8 +6,8 @@ export class ThingyFactory {
     constructor() {
     }
 
-    public createThingyLocalization(uuid: string, localization?: string): ThingyLocalization {
-        const thingy = new ThingyLocalization();
+    public createThingyLocation (uuid: string, localization?: string): ThingyLocation {
+        const thingy = new ThingyLocation();
         thingy.setThingyUuid(uuid);
         if (localization)
             thingy.setThingyUuid(localization);

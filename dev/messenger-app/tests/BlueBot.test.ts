@@ -14,14 +14,14 @@ import {
 } from './helpers/context';
 import { createCommandMessage } from './helpers/messageFactories';
 import { successResult } from './helpers/PromiseMockResult';
-import { SimplePersistLocalizationClient } from './helpers/services/client/SimplePersistLocalizationClient';
+import { SimpleThingyPersistenceClient } from './helpers/services/client/SimpleThingyPersistenceClient';
 import { emptyStageManager } from './helpers/stage/stageManagers';
 
 const test = <TestInterface<IAvaContext<BotSceneSessionContext>>> ava;
 
 test.beforeEach('Setup mocked bot', ({ context }) => {
     const sessionMiddleware = session<BotSceneSessionContext>();
-    const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
+    const simplePersistLocalizationClient = new SimpleThingyPersistenceClient(successResult([]), successResult(undefined));
     const bot = new BlueBot(undefined, simplePersistLocalizationClient, [sessionMiddleware, emptyStageManager]);
 
     context.sessionMiddleware = sessionMiddleware;

@@ -8,12 +8,12 @@ import {
     requestHandler,
     tracingHandler
 } from './helpers/TelegrafSentry';
-import { GrpcPersistLocalizationClient } from './services/client/GrpcPersistLocalizationClient';
+import { GrpcThingyPersistenceClient } from './services/client/GrpcThingyPersistenceClient';
 import { createServer } from './services/server';
 import { MessengerServer } from './services/server/MessengerServer';
 import { BlueStageManager } from './stage/BlueStageManager';
-import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
-import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
+import { ConfigureLocationScene } from './stage/scenes/ConfigureLocationScene';
+import { ConfigurePendingLocationScene } from './stage/scenes/ConfigurePendingLocationScene';
 
 const { BACKEND_GRPC_HOST, BACKEND_GRPC_BIND_PORT, MESS_GRPC_BIND_HOST, MESS_GRPC_BIND_PORT, NODE_ENV } = process.env;
 
@@ -28,13 +28,13 @@ const session = new (require('telegraf-session-redis'))({
     }
 });
 
-const configureLocalizationScene = new ConfigureLocalizationScene();
+const configureLocalizationScene = new ConfigureLocationScene();
 const blueStageManager = new BlueStageManager([
     configureLocalizationScene,
-    new ConfigurePendingLocalizationScene(configureLocalizationScene)
+    new ConfigurePendingLocationScene(configureLocalizationScene)
 ]);
 
-const grpcPersistLocalizationClient = new GrpcPersistLocalizationClient(BACKEND_GRPC_HOST, parseInt(BACKEND_GRPC_BIND_PORT, 10));
+const grpcPersistLocalizationClient = new GrpcThingyPersistenceClient(BACKEND_GRPC_HOST, parseInt(BACKEND_GRPC_BIND_PORT, 10));
 
 const botMiddleware = [session, blueStageManager];
 if (isProd)

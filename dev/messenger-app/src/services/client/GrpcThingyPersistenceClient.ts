@@ -2,28 +2,29 @@ import { credentials } from '@grpc/grpc-js';
 import * as Debug from 'debug';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 
-import { PersistLocalizationClient } from '../../proto/thingy_grpc_pb';
-import { ThingyLocalization } from '../../proto/thingy_pb';
-import { IPersistLocalizationClient } from './IPersistLocalizationClient';
+import { ThingyPersistenceClient } from '../../proto/thingy_grpc_pb';
+import { ThingyLocation } from '../../proto/thingy_pb';
+import { IThingyPersistenceClient } from './IThingyPersistenceClient';
 
-const debug = Debug('messenger:grpc:client:PersistLocalizationClient');
+const debug = Debug('messenger:grpc:client:ThingyPersistenceClient');
 
-export class GrpcPersistLocalizationClient implements IPersistLocalizationClient {
+export class GrpcThingyPersistenceClient implements IThingyPersistenceClient {
 
-    private readonly grpcClient: PersistLocalizationClient;
+    private readonly grpcClient: ThingyPersistenceClient;
 
     constructor(host: string, port: number) {
-        this.grpcClient = new PersistLocalizationClient(
+        // FIXME race promises to connect to service as the other service might not be up yet
+        this.grpcClient = new ThingyPersistenceClient(
             `${host}:${port}`,
             credentials.createInsecure()
         );
     }
 
-    public getPendingLocation(): Promise<Array<ThingyLocalization>> {
-        return new Promise<Array<ThingyLocalization>>((resolve, reject) => {
-            const thingies = new Array<ThingyLocalization>();
+    public getPendingLocation(): Promise<Array<ThingyLocation>> {
+        return new Promise<Array<ThingyLocation>>((resolve, reject) => {
+            const thingies = new Array<ThingyLocation>();
             const pendingLocationStream = this.grpcClient.getPendingLocation(new Empty());
-            pendingLocationStream.on('data', (thingy: ThingyLocalization) => {
+            pendingLocationStream.on('data', (thingy: ThingyLocation) => {
                 thingies.push(thingy);
             });
             pendingLocationStream.on('end', () => {
@@ -34,7 +35,7 @@ export class GrpcPersistLocalizationClient implements IPersistLocalizationClient
         });
     }
 
-    public setNewLocation(thingyLocation: ThingyLocalization): Promise<void> {
+    public setNewLocation(thingyLocation: ThingyLocation): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.grpcClient.setNewLocation(thingyLocation, (error) => {
                 if (error) {

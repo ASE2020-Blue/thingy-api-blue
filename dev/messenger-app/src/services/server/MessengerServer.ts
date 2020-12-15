@@ -5,7 +5,7 @@ import { Telegram } from 'telegraf';
 
 import { IMessengerServer, MessengerService } from '../../proto/messenger_grpc_pb';
 import { TestMessageRequest, ThingyId } from '../../proto/messenger_pb';
-import { ConfigureLocalizationScene } from '../../stage/scenes/ConfigureLocalizationScene';
+import { ConfigureLocationScene } from '../../stage/scenes/ConfigureLocationScene';
 import { extractAndBind } from '../../helpers/MethodExtractor';
 import { IServiceProvider } from './IServiceProvider';
 
@@ -28,7 +28,7 @@ export class MessengerServer implements IMessengerServer, IServiceProvider {
         debug(`\t"${thingyUuid}"`);
 
         try {
-            await ConfigureLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(this.telegram, thingyUuid);
+            await ConfigureLocationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(this.telegram, thingyUuid);
             callback(undefined, new Empty());
         } catch (error) {
             callback(error, undefined);

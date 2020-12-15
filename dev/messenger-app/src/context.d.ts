@@ -1,6 +1,6 @@
 import { TelegrafContext } from 'telegraf/typings/context';
 import { SceneContextMessageUpdate } from 'telegraf/typings/stage';
-import { IPersistLocalizationClient } from './services/client/IPersistLocalizationClient';
+import { IThingyPersistenceClient } from './services/client/IThingyPersistenceClient';
 
 export declare interface IMessengerSession {
     thingyUuid: string | undefined;
@@ -12,7 +12,7 @@ export declare interface IMessengerSession {
 export declare interface ISessionContext {
     session: IMessengerSession;
     // https://telegraf.js.org/#/?id=extending-context
-    persistLocalizationClient: IPersistLocalizationClient;
+    persistLocalizationClient: IThingyPersistenceClient;
 }
 
 export type BotSessionContext = ISessionContext & TelegrafContext;

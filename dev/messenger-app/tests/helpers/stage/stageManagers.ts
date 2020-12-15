@@ -1,11 +1,11 @@
 import { BlueStageManager } from '../../../src/stage/BlueStageManager';
-import { ConfigureLocalizationScene } from '../../../src/stage/scenes/ConfigureLocalizationScene';
-import { ConfigurePendingLocalizationScene } from '../../../src/stage/scenes/ConfigurePendingLocalizationScene';
+import { ConfigureLocationScene } from '../../../src/stage/scenes/ConfigureLocationScene';
+import { ConfigurePendingLocationScene } from '../../../src/stage/scenes/ConfigurePendingLocationScene';
 
 export const emptyStageManager = new BlueStageManager([]);
 
-const configureLocalizationScene = new ConfigureLocalizationScene();
+const configureLocalizationScene = new ConfigureLocationScene();
 export const srcStageManager = new BlueStageManager([
     configureLocalizationScene,
-    new ConfigurePendingLocalizationScene(configureLocalizationScene)
+    new ConfigurePendingLocationScene(configureLocalizationScene)
 ]);

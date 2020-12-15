@@ -5,13 +5,13 @@ import { Message } from 'telegraf/typings/telegram-types';
 
 import { SceneSessionContext } from '../../context';
 import { fgRed, reset } from '../../helpers/consoleColors';
-import { ThingyLocalization } from '../../proto/thingy_pb';
+import { ThingyLocation } from '../../proto/thingy_pb';
 
-const debug = Debug('messenger:scene:ConfigureLocalizationScene');
+const debug = Debug('messenger:scene:ConfigureLocationScene');
 
-export class ConfigureLocalizationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
+export class ConfigureLocationScene<TContext extends SceneSessionContext> extends BaseScene<TContext> {
 
-    public static readonly ID = 'configure-localization';
+    public static readonly ID = 'configure-location';
 
     // TODO doc
     public static readonly USER_ACCEPT_SETTING_NEW_LOCATION = 'configure_new_location_yes/';
@@ -23,11 +23,11 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
     public static readonly STOP_CALLBACK = 'configure_new_location_stop';
 
     constructor(options?: Partial<BaseSceneOptions<TContext>>) {
-        super(ConfigureLocalizationScene.ID, options);
+        super(ConfigureLocationScene.ID, options);
 
         this.on('message', this.onMessage);
 
-        const { CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK } = ConfigureLocalizationScene;
+        const { CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK } = ConfigureLocationScene;
         this.action([ CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK ], this.onCallbackAction);
     }
 
@@ -38,7 +38,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
             return Promise.resolve();
         }
 
-        const { USER_ACCEPT_SETTING_NEW_LOCATION, USER_REFUSE_SETTING_NEW_LOCATION } = ConfigureLocalizationScene;
+        const { USER_ACCEPT_SETTING_NEW_LOCATION, USER_REFUSE_SETTING_NEW_LOCATION } = ConfigureLocationScene;
 
         return telegram.sendMessage(process.env.DEV_ID,
             `You requested a new location for '*${thingyUuid}*'? 🧐\nWant to set a new location? 📍`,
@@ -72,7 +72,7 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
         const { thingyUuid } = session;
         session.location = text;
         if (thingyUuid) {
-            const { CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK } = ConfigureLocalizationScene;
+            const { CONFIRM_CALLBACK, RESTART_CALLBACK, STOP_CALLBACK } = ConfigureLocationScene;
 
             return replyWithMarkdown(`Please confirm: _${thingyUuid}_ at \`${text}\``,
                 Markup
@@ -95,8 +95,8 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
 
     private async onCallbackAction ({ callbackQuery: { data }, reply, replyWithMarkdown, session, scene, persistLocalizationClient }: TContext) : Promise<any> {
         switch (data) {
-            case ConfigureLocalizationScene.CONFIRM_CALLBACK:
-                const thingyLocalization = new ThingyLocalization();
+            case ConfigureLocationScene.CONFIRM_CALLBACK:
+                const thingyLocalization = new ThingyLocation();
                 const { location, thingyUuid } = session;
                 thingyLocalization.setLocation(location);
                 thingyLocalization.setThingyUuid(thingyUuid);
@@ -117,14 +117,14 @@ export class ConfigureLocalizationScene<TContext extends SceneSessionContext> ex
                     return scene.reenter();
                 }
 
-            case ConfigureLocalizationScene.STOP_CALLBACK:
+            case ConfigureLocationScene.STOP_CALLBACK:
                 session.location = session.thingyUuid = undefined;
 
                 await replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [[<thingy-name>] <new location>]`');
 
                 return scene.leave();
 
-            case ConfigureLocalizationScene.RESTART_CALLBACK:
+            case ConfigureLocationScene.RESTART_CALLBACK:
             default:
                 return scene.reenter();
         }
