@@ -18,7 +18,17 @@ router
   .delete(baseRoute + "/:uuid", deleteThingy);
 
 async function getAllThingies(ctx) {
-  ctx.body = await thingy.findAll();
+  let thingies = await thingy.findAll({
+    include: [
+      {
+        model: locationHistory,
+        order: [['createdAt', "DESC"]],
+        limit: 1,
+      }
+    ]
+  });
+
+  ctx.body = thingies
   ctx.status = 200;
 }
 
