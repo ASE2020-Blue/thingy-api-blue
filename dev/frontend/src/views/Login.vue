@@ -39,7 +39,6 @@
                   type="submit"
                   :disabled="invalid"
                   color="success"
-                  @click="submit"
                 >
                   submit
                 </v-btn>
@@ -65,6 +64,7 @@ import {
 } from "vee-validate";
 
 import Authentication from "../api/Authentication";
+import router from "../router";
 
 setInteractionMode("eager");
 
@@ -127,14 +127,10 @@ export default {
       if (this.$refs.observer.validate()) {
         try {
           await Authentication.login(this.email, this.password);
-          // auth ok, redirect to thingy view
-          // TODO push new route
-          // eslint-disable-next-line no-debugger
-          debugger;
+          // auth ok, redirect to thingies view
+          router.push("thingies");
         } catch (e) {
-          // error, show error, user as to enter new creds
-          // eslint-disable-next-line no-debugger
-          debugger;
+          // TODO user feedback
         }
       }
     },

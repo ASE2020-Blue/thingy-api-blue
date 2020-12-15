@@ -1,7 +1,11 @@
 import Repository from "./repository";
 
 export default {
-  async login(email, password) {
-    await Repository.post("/auth/login", { email, password });
+  login(email, password) {
+    return new Promise((resolve, reject) => {
+      Repository.post("/auth/login", { email, password })
+        .then(res => resolve(res))
+        .catch(error => reject(error));
+    });
   }
 };
