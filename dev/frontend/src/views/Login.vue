@@ -61,54 +61,54 @@ import {
   extend,
   ValidationObserver,
   ValidationProvider,
-  setInteractionMode,
+  setInteractionMode
 } from "vee-validate";
 
 setInteractionMode("eager");
 
 extend("required", {
   ...required,
-  message: "{_field_} can not be empty",
+  message: "{_field_} can not be empty"
 });
 
 extend("alpha_dash", {
   ...alpha_dash,
   message:
-    "{_field_} may contain alphabetic characters, numbers, dashes or underscores.",
+    "{_field_} may contain alphabetic characters, numbers, dashes or underscores."
 });
 
 extend("password", {
-  validate: (value) => {
+  validate: value => {
     let strongRegex = new RegExp(
       "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
     );
     return strongRegex.test(value);
   },
   message:
-    "{_field_} must contain: uppercase and lowercase letter, number, special character",
+    "{_field_} must contain: uppercase and lowercase letter, number, special character"
 });
 
 extend("min", {
   ...min,
-  message: "{_field_} has to be at least {length} characters long",
+  message: "{_field_} has to be at least {length} characters long"
 });
 
 extend("max", {
   ...max,
-  message: "{_field_} may not be longer than {length} characters",
+  message: "{_field_} may not be longer than {length} characters"
 });
 
 export default {
   name: "Login",
   components: {
     ValidationProvider,
-    ValidationObserver,
+    ValidationObserver
   },
   data() {
     return {
       username: "",
       password: "",
-      showPassword: false,
+      showPassword: false
     };
   },
   methods: {
@@ -119,8 +119,8 @@ export default {
       this.username = "";
       this.password = "";
       this.$refs.observer.reset();
-    },
-  },
+    }
+  }
 };
 </script>
 

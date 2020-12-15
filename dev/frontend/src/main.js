@@ -7,7 +7,7 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from "vue-apexcharts";
-import {validate} from "vee-validate"
+import { validate } from "vee-validate";
 
 if (process.env.NODE_ENV === "production") {
   const { FRONTEND_SENTRY_DSN, ENABLE_SENTRY, DEBUG_SENTRY } = process.env;
@@ -33,5 +33,5 @@ new Vue({
   router,
   store,
   vuetify,
-  render: (h) => h(App),
+  render: createElement => createElement(App)
 }).$mount("#app");
