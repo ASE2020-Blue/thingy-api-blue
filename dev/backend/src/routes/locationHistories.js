@@ -4,7 +4,7 @@ const { localOrJwtAuth } = require("../controllers/authentication");
 const { LocationHistory } = require("../models");
 
 const router = new Router({
-  prefix: "/locationHistory"
+    prefix: "/locationHistory"
 });
 
 router
@@ -33,7 +33,7 @@ async function getAllLocationHistory(ctx) {
 
 async function deleteLocationHistory(ctx) {
     const location = await locationHistory.findByPk(ctx.params.id)
-    if (!location) ctx.throw(404, {'error': 'location not found'});
+    if (!location) ctx.throw(404, { 'error': 'location not found' });
     ctx.status = 200;
     return location.destroy()
 }

@@ -21,12 +21,15 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.1.8",
+    "@sentry/node": "^5.29.0",
+    "@sentry/tracing": "^5.29.0",
     "debug": "^4.3.1",
     "telegraf": "^3.38.0",
     "telegraf-session-redis": "^5.1.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
+    "@sentry/types": "^5.29.0",
     "ava": "^3.13.0",
     "google-protobuf": "^3.13.0",
     "nodemon": "^2.0.6",

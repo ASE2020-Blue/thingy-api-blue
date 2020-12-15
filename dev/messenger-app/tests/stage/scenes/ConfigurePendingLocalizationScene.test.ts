@@ -11,8 +11,7 @@ import {
     botUser,
     createCallbackQuery,
     createCommandMessage, createMessage,
-    SimpleCallbackQuery,
-    SimpleMessage
+    SimpleCallbackQuery
 } from '../../helpers/messageFactories';
 import { session } from '../../helpers/MyLocalSession';
 import { successResult } from '../../helpers/PromiseMockResult';
@@ -27,7 +26,7 @@ const { createThingyLocalization } = ThingyFactory.instance;
 test.beforeEach('Setup mocked bot', ({ context }) => {
     const sessionMiddleware = session<BotSceneSessionContext>();
     const simplePersistLocalizationClient = new SimplePersistLocalizationClient(successResult([]), successResult(undefined));
-    const bot = new BlueBot(undefined, sessionMiddleware, srcStageManager, simplePersistLocalizationClient);
+    const bot = new BlueBot(undefined, simplePersistLocalizationClient, [sessionMiddleware, srcStageManager]);
 
     context.sessionMiddleware = sessionMiddleware;
     context.simplePersistLocalizationClient = simplePersistLocalizationClient;

@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn run db:migrate && nodemon src/serve.js",
-    "test": "jest -i --coverage tests/*",
+    "prod:start": "yarn run db:migrate && node src/serve.js",
+    "test": "set -a && source ../.env && set +a && jest -i --coverage tests/*",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all"
   },
@@ -15,6 +16,8 @@
     "@grpc/grpc-js": "^1.1.8",
     "@koa/cors": "^3.1.0",
     "bcrypt": "^5.0.0",
+    "@sentry/node": "^5.29.0",
+    "@sentry/tracing": "^5.29.0",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",

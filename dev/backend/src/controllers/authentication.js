@@ -27,7 +27,7 @@ const secret = "nXCoRWQoxLEVH0/ZRQmDDw==";
  */
 const expiresIn = 3600;
 
-module.exports.generateJwt = function generateJwt ({ id } /** @type User */) {
+module.exports.generateJwt = function generateJwt({ id } /** @type User */) {
     return jwt.sign({ id }, secret, { expiresIn });
 }
 
@@ -95,7 +95,8 @@ const jwtLogin = new JwtStrategy({
         } catch (e) {
             done(error, false);
         }
-});
+    }
+);
 
 // register the different strategy in the global passport
 passport.use(localLogin.name, localLogin);

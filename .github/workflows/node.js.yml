@@ -5,7 +5,7 @@ name: Blue Team Node.js CI
 
 on:
   push:
-    branches: [ main, develop, feature/100_improvements_sprint2 ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
 
@@ -56,7 +56,5 @@ jobs:
 
     - name: Run tests
       working-directory: ./dev/messenger-app
-      # https://stackoverflow.com/a/43267603/3771148
-      #   set -a: automatically export all variables
       run: |
-        set -a && source ../.env && set +a && yarn run test:coverage:run
+        yarn run test:coverage:run

@@ -33,6 +33,7 @@
 
 
 ## Todos
+Todo idea:
 
 - [X] Create bot with:
     - [X] Token
@@ -52,13 +53,12 @@
 - [ ] `/sleep, /mute`
 - [ ] `/awake, /wake, /unmute`
 - [ ] `/bind`
-- [ ] `/move`
+- [X] `/setlocation`
 - [ ] Quick web login?
 
 
 ## Telegram API
 [API documentation](https://core.telegram.org/bots/api/#replykeyboardmarkup)
-
 
 ## Testing
 
@@ -83,7 +83,7 @@ For inspiration:
 ### Selection: [AVA](https://github.com/avajs/ava)
 * [ava/test-setup.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/recipes/test-setup.md)
 * [ava/typescript.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/recipes/typescript.md)
-** [GitHub - avajs/typescript: Rudimentary TypeScript support](https://github.com/avajs/typescript)
+    * [GitHub - avajs/typescript: Rudimentary TypeScript support](https://github.com/avajs/typescript)
 * [ava/06-configuration.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/06-configuration.md)
 * [ava/01-writing-tests.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/01-writing-tests.md)
 * [ava/03-assertions.md at master · avajs/ava · GitHub](https://github.com/avajs/ava/blob/master/docs/03-assertions.md)

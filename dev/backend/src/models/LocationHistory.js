@@ -1,20 +1,20 @@
 'use strict';
 const {
-  Model
+    Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class LocationHistory extends Model {
-    static associate(models) {
-      this.belongsTo(models.thingy)
+    class LocationHistory extends Model {
+        static associate(models) {
+            this.belongsTo(models.thingy)
+        }
     }
-  }
 
-  LocationHistory.init({
-    thingyId: DataTypes.INTEGER,
-    locationName: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'locationHistory'
-  });
-  return LocationHistory;
+    LocationHistory.init({
+        thingyId: DataTypes.INTEGER,
+        locationName: DataTypes.STRING,
+    }, {
+        sequelize,
+        modelName: 'locationHistory'
+    });
+    return LocationHistory;
 };

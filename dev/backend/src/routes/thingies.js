@@ -33,7 +33,7 @@ async function getThingy(ctx) {
             uuid: ctx.params.uuid,
         },
     });
-    if (!t) ctx.throw(404, {error: "thingy not found"});
+    if (!t) ctx.throw(404, { error: "thingy not found" });
     ctx.body = t;
     ctx.status = 200;
 }
@@ -49,7 +49,7 @@ async function getThingyLocations(ctx) {
             },
         ],
     });
-    if (!t) ctx.throw(404, {error: "thingy not found"});
+    if (!t) ctx.throw(404, { error: "thingy not found" });
 
     ctx.status = 200;
     ctx.body = t.locationHistories;
@@ -57,29 +57,36 @@ async function getThingyLocations(ctx) {
 
 async function getThingyParamValues(ctx) {
     if (!ctx.query.envParam)
-        ctx.throw(400, {error: '"envParam" is a required field'});
+        ctx.throw(400, { error: '"envParam" is a required field' });
     let t = await Thingy.findOne({
         where: {
             uuid: ctx.params.uuid,
         },
-        order: [EnvironmentParamsValue, 'createdAt'],
-        include: [
-            {
-                model: EnvironmentParamsValue,
-                where: {
-                    envParam: ctx.query.envParam,
-                    createdAt: {
-                        [Op.between]: [
-                            new Date(ctx.query.dateFrom),
-                            new Date(ctx.query.dateTo),
-                        ],
-                    },
-                },
-                required: false,
+        order: [[EnvironmentParamsValue, 'createdAt', "ASC"]],
+        include: [{
+            model: EnvironmentParamsValue,
+            where: {
+                uuid: ctx.params.uuid,
             },
-        ],
+            order: [EnvironmentParamsValue, 'createdAt'],
+            include: [
+                {
+                    model: EnvironmentParamsValue,
+                    where: {
+                        envParam: ctx.query.envParam,
+                        createdAt: {
+                            [Op.between]: [
+                                new Date(ctx.query.dateFrom),
+                                new Date(ctx.query.dateTo),
+                            ],
+                        },
+                    },
+                    required: false,
+                },
+            ],
+        }]
     });
-    if (!t) ctx.throw(404, {error: "thingy not found"});
+    if (!t) ctx.throw(404, { error: "thingy not found" });
     //let validValues = t.environmentParamsValues.filter(e => e.createdAt >= new Date(ctx.query.dateFrom) && e.createdAt <= new Date(ctx.query.dateTo))
     ctx.body = t.environmentParamsValues;
     ctx.status = 200;
@@ -102,7 +109,7 @@ async function getThingyParamValues(ctx) {
 //  Somebody could fill our db for "nothing"
 async function createThingy(ctx) {
     const body = ctx.request.body;
-    if (!body.uuid) ctx.throw(400, {error: '"uuid" is a required field'});
+    if (!body.uuid) ctx.throw(400, { error: '"uuid" is a required field' });
     ctx.status = 200;
 
     let updatedThingy = await Thingy.upsert(body);
@@ -119,7 +126,7 @@ async function deleteThingy(ctx) {
             uuid: ctx.params.uuid,
         },
     });
-    if (!t) ctx.throw(404, {error: "thingy not found"});
+    if (!t) ctx.throw(404, { error: "thingy not found" });
     ctx.status = 200;
     return t.destroy();
 }

@@ -37,7 +37,7 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
         const thingyLocation = call.request.getLocation();
         console.log(`\t${thingyUuid}: ${thingyLocation}`);
 
-        if ( ! thingyUuid || ! thingyLocation) {
+        if (!thingyUuid || !thingyLocation) {
             callback(new Error('BadRequest, missing or invalid params!'));
             return;
         }
@@ -49,13 +49,13 @@ class ThingyServer /** @implements IPersistLocalizationServer */ {
                 }
             })
             .then(foundThingy => {
-                if ( ! foundThingy)
+                if (!foundThingy)
                     callback(new Error('NotFound, no corresponding uuid: ' + thingyUuid));
                 else
                     LocationHistory.upsert({
-                        locationName: thingyLocation,
-                        thingyId: foundThingy.id
-                    })
+                            locationName: thingyLocation,
+                            thingyId: foundThingy.id
+                        })
                         .then(() => callback(null, new Empty()))
                         .catch(callback);
             })

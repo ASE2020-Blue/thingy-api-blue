@@ -3,7 +3,7 @@ const grpc = require('@grpc/grpc-js');
 const { PersistLocalizationService } = require('../../proto/thingy_grpc_pb');
 const { ThingyServer } = require('./ThingyServer');
 
-function createGRpcServer () {
+function createGRpcServer() {
     const server = new grpc.Server();
 
     const { BACKEND_GRPC_BIND_HOST, BACKEND_GRPC_BIND_PORT } = process.env;
