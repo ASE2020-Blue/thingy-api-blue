@@ -252,7 +252,7 @@ proto.ThingyValue.prototype.toObject = function(opt_includeInstance) {
 proto.ThingyValue.toObject = function(includeInstance, msg) {
   var f, obj = {
     thingyUuid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    value: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    value: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
     envParam: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
@@ -295,7 +295,7 @@ proto.ThingyValue.deserializeBinaryFromReader = function(msg, reader) {
       msg.setThingyUuid(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readDouble());
       msg.setValue(value);
       break;
     case 3:
@@ -339,8 +339,8 @@ proto.ThingyValue.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getValue();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0.0) {
+    writer.writeDouble(
       2,
       f
     );
@@ -386,20 +386,20 @@ proto.ThingyValue.prototype.setThingyUuid = function(value) {
 
 
 /**
- * optional string value = 2;
- * @return {string}
+ * optional double value = 2;
+ * @return {number}
  */
 proto.ThingyValue.prototype.getValue = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.ThingyValue} returns this
  */
 proto.ThingyValue.prototype.setValue = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
+  return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 

@@ -26,7 +26,7 @@ message ThingyLocation {
 
 message ThingyValue {
     string thingy_uuid = 1;
-    string value = 2;
+    double value = 2;
     enum EnvParam {
         TEMPERATURE = 0;
         HUMIDITY = 1;

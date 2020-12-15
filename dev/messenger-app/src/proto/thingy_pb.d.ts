@@ -36,8 +36,8 @@ export class ThingyValue extends jspb.Message {
     getThingyUuid(): string;
     setThingyUuid(value: string): ThingyValue;
 
-    getValue(): string;
-    setValue(value: string): ThingyValue;
+    getValue(): number;
+    setValue(value: number): ThingyValue;
 
     getEnvParam(): ThingyValue.EnvParam;
     setEnvParam(value: ThingyValue.EnvParam): ThingyValue;
@@ -56,7 +56,7 @@ export class ThingyValue extends jspb.Message {
 export namespace ThingyValue {
     export type AsObject = {
         thingyUuid: string,
-        value: string,
+        value: number,
         envParam: ThingyValue.EnvParam,
     }
 
