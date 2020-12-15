@@ -9,7 +9,7 @@ const domain = require("domain");
  * Revamped source: https://docs.sentry.io/platforms/node/guides/koa/
  */
 
-module.exports.initSentryInProd = function initSentryInProd () {
+module.exports.initSentryInProd = function initSentryInProd() {
     const { NODE_ENV, BACKEND_SENTRY_DSN, ENABLE_SENTRY, DEBUG_SENTRY } = process.env;
 
     if (NODE_ENV !== 'production')
@@ -30,7 +30,7 @@ module.exports.initSentryInProd = function initSentryInProd () {
     });
 }
 
-module.exports.addSentryMiddlewareInProd = function addSentryMiddlewareInProd (app) {
+module.exports.addSentryMiddlewareInProd = function addSentryMiddlewareInProd(app) {
     const { NODE_ENV } = process.env;
 
     if (NODE_ENV !== 'production')
@@ -42,7 +42,7 @@ module.exports.addSentryMiddlewareInProd = function addSentryMiddlewareInProd (a
     app.on('error', errorHandler());
 }
 
-function requestHandler () {
+function requestHandler() {
     return (ctx, next) => {
         return new Promise((resolve, _) => {
             const local = domain.create();
@@ -66,7 +66,7 @@ function requestHandler () {
 }
 
 // this tracing middleware creates a transaction per request
-function tracingHandler () {
+function tracingHandler() {
     return async (ctx, next) => {
         const reqMethod = (ctx.method || "").toUpperCase();
         const reqUrl = ctx.url && stripUrlQueryAndFragment(ctx.url);
@@ -96,7 +96,7 @@ function tracingHandler () {
     };
 }
 
-function errorHandler () {
+function errorHandler() {
     return (err, ctx) => {
         Sentry.withScope(scope => {
             scope.addEventProcessor(event => {

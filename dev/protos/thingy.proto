@@ -12,13 +12,28 @@ import "google/protobuf/empty.proto";
 /**
  * Implemented by the backend
  */
-service PersistLocalization {
-    rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocalization);
-    rpc SetNewLocation (ThingyLocalization) returns (google.protobuf.Empty);
+service ThingyPersistence {
+    rpc GetPendingLocation (google.protobuf.Empty) returns (stream ThingyLocation);
+    rpc SetNewLocation (ThingyLocation) returns (google.protobuf.Empty);
+    rpc SetNewValue (ThingyValue) returns (google.protobuf.Empty);
 }
 
 
-message ThingyLocalization {
+message ThingyLocation {
     string thingy_uuid = 1;
     string location = 2;
+}
+
+message ThingyValue {
+    string thingy_uuid = 1;
+    double value = 2;
+    enum EnvParam {
+        TEMPERATURE = 0;
+        HUMIDITY = 1;
+        AIR_QUALITY = 2;
+        AIR_PRESSURE = 3;
+        CO2_EQUIV = 4;
+        LIGHT = 5;
+    }
+    EnvParam env_param = 3;
 }

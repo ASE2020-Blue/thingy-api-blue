@@ -13,7 +13,6 @@ import "google/protobuf/empty.proto";
  */
 service Messenger {
   rpc AskNewLocation (ThingyId) returns (google.protobuf.Empty);
-
   rpc SendTestMessage (TestMessageRequest) returns (google.protobuf.Empty);
 }
 

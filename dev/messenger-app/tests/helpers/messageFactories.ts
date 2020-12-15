@@ -1,5 +1,21 @@
 import { Audio, Chat, Contact, Document, Invoice, Location, Game, Message, MessageEntity, PhotoSize, Sticker, Update, User, SuccessfulPayment, Video, Venue, VideoNote, Voice, CallbackQuery, ChosenInlineResult, InlineQuery, PreCheckoutQuery, ShippingQuery } from "telegraf/typings/telegram-types";
 
+export const testTargetUser: User = {
+    first_name: 'The Tests Savior',
+    id: 42,
+    is_bot: false,
+    language_code: 'en',
+    last_name: 'Savior',
+    username: 'the_tests_savior'
+};
+
+export const botUser: User = {
+    id: 141414,
+    is_bot: true,
+    first_name: "ASE-Blue",
+    username: "ASEBlueBot"
+};
+
 export class SimpleChat implements Chat {
     id: number = 1;
     type: string = 'private';
@@ -9,14 +25,7 @@ export class SimpleMessage implements Message {
     chat: Chat = new SimpleChat();
     date: number = + new Date();
 
-    from: User = {
-        first_name: 'The Tests Savior',
-        id: 42,
-        is_bot: true,
-        language_code: 'en',
-        last_name: 'Savior',
-        username: 'the_tests_savior' // TODO check if needs an @
-    }
+    from: User = testTargetUser;
 
     message_id: 0;
 
@@ -83,6 +92,82 @@ export class SimpleUpdate implements Update {
 }
 
 /**
+ * Example of callbackQuery:
+ * <pre>
+ *     {
+          "id": "2678034395795620365",
+          "from": {
+            "id": 623528472,
+            "is_bot": false,
+            "first_name": "Alain",
+            "last_name": "Schaller",
+            "username": "schallerala",
+            "language_code": "en"
+          },
+          "message": {
+            "message_id": 896,
+            "from": {
+              "id": 1401251288,
+              "is_bot": true,
+              "first_name": "ASE-Blue",
+              "username": "ASEBlueBot"
+            },
+            "chat": {
+              "id": 623528472,
+              "first_name": "Alain",
+              "last_name": "Schaller",
+              "username": "schallerala",
+              "type": "private"
+            },
+            "date": 1607725187,
+            "text": "We started collecting data for one or more thingy, do you want to configure where you placed them?",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "text": "Yes",
+                    "callback_data": "configure_pending_location_yes/rainbow-22/blue-3"
+                  },
+                  {
+                    "text": "No",
+                    "callback_data": "configure_pending_location_no"
+                  }
+                ]
+              ]
+            }
+          },
+          "chat_instance": "5290634094642987684",
+          "data": "configure_pending_location_yes/rainbow-22/blue-3"
+        }
+ * </pre>
+ */
+export class SimpleCallbackQuery implements CallbackQuery {
+    chat_instance: string = '5290634094642987684';
+    from: User = testTargetUser;
+    id: string = '2678034395795620365';
+
+    message?: Message;
+    inline_message_id?: string;
+    data?: string;
+    game_short_name?: string;
+
+    public toUpdate(): SimpleUpdate {
+        const update = new SimpleUpdate();
+        update.callback_query = this;
+
+        return update;
+    }
+}
+
+export function createMessage (text: string, from: User = testTargetUser): SimpleMessage {
+    const msg = new SimpleMessage();
+    msg.text = text;
+    msg.from = from;
+
+    return msg;
+}
+
+/**
  *
  * @param commandName with the prefix '/'
  * @param entireText including the command
@@ -93,4 +178,11 @@ export function createCommandMessage (commandName: string, entireText: string = 
     msg.entities = [{ type: 'bot_command', offset: 0, length: commandName.length }];
 
     return msg;
+}
+
+export function createCallbackQuery (message: Message, data: string): SimpleCallbackQuery {
+    const callbackQuery = new SimpleCallbackQuery();
+    callbackQuery.message = message;
+    callbackQuery.data = data;
+    return callbackQuery;
 }

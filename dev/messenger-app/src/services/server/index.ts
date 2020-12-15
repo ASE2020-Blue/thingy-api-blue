@@ -1,7 +1,9 @@
 import { Server, ServerCredentials } from '@grpc/grpc-js';
-import { Telegram } from 'telegraf';
+import * as Debug from 'debug';
 
 import { IServiceProvider } from './IServiceProvider';
+
+const debug = Debug('messenger:grpc:server');
 
 export function createServer (host: string, port: number, serviceProviders: Array<IServiceProvider>) {
     const server = new Server();
@@ -18,7 +20,7 @@ export function createServer (host: string, port: number, serviceProviders: Arra
                 throw error;
 
             server.start();
-            console.log(`Started gRPC: ${host}:${port}`);
+            debug(`Started gRPC: ${host}:${port}`);
         }
     );
 }
