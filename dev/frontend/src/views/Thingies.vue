@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col :class="{ 'text-center': true }">
-          <h1>Your report</h1>
+          <h1>Blue thingy, your weather station</h1>
         </v-col>
       </v-row>
     </v-container>
@@ -28,14 +28,14 @@
       <v-row class="d-flex  justify-space-between mb-3">
         <v-col cols="8" sm="4" class="pa-2">
           <v-select
-            style="padding-top: 20px"
-            :items="thingies"
-            item-text="uuid"
-            item-value="uuid"
-            label="Available thingies"
-            v-model="selectedThingy"
-            outlined
-            return-object
+              style="padding-top: 20px"
+              :items="thingies"
+              item-text="uuid"
+              item-value="uuid"
+              label="Your thingies"
+              v-model="selectedThingy"
+              outlined
+              return-object
           />
         </v-col>
 
@@ -58,10 +58,16 @@
           </p>
           <v-radio-group v-model="selectedPeriod" max="1">
             <v-radio
-              v-for="reportPeriod in reportPeriods"
-              :key="reportPeriod"
-              :label="`last ${reportPeriod} days`"
-              :value="reportPeriod"
+                v-for="reportPeriod in reportPeriods"
+                :key="reportPeriod"
+                :label="`last ${reportPeriod} days`"
+                :value="reportPeriod"
+            ></v-radio>
+            <v-radio
+                v-if="selectedThingyLastLocalisation"
+                key="entireLastLocation"
+                :label="`last location : ${selectedThingyLastLocalisation.locationName}`"
+                value="entireLastLocation"
             ></v-radio>
           </v-radio-group>
         </v-col>
@@ -88,6 +94,7 @@ export default {
     return {
       thingies: undefined,
       selectedThingy: undefined,
+      selectedThingyLastLocalisation: undefined,
       reportPeriods: [7, 30],
       selectedPeriod: undefined,
       envValues: [],
@@ -103,11 +110,20 @@ export default {
   watch: {
     selectedThingy(value) {
       this.selectedThingy = value;
-      this.loadEnvParamValues();
+      this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0]
+      if (!this.selectedThingyLastLocalisation && this.isLastLocation()) {
+        this.selectedPeriod = this.reportPeriods[0]
+      } else {
+        this.loadEnvParamValues();
+      }
     },
     selectedPeriod(value) {
       this.selectedPeriod = value;
-      this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
+      if (this.isLastLocation()) {
+        this.dateFrom= new Date(this.selectedThingyLastLocalisation.createdAt)
+      } else {
+        this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
+      }
       this.loadEnvParamValues();
     },
     selectedEnvParam() {
@@ -122,7 +138,11 @@ export default {
       .then((res) => {
         this.thingies = res.data;
         this.thingies.sort((a, b) => (a.uuid > b.uuid ? 1 : -1));
-        if (this.thingies.length > 0) this.selectedThingy = this.thingies[0];
+        if (this.thingies.length > 0) {
+          this.selectedThingy = this.thingies[0]
+          if (this.selectedThingy.locationHistories.length > 0)
+            this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0]
+        };
       })
       .catch((err) => console.error(err))
       .finally((this.isLoading = false));
@@ -132,6 +152,9 @@ export default {
       this.envValues = [];
       this.graphSeries = [];
     },
+    isLastLocation() {
+      return this.selectedPeriod === "entireLastLocation"
+    },
     loadEnvParamValues() {
       if (this.selectedThingy) {
         const promises = [];
@@ -140,7 +163,8 @@ export default {
             dateFrom: this.dateFrom,
             dateTo: this.dateTo,
             envParam: envParam.value,
-          };
+          }
+
           promises.push(
             Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
           );

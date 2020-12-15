@@ -23,7 +23,15 @@ router
     .delete("/:uuid", deleteThingy);
 
 async function getAllThingies(ctx) {
-    ctx.body = await Thingy.findAll();
+    ctx.body = await Thingy.findAll({
+        include: [
+            {
+                model: LocationHistory,
+                order: [['createdAt', "DESC"]],
+                limit: 1,
+            }
+        ]
+    });
     ctx.status = 200;
 }
 
