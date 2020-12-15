@@ -8,7 +8,7 @@
   "scripts": {
     "start": "yarn run db:migrate && nodemon src/serve.js",
     "prod:start": "yarn run db:migrate && node src/serve.js",
-    "test": "set -a && source ../.env && set +a && jest -i --coverage tests/*",
+    "test": "set -a && . ../.env && set +a && jest -i --coverage tests/*",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all"
   },
