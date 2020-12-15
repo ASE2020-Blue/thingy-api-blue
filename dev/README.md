@@ -1,6 +1,12 @@
 # Project requirements
 [Durand doc](https://duranda.github.io/ase2020-docs/project-2020)
 
+# Seed db
+After running the backend service:
+```shell
+docker exec dev_backend_1 yarn run db:seed
+```
+
 # Error/Performance logging
 * [GitHub - cheeaun/javascript-error-logging: A collection of JavaScript error logging services, resources and shiny things.](https://github.com/cheeaun/javascript-error-logging)
 * [Sentry for Education | Sentry](https://sentry.io/for/education/)

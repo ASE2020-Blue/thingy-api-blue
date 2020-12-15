@@ -6,9 +6,9 @@ axios.defaults.withCredentials = true;
 const httpClient = axios.create({
   baseURL,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json"
   },
-  withCredentials: true,
+  withCredentials: true
 });
 
 export default httpClient;

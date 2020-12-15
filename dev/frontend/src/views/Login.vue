@@ -9,28 +9,27 @@
               <form @submit.prevent="submit">
                 <validation-provider
                   v-slot="{ errors }"
-                  name="Username"
-                  rules="required|max:10|min:4|alpha_dash"
+                  name="email"
+                  rules="required|email"
                 >
                   <v-text-field
-                    v-model="username"
+                    v-model="email"
                     :error-messages="errors"
-                    :counter="10"
-                    label="Username"
+                    label="email"
                     required
                   ></v-text-field>
                 </validation-provider>
                 <validation-provider
                   v-slot="{ errors }"
-                  name="Password"
                   rules="required|min:8|password"
+                  name="password"
                 >
                   <v-text-field
                     v-model="password"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     :type="showPassword ? 'text' : 'password'"
                     :error-messages="errors"
-                    label="Password"
+                    label="password"
                     required
                     @click:append="showPassword = !showPassword"
                   ></v-text-field>
@@ -40,6 +39,7 @@
                   type="submit"
                   :disabled="invalid"
                   color="success"
+                  @click="submit"
                 >
                   submit
                 </v-btn>
@@ -64,6 +64,8 @@ import {
   setInteractionMode
 } from "vee-validate";
 
+import Authentication from "../api/Authentication";
+
 setInteractionMode("eager");
 
 extend("required", {
@@ -75,6 +77,15 @@ extend("alpha_dash", {
   ...alpha_dash,
   message:
     "{_field_} may contain alphabetic characters, numbers, dashes or underscores."
+});
+
+extend("email", {
+  validate: email => {
+    // https://vuejs.org/v2/cookbook/form-validation.html
+    let emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return emailRegex.test(email);
+  },
+  message: "{_field_} must be a valid email. Like robert@example.com"
 });
 
 extend("password", {
@@ -106,17 +117,29 @@ export default {
   },
   data() {
     return {
-      username: "",
-      password: "",
+      email: "demo@unifr.ch",
+      password: "mC0mpl*xPass",
       showPassword: false
     };
   },
   methods: {
-    submit() {
-      this.$refs.observer.validate();
+    async submit() {
+      if (this.$refs.observer.validate()) {
+        try {
+          await Authentication.login(this.email, this.password);
+          // auth ok, redirect to thingy view
+          // TODO push new route
+          // eslint-disable-next-line no-debugger
+          debugger;
+        } catch (e) {
+          // error, show error, user as to enter new creds
+          // eslint-disable-next-line no-debugger
+          debugger;
+        }
+      }
     },
     clear() {
-      this.username = "";
+      this.email = "";
       this.password = "";
       this.$refs.observer.reset();
     }
