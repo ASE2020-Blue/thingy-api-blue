@@ -24,9 +24,12 @@ services:
         - backend
       environment:
         # TODO Don't work here, find a solution
-        - NODE_ENV=production
+        #   for the moment, place in the dockerfile
         - VUE_APP_API_BASE_URL=https://thingy-blue.xyz/api
+        - ENABLE_SENTRY=true
       env_file:
+        # TODO don't work here. They aren't used in the vue build process
+        #   for the moment, copy them and cat them in one file in the dockerfile
         - .env
         - .secrets.env
       restart: unless-stopped
@@ -64,6 +67,7 @@ services:
             - postgres
         environment:
             - NODE_ENV=production
+            - ENABLE_SENTRY=true
         env_file:
             - .env
             - .secrets.env
@@ -105,6 +109,7 @@ services:
             dockerfile: docker/messenger/Dockerfile
         environment:
             - NODE_ENV=production
+            - ENABLE_SENTRY=true
         env_file:
             - .env
             - .secrets.env

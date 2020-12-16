@@ -10,9 +10,11 @@ WORKDIR /root/app
 COPY ./frontend /root/app
 
 ENV VUE_APP_API_BASE_URL=https://thingy-blue.xyz/api
+ENV ENABLE_SENTRY=true
 
-RUN yarn install
-RUN yarn build
+COPY .env .secrets.env /root/app/
+
+RUN cat .env .secrets.env > .env.production && yarn install && yarn build
 
 VOLUME [ "/root/app" ]
 
