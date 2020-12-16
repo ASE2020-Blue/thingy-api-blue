@@ -23,6 +23,7 @@ services:
       depends_on:
         - backend
       environment:
+        # TODO Don't work here, find a solution
         - NODE_ENV=production
         - VUE_APP_API_BASE_URL=https://thingy-blue.xyz/api
       env_file:
