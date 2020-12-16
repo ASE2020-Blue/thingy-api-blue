@@ -14,6 +14,7 @@ export class GrpcThingyPersistenceClient implements IThingyPersistenceClient {
 
     constructor(host: string, port: number) {
         // FIXME race promises to connect to service as the other service might not be up yet
+        //  client.waitForReady(new Date().getTime()+ 2000, e => console.error(e)) waits for 2s
         this.grpcClient = new ThingyPersistenceClient(
             `${host}:${port}`,
             credentials.createInsecure()
