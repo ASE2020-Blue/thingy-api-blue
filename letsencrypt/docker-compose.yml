@@ -6,9 +6,3 @@ letsencrypt-nginx-container:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    networks:
-      - docker-network
-
-networks:
-  docker-network:
-    driver: bridge
