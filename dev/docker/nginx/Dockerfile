@@ -9,14 +9,16 @@ WORKDIR /root/app
 
 COPY ./frontend /root/app
 
-ENV NODE_ENV=production
 ENV VUE_APP_API_BASE_URL=https://thingy-blue.xyz/api
 
-RUN yarn install && yarn build
+RUN yarn install
+RUN yarn build
 
 VOLUME [ "/root/app" ]
 
 FROM nginx:1.18.0-alpine as production-build
+
+ENV NODE_ENV=production
 
 COPY --from=builder /root/app/dist /usr/share/nginx/html
 
