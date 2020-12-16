@@ -15,7 +15,7 @@ staging=0 # Set to 1 if you're testing your setup to avoid hitting request limit
 if ! [ -e $docker_compose_file ]; then
   >&2 echo "docker_compose file not existed"
   exit 1
-elif ! docker_compose -f $docker_compose_file config > /dev/null; then
+elif ! docker-compose -f $docker_compose_file config > /dev/null; then
   >&2 echo "Failed to read the configuration of the docker compose"
   exit 1
 fi
