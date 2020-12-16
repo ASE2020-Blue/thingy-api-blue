@@ -40,7 +40,6 @@ services:
         env_file:
             - .env
         environment:
-            - "APP_BASE_URL=http://localhost:8081"
             - "VUE_APP_API_BASE_URL=http://localhost:8080"
         restart: always
         ports:
