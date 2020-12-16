@@ -14,7 +14,7 @@ ENV ENABLE_SENTRY=true
 
 COPY .env .secrets.env /root/app/
 
-RUN cat .env .secrets.env > .env.production && yarn install && yarn build
+RUN cat .env .secrets.env > .env.production && rm .env .secrets.env && cat .env.production && env && yarn install && yarn build
 
 VOLUME [ "/root/app" ]
 
