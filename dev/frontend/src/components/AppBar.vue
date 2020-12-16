@@ -28,11 +28,15 @@ export default {
   computed: {
     ...mapGetters(["isConnected"])
   },
+  created() {
+    console.log(this.$cookies.get("token"));
+  },
   methods: {
     logout() {
       Authentication.logout()
         .then(() => {
           this.$store.commit("logoutUser");
+          this.$cookies.remove("token");
           router.push("login");
         })
         .catch(error => console.error(error));

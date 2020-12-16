@@ -8,6 +8,9 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from "vue-apexcharts";
 import { validate } from "vee-validate";
+import VueCookies from "vue-cookies";
+Vue.use(VueCookies);
+// import VueCookies from "vue-cookies";
 
 if (process.env.NODE_ENV === "production") {
   const {

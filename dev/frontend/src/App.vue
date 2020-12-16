@@ -9,14 +9,18 @@
 
 <script>
 import AppBar from "@/components/AppBar";
+import router from "./router";
+
 export default {
   name: "App",
 
   components: { AppBar },
 
-  data: () => ({
-    //
-  }),
-  created() {}
+  created() {
+    if (this.$cookies.get("token")) {
+      this.$store.commit("initToken", this.$cookies.get("token"));
+      router.push("thingies");
+    }
+  }
 };
 </script>
