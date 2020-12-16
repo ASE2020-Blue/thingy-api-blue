@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>Blue thingy</v-app-bar>
+    <AppBar />
     <v-main>
       <router-view />
     </v-main>
@@ -8,13 +8,15 @@
 </template>
 
 <script>
+import AppBar from "@/components/AppBar";
 export default {
   name: "App",
 
-  components: {},
+  components: { AppBar },
 
   data: () => ({
     //
-  })
+  }),
+  created() {}
 };
 </script>

@@ -14,20 +14,20 @@ const localAuth = passport.authenticate('local');
  * and return it in a property called: `bearerToken`.
  */
 router.post('/login', localAuth, (ctx) => {
-    ctx.status = 200
-    // have to explicitly specify json as accepted response to get a token back
-    if ('accept' in ctx.req.headers && ctx.accepts("json"))
-        ctx.body = {
-            bearerToken: generateJwt(ctx.req.user)
-        };
+  ctx.status = 200
+  // have to explicitly specify json as accepted response to get a token back
+  if ('accept' in ctx.req.headers && ctx.accepts("json"))
+  ctx.body = {
+    bearerToken: generateJwt(ctx.req.user)
+  };
 });
 
 router.get('/logout', (ctx) => {
     if (ctx.isAuthenticated()) {
         ctx.logout();
     }
-    // TODO switch between accept header
-    ctx.redirect('/auth/login');
+    // route vue router
+    ctx.redirect('/login');
 });
 
 module.exports = router;

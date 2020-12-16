@@ -7,5 +7,19 @@ export default {
         .then(res => resolve(res))
         .catch(error => reject(error));
     });
+  },
+  logout() {
+    return new Promise(resolve => {
+      Repository.get("/auth/logout")
+        .then(res => resolve(res))
+        .catch(error => {
+          // to avoid having an error in views
+          try {
+            resolve(error);
+          } catch (e) {
+            // nothing
+          }
+        });
+    });
   }
 };

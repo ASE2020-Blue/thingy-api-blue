@@ -10,7 +10,11 @@ import VueApexCharts from "vue-apexcharts";
 import { validate } from "vee-validate";
 
 if (process.env.NODE_ENV === "production") {
-  const { VUE_APP_FRONTEND_SENTRY_DSN, VUE_APP_ENABLE_SENTRY, VUE_APP_DEBUG_SENTRY } = process.env;
+  const {
+    VUE_APP_FRONTEND_SENTRY_DSN,
+    VUE_APP_ENABLE_SENTRY,
+    VUE_APP_DEBUG_SENTRY
+  } = process.env;
   Sentry.init({
     Vue,
     dsn: VUE_APP_FRONTEND_SENTRY_DSN,

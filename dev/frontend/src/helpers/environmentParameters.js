@@ -1,26 +1,26 @@
 export const ENV_PARAMETERS = [
   {
     value: "TEMPERATURE",
-    key: "temp",
+    key: "temp"
   },
   {
     value: "HUMIDITY",
-    key: "humidity",
+    key: "humidity"
   },
   {
     value: "AIR_QUALITY",
-    key: "air",
+    key: "air"
   },
   {
     value: "AIR_PRESSURE",
-    key: "pres",
+    key: "pres"
   },
   {
     value: "CO2_EQUIV",
-    key: "co2",
+    key: "co2"
   },
   {
     value: "LIGHT",
-    key: "light",
-  },
+    key: "light"
+  }
 ];

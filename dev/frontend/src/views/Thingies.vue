@@ -28,14 +28,14 @@
       <v-row class="d-flex  justify-space-between mb-3">
         <v-col cols="8" sm="4" class="pa-2">
           <v-select
-              style="padding-top: 20px"
-              :items="thingies"
-              item-text="uuid"
-              item-value="uuid"
-              label="Your thingies"
-              v-model="selectedThingy"
-              outlined
-              return-object
+            style="padding-top: 20px"
+            :items="thingies"
+            item-text="uuid"
+            item-value="uuid"
+            label="Your thingies"
+            v-model="selectedThingy"
+            outlined
+            return-object
           />
         </v-col>
 
@@ -58,16 +58,18 @@
           </p>
           <v-radio-group v-model="selectedPeriod" max="1">
             <v-radio
-                v-for="reportPeriod in reportPeriods"
-                :key="reportPeriod"
-                :label="`last ${reportPeriod} days`"
-                :value="reportPeriod"
+              v-for="reportPeriod in reportPeriods"
+              :key="reportPeriod"
+              :label="`last ${reportPeriod} days`"
+              :value="reportPeriod"
             ></v-radio>
             <v-radio
-                v-if="selectedThingyLastLocalisation"
-                key="entireLastLocation"
-                :label="`last location : ${selectedThingyLastLocalisation.locationName}`"
-                value="entireLastLocation"
+              v-if="selectedThingyLastLocalisation"
+              key="entireLastLocation"
+              :label="
+                `last location : ${selectedThingyLastLocalisation.locationName}`
+              "
+              value="entireLastLocation"
             ></v-radio>
           </v-radio-group>
         </v-col>
@@ -104,15 +106,15 @@ export default {
       isLoading: true,
       selectedEnvParams: [],
       dateFrom: undefined,
-      dateTo: today,
+      dateTo: today
     };
   },
   watch: {
     selectedThingy(value) {
       this.selectedThingy = value;
-      this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0]
+      this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0];
       if (!this.selectedThingyLastLocalisation && this.isLastLocation()) {
-        this.selectedPeriod = this.reportPeriods[0]
+        this.selectedPeriod = this.reportPeriods[0];
       } else {
         this.loadEnvParamValues();
       }
@@ -120,7 +122,7 @@ export default {
     selectedPeriod(value) {
       this.selectedPeriod = value;
       if (this.isLastLocation()) {
-        this.dateFrom= new Date(this.selectedThingyLastLocalisation.createdAt)
+        this.dateFrom = new Date(this.selectedThingyLastLocalisation.createdAt);
       } else {
         this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
       }
@@ -128,23 +130,23 @@ export default {
     },
     selectedEnvParam() {
       this.loadEnvParamValues();
-    },
+    }
   },
   created() {
     this.selectedPeriod = this.reportPeriods[0];
     this.envParams = ENV_PARAMETERS;
     this.selectedEnvParam = this.envParams[0];
     Thingies.getAllThingies()
-      .then((res) => {
+      .then(res => {
         this.thingies = res.data;
         this.thingies.sort((a, b) => (a.uuid > b.uuid ? 1 : -1));
         if (this.thingies.length > 0) {
-          this.selectedThingy = this.thingies[0]
+          this.selectedThingy = this.thingies[0];
           if (this.selectedThingy.locationHistories.length > 0)
-            this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0]
-        };
+            this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0];
+        }
       })
-      .catch((err) => console.error(err))
+      .catch(err => console.error(err))
       .finally((this.isLoading = false));
   },
   methods: {
@@ -153,30 +155,30 @@ export default {
       this.graphSeries = [];
     },
     isLastLocation() {
-      return this.selectedPeriod === "entireLastLocation"
+      return this.selectedPeriod === "entireLastLocation";
     },
     loadEnvParamValues() {
       if (this.selectedThingy) {
         const promises = [];
-        this.envParams.forEach((envParam) => {
+        this.envParams.forEach(envParam => {
           const params = {
             dateFrom: this.dateFrom,
             dateTo: this.dateTo,
-            envParam: envParam.value,
-          }
+            envParam: envParam.value
+          };
 
           promises.push(
             Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
           );
         });
         Promise.all(promises)
-          .then((resAll) => {
+          .then(resAll => {
             this.graphSeries = resAll;
           })
-          .catch((err) => console.error(err));
+          .catch(err => console.error(err));
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

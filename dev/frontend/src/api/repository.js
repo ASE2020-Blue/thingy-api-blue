@@ -28,7 +28,6 @@ httpClient.interceptors.response.use(
       router.currentRoute.name !== "Login"
     ) {
       // TODO feedback?
-      // store.dispatch("logout");
       router.push("login");
     }
     return Promise.reject(responseError);
