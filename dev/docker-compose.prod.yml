@@ -16,23 +16,35 @@ services:
             - pgdata:/var/lib/postgresql/data
 
     nginx:
-      image: nginx:1.15-alpine
-      build:
-        context: .
-        dockerfile: docker/frontend/Dockerfile.prod
+      image: nginx:1.18.0-alpine
       depends_on:
         - backend
-      environment:
-        - NODE_ENV=production
-      env_file:
-        - .env
       restart: unless-stopped
       volumes:
-        - ./frontend:/root/app
+        # Mount the build frontend in the server target folder
+        - ./frontend/dist:/usr/share/nginx/html
+        # Nginx config file
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-        - ./frontend/dist:/usr/share/nginx/html/app/dist
+        # Volumes shared with the certbot service to share/update the certificates
+        - ./docker/nginx/certbot/conf:/etc/letsencrypt
+        - ./docker/nginx/certbot/www:/var/www/certbot
       ports:
         - "80:80"
+        - "443:443"
+      command:
+        # This makes nginx reload its configuration (and certificates) every six hours
+        # in the background and launches nginx in the foreground.
+        "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+    certbot:
+        image: certbot/certbot
+        volumes:
+          - ./docker/nginx/certbot/conf:/etc/letsencrypt
+          - ./docker/nginx/certbot/www:/var/www/certbot
+        entrypoint:
+            # This will check if your certificate is up for renewal every 12 hours
+            # as recommended by Let’s Encrypt.
+            "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
     backend:
         build:
@@ -42,8 +54,10 @@ services:
             - postgres
         environment:
             - NODE_ENV=production
+            - ENABLE_SENTRY=true
         env_file:
             - .env
+            - .secrets.env
         ports:
             - "8080:8080"
         volumes:
@@ -82,6 +96,7 @@ services:
             dockerfile: docker/messenger/Dockerfile
         environment:
             - NODE_ENV=production
+            - ENABLE_SENTRY=true
         env_file:
             - .env
             - .secrets.env

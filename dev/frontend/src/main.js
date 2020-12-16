@@ -10,12 +10,12 @@ import VueApexCharts from "vue-apexcharts";
 import { validate } from "vee-validate";
 
 if (process.env.NODE_ENV === "production") {
-  const { FRONTEND_SENTRY_DSN, ENABLE_SENTRY, DEBUG_SENTRY } = process.env;
+  const { VUE_APP_FRONTEND_SENTRY_DSN, VUE_APP_ENABLE_SENTRY, VUE_APP_DEBUG_SENTRY } = process.env;
   Sentry.init({
     Vue,
-    dsn: FRONTEND_SENTRY_DSN,
-    enabled: ENABLE_SENTRY === "true" || ENABLE_SENTRY === "1",
-    debug: DEBUG_SENTRY === "true" || DEBUG_SENTRY === "1",
+    dsn: VUE_APP_FRONTEND_SENTRY_DSN,
+    enabled: VUE_APP_ENABLE_SENTRY === "true" || VUE_APP_ENABLE_SENTRY === "1",
+    debug: VUE_APP_DEBUG_SENTRY === "true" || VUE_APP_DEBUG_SENTRY === "1",
     autoSessionTracking: true,
     integrations: [new Integrations.BrowserTracing()],
 
