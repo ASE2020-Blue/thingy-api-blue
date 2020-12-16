@@ -26,10 +26,7 @@ import router from "@/router";
 export default {
   name: "AppBar",
   computed: {
-    ...mapGetters(["isConnected"])
-  },
-  created() {
-    console.log(this.$cookies.get("token"));
+    ...mapGetters(["isConnected"]),
   },
   methods: {
     logout() {
