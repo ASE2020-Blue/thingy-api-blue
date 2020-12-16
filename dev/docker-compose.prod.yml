@@ -24,7 +24,6 @@ services:
     #     - backend
       environment:
         - NODE_ENV=production
-        - DOMAIN=thingy-blue.xyz
       env_file:
         - .env
       restart: unless-stopped
