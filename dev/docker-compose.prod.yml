@@ -19,7 +19,7 @@ services:
       image: nginx:1.18.0-alpine
       build:
         context: .
-        dockerfile: docker/frontend/Dockerfile.prod
+        dockerfile: docker/nginx/Dockerfile
       depends_on:
         - backend
       environment:
