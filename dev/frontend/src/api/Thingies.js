@@ -1,14 +1,15 @@
 import Repository from "./repository";
-import { appendParamsToUrl } from "@/api/appendParamsToUrl";
+import { appendParamsToUrl } from "./appendParamsToUrl";
 
 const resource = "/thingy";
+
 export default {
   getAllThingies() {
     return Repository.get(`${resource}`);
   },
-  getLastLocation(thingyUuid, params) {
+  getThingyLocations(thingyUuid, params) {
     return Repository.get(
-      `${resource}/${thingyUuid}/lastLocation`, // TODO
+      `${resource}/${thingyUuid}/locationHistories`,
       params
     );
   },
@@ -19,9 +20,5 @@ export default {
         params
       )
     );
-  },
-  createEnvironmentValues(params) {
-    // todo: remove
-    return Repository.put(`environmentParamsValue`, params);
-  },
+  }
 };

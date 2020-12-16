@@ -4,8 +4,25 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
+  state: {
+    token: ""
+  },
+  mutations: {
+    initToken(state, payload) {
+      state.token = payload;
+    },
+    loginUser(state, payload) {
+      state.token = payload;
+    },
+    logoutUser(state) {
+      state.token = "";
+    }
+  },
+  getters: {
+    isConnected: state => {
+      return state.token !== "";
+    }
+  },
   actions: {},
   modules: {}
 });

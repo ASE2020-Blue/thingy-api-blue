@@ -67,13 +67,13 @@ export default {
       dateFrom: new Date(),
       dateTo: new Date(),
       min: [],
-      max: [],
+      max: []
     };
   },
   watch: {
     series() {
       this.loadData();
-    },
+    }
   },
   methods: {
     loadData() {
@@ -83,11 +83,11 @@ export default {
         const values = [];
         let data = {
           name: this.envParams[index].value,
-          data: [],
+          data: []
         };
 
         const xaxis = [];
-        serie.data.forEach((envParamValue) => {
+        serie.data.forEach(envParamValue => {
           data.data.push(envParamValue.value);
           xaxis.push(getFormattedDatetime(envParamValue.createdAt));
         });
@@ -110,49 +110,49 @@ export default {
             top: 18,
             left: 7,
             blur: 10,
-            opacity: 0.2,
+            opacity: 0.2
           },
           toolbar: {
-            show: false,
-          },
+            show: false
+          }
         },
         colors: ["#77B6EA", "#545454"],
         stroke: {
-          curve: "smooth",
+          curve: "smooth"
         },
         grid: {
           borderColor: "#e7e7e7",
           row: {
             colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-            opacity: 0.5,
-          },
+            opacity: 0.5
+          }
         },
         xaxis: {
           labels: {
-            show: false,
+            show: false
           },
-          categories: this.xaxis[index],
+          categories: this.xaxis[index]
         },
         yaxis: {
           title: {
-            text: param[0].name,
+            text: param[0].name
           },
           min: this.min[index] - 5,
-          max: this.max[index] + 5,
+          max: this.max[index] + 5
         },
         legend: {
           position: "top",
           horizontalAlign: "right",
           floating: true,
           offsetY: -25,
-          offsetX: -5,
-        },
+          offsetX: -5
+        }
       };
-    },
+    }
   },
   created() {
     this.loadData();
-  },
+  }
 };
 </script>
 

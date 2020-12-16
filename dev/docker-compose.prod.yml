@@ -1,0 +1,119 @@
+version: '3.8'
+
+
+services:
+    postgres:
+        build:
+            context: ./docker/postgres/
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        restart: always
+        ports:
+            - "5432:5432"
+        volumes:
+            # Use named volume, see at the end of the file
+            - pgdata:/var/lib/postgresql/data
+
+    nginx:
+      image: nginx:1.18.0-alpine
+      depends_on:
+        - backend
+      restart: unless-stopped
+      volumes:
+        # Mount the build frontend in the server target folder
+        - ./frontend/dist:/usr/share/nginx/html
+        # Nginx config file
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        # Volumes shared with the certbot service to share/update the certificates
+        - ./docker/nginx/certbot/conf:/etc/letsencrypt
+        - ./docker/nginx/certbot/www:/var/www/certbot
+      ports:
+        - "80:80"
+        - "443:443"
+      command:
+        # This makes nginx reload its configuration (and certificates) every six hours
+        # in the background and launches nginx in the foreground.
+        "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+    certbot:
+        image: certbot/certbot
+        volumes:
+          - ./docker/nginx/certbot/conf:/etc/letsencrypt
+          - ./docker/nginx/certbot/www:/var/www/certbot
+        entrypoint:
+            # This will check if your certificate is up for renewal every 12 hours
+            # as recommended by Let’s Encrypt.
+            "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+    backend:
+        build:
+            context: .
+            dockerfile: docker/backend/Dockerfile.prod
+        depends_on:
+            - postgres
+        environment:
+            - NODE_ENV=production
+            - ENABLE_SENTRY=true
+        env_file:
+            - .env
+            - .secrets.env
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./backend:/root/app
+            # Avoid shadowing the node_modules folder
+            # https://stackoverflow.com/a/32785014/3771148
+            # Install is necessary for CI purposes for example
+            # But for dev, install dependencies locally
+            - /root/app/node_modules
+
+    node-red-notifier:
+        build:
+            context: .
+            dockerfile: docker/node-red-notifier/Dockerfile
+        environment:
+            - NODE_ENV=production
+        env_file:
+            - .env
+            - .secrets.env
+        restart: always
+        ports:
+            - "1880:1880"
+        volumes:
+            - ./node-red-notifier-data:/data
+
+    # For persisting sessions related elements, like in the messenger app
+    redis:
+        image: redis:6.0-alpine
+        command: redis-server --appendonly yes # Persists the data in docker
+        env_file:
+            - .env
+
+    messenger:
+        build:
+            context: .
+            dockerfile: docker/messenger/Dockerfile
+        environment:
+            - NODE_ENV=production
+            - ENABLE_SENTRY=true
+        env_file:
+            - .env
+            - .secrets.env
+        depends_on:
+            - redis
+        volumes:
+            # Avoid shadowing the node_modules folder
+            # https://stackoverflow.com/a/32785014/3771148
+            # Install is necessary for CI purposes for example
+            # But for dev, install dependencies locally
+            - ./messenger-app:/root/app
+            - /root/app/node_modules
+
+volumes:
+    pgdata:
+        # Let docker handle internally the storage of this volume
+        # to prune the volume and start new with the database, use:
+        #   `docker volume prune ase-blue-pgdata-prod`
+        # name: ase-blue-pgdata-prod
+        name: ase-blue-pgdata-prod

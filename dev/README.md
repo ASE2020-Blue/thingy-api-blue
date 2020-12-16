@@ -1,7 +1,45 @@
 # Project requirements
 [Durand doc](https://duranda.github.io/ase2020-docs/project-2020)
 
-# GPS
+# Seed db
+After running the backend service:
+```shell
+docker exec dev_backend_1 yarn run db:seed
+```
+
+# Error/Performance logging
+* [GitHub - cheeaun/javascript-error-logging: A collection of JavaScript error logging services, resources and shiny things.](https://github.com/cheeaun/javascript-error-logging)
+* [Sentry for Education | Sentry](https://sentry.io/for/education/)
+* [Pricing Plans — Stability and Error Monitoring  |  Bugsnag](https://www.bugsnag.com/pricing)
+* [Raygun Pricing](https://raygun.com/pricing)
+* [Priced For You - TrackJS](https://trackjs.com/pricing/)
+* [User feedback is priceless but ... | Usersnap Pricing](https://usersnap.com/pricing)
+
+**Choice**: [Sentry](sentry.io) as it is free for students, heard about it already (through ads, definitely worked),
+and also announced to be open-source (:shrug:).
+
+## Sentry articles/documentations
+[Sentry](sentry.io) is an open-source error tracking that is free for students.
+
+### Articles
+* Node: [Usage | Sentry Documentation](https://docs.sentry.io/clients/node/usage/)
+* [Vue | Sentry Documentation](https://docs.sentry.io/platforms/javascript/guides/vue/)
+    * Doesn't need to add middleware or what so ever. Does it all with the Vue ref already.
+* [Express | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/express/)
+* [Koa | Sentry Documentation](https://docs.sentry.io/platforms/node/guides/koa/)
+---
+More in depth doc:
+* [Transaction Summary | Sentry Documentation](https://docs.sentry.io/product/performance/transaction-summary/)
+* [Add Context for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/context/)
+* [Breadcrumbs for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/enriching-events/breadcrumbs/)
+* [Source Maps for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/sourcemaps/)
+* [TypeScript for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/typescript/)
+* [Integrations for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/configuration/integrations/)
+* [Performance Monitoring for Node.js | Sentry Documentation](https://docs.sentry.io/platforms/node/performance/)
+
+
+# Old topics
+## GPS
 Took 75 seconds to get
 
     {

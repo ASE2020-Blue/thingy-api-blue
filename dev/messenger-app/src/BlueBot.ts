@@ -1,16 +1,19 @@
 import { Middleware, Telegraf } from 'telegraf';
 import { TelegrafOptions } from 'telegraf/typings/telegraf';
 import { Message } from 'telegraf/typings/telegram-types';
+import * as Debug from 'debug';
 
 import { BotSceneSessionContext } from './context';
 
-import { ThingyLocalization } from './proto/thingy_pb';
-import { IPersistLocalizationClient } from './services/client/IPersistLocalizationClient';
+import { ThingyLocation } from './proto/thingy_pb';
+import { IThingyPersistenceClient } from './services/client/IThingyPersistenceClient';
 
-import { ConfigureLocalizationScene } from './stage/scenes/ConfigureLocalizationScene';
-import { ConfigurePendingLocalizationScene } from './stage/scenes/ConfigurePendingLocalizationScene';
+import { ConfigureLocationScene } from './stage/scenes/ConfigureLocationScene';
+import { ConfigurePendingLocationScene } from './stage/scenes/ConfigurePendingLocationScene';
 
 import { fgRed, reset } from './helpers/consoleColors';
+
+const debug = Debug('messenger:BlueBot');
 
 /**
  * In addition to the help commands, we can register the `help` and `setlocation` commands to the bot father with:
@@ -29,19 +32,20 @@ import { fgRed, reset } from './helpers/consoleColors';
  */
 export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<TContext> {
 
-    constructor(token: string, sessionMiddleware: Middleware<TContext>, stageManagerMiddleware: Middleware<TContext>,
-                persistLocalizationClient: IPersistLocalizationClient, options? : TelegrafOptions) {
+    constructor(token: string, persistLocalizationClient: IThingyPersistenceClient,
+                middlewares?: Array<Middleware<TContext>>, options? : TelegrafOptions) {
         super(token, options);
 
         this.context.persistLocalizationClient = persistLocalizationClient;
 
-        this.use(sessionMiddleware, stageManagerMiddleware);
+        if (middlewares)
+            this.use(...middlewares);
 
         this.start(this.onStart);
         this.help(this.onHelp);
 
-        const { USER_REFUSE_SETTING_NEW_LOCATION } = ConfigureLocalizationScene;
-        const { USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocalizationScene;
+        const { USER_REFUSE_SETTING_NEW_LOCATION } = ConfigureLocationScene;
+        const { USER_REFUSE_PENDING_CONFIGURATION } = ConfigurePendingLocationScene;
         this.action([USER_REFUSE_PENDING_CONFIGURATION, USER_REFUSE_SETTING_NEW_LOCATION], this.onRefuseActions);
         this.on('callback_query', this.onCallbackQuery);
 
@@ -55,21 +59,18 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         await reply('Welcome on the Telegram bot of group 🔷🥳');
 
         const chatId = from.id;
-        console.log(
-            `Started talking with: ${from.first_name} ${from.last_name}` +
-            `(@${from.username} - ${chatId})`
-        );
+        debug(`Started talking with: ${from.first_name} ${from.last_name} (@${from.username} - ${chatId})`);
         if (! process.env.DEV_ID) {
             process.env.DEV_ID = chatId.toString();
-            console.log(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
+            debug(`${fgRed}Set DEV_ID in .env file: ${chatId}${reset}`);
         }
 
         try {
-            const thingies: Array<ThingyLocalization> = await persistLocalizationClient.getPendingLocation();
+            const thingies: Array<ThingyLocation> = await persistLocalizationClient.getPendingLocation();
 
-            return await ConfigurePendingLocalizationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(ctx, thingies);
+            return await ConfigurePendingLocationScene.ASK_IF_USER_WANTS_TO_CONFIGURE(ctx, thingies);
         } catch (error) {
-            console.error('Error while requesting pending locations', error);
+            debug(`${fgRed}Error while requesting pending locations:${reset} %O`, error);
 
             return Promise.reject(error);
         }
@@ -87,12 +88,13 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
      *
      * TODO improve to combine in an object the key to bind the action and the action to be done
      */
-    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown }: TContext): Promise<Message> {
+    private onRefuseActions ({ callbackQuery: { data }, reply, replyWithMarkdown, session }: TContext): Promise<Message> {
         switch (data) {
-            case ConfigurePendingLocalizationScene.USER_REFUSE_PENDING_CONFIGURATION:
-                return reply('No pressure 👍\nYou can configure them any them');
+            case ConfigurePendingLocationScene.USER_REFUSE_PENDING_CONFIGURATION:
+                session.thingiesUuid = undefined;
+                return reply('No pressure 👍\nYou can configure them any time');
 
-            case ConfigureLocalizationScene.USER_REFUSE_SETTING_NEW_LOCATION:
+            case ConfigureLocationScene.USER_REFUSE_SETTING_NEW_LOCATION:
                 return replyWithMarkdown('NP!\nIf you change your mind, use the command `/setlocation [thingy-name]`');
 
             default:
@@ -109,16 +111,16 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
      * @private
      */
     private onCallbackQuery ({ callbackQuery: { data }, scene, session }: TContext) {
-        if (data.startsWith(ConfigurePendingLocalizationScene.USER_ACCEPT_PENDING_CONFIGURATION)) {
-            session.thingiesUuid = data.replace(new RegExp(ConfigurePendingLocalizationScene.USER_ACCEPT_PENDING_CONFIGURATION), '')
+        if (data.startsWith(ConfigurePendingLocationScene.USER_ACCEPT_PENDING_CONFIGURATION)) {
+            session.thingiesUuid = data.replace(new RegExp(ConfigurePendingLocationScene.USER_ACCEPT_PENDING_CONFIGURATION), '')
                 .split('/');
 
-            return scene.enter(ConfigurePendingLocalizationScene.ID);
+            return scene.enter(ConfigurePendingLocationScene.ID);
 
-        } else if (data.startsWith(ConfigureLocalizationScene.USER_ACCEPT_SETTING_NEW_LOCATION)) {
-            session.thingyUuid = data.replace(new RegExp(ConfigureLocalizationScene.USER_ACCEPT_SETTING_NEW_LOCATION), '');
+        } else if (data.startsWith(ConfigureLocationScene.USER_ACCEPT_SETTING_NEW_LOCATION)) {
+            session.thingyUuid = data.replace(new RegExp(ConfigureLocationScene.USER_ACCEPT_SETTING_NEW_LOCATION), '');
 
-            return scene.enter(ConfigureLocalizationScene.ID);
+            return scene.enter(ConfigureLocationScene.ID);
         }
     }
 
@@ -129,7 +131,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
 
         if (thingyUuid && location) {
             // TODO refactor - move to "shared" method
-            const thingyLocalization = new ThingyLocalization();
+            const thingyLocalization = new ThingyLocation();
             thingyLocalization.setLocation(location);
             thingyLocalization.setThingyUuid(thingyUuid);
 
@@ -139,8 +141,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
 
                 return;
             } catch (error) {
-                console.error('Error while setting new location...');
-                console.error(error);
+                debug(`${fgRed}Error while setting new location...${reset} %O`, error);
                 // FIXME, maybe, validate the existence of the thingy uuid on the server and see how to anser
                 await reply('Oups... got and error, let\'s try again! 🙃');
 
@@ -151,7 +152,7 @@ export class BlueBot<TContext extends BotSceneSessionContext> extends Telegraf<T
         // Even if it is empty, set it in the session, to make sure we will ask the name or not reuse a previous name
         session.thingyUuid = thingyUuid;
 
-        return scene.enter(ConfigureLocalizationScene.ID);
+        return scene.enter(ConfigureLocationScene.ID);
     }
 
     private onHelp ({ replyWithMarkdown }: TContext): Promise<Message> {

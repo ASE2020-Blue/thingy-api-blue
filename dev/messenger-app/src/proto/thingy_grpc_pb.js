@@ -5,15 +5,26 @@ var grpc = require('@grpc/grpc-js');
 var thingy_pb = require('./thingy_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 
-function serialize_ThingyLocalization(arg) {
-  if (!(arg instanceof thingy_pb.ThingyLocalization)) {
-    throw new Error('Expected argument of type ThingyLocalization');
+function serialize_ThingyLocation(arg) {
+  if (!(arg instanceof thingy_pb.ThingyLocation)) {
+    throw new Error('Expected argument of type ThingyLocation');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_ThingyLocalization(buffer_arg) {
-  return thingy_pb.ThingyLocalization.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_ThingyLocation(buffer_arg) {
+  return thingy_pb.ThingyLocation.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_ThingyValue(arg) {
+  if (!(arg instanceof thingy_pb.ThingyValue)) {
+    throw new Error('Expected argument of type ThingyValue');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_ThingyValue(buffer_arg) {
+  return thingy_pb.ThingyValue.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_google_protobuf_Empty(arg) {
@@ -36,29 +47,40 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 //
 // *
 // Implemented by the backend
-var PersistLocalizationService = exports.PersistLocalizationService = {
+var ThingyPersistenceService = exports.ThingyPersistenceService = {
   getPendingLocation: {
-    path: '/PersistLocalization/GetPendingLocation',
+    path: '/ThingyPersistence/GetPendingLocation',
     requestStream: false,
     responseStream: true,
     requestType: google_protobuf_empty_pb.Empty,
-    responseType: thingy_pb.ThingyLocalization,
+    responseType: thingy_pb.ThingyLocation,
     requestSerialize: serialize_google_protobuf_Empty,
     requestDeserialize: deserialize_google_protobuf_Empty,
-    responseSerialize: serialize_ThingyLocalization,
-    responseDeserialize: deserialize_ThingyLocalization,
+    responseSerialize: serialize_ThingyLocation,
+    responseDeserialize: deserialize_ThingyLocation,
   },
   setNewLocation: {
-    path: '/PersistLocalization/SetNewLocation',
+    path: '/ThingyPersistence/SetNewLocation',
     requestStream: false,
     responseStream: false,
-    requestType: thingy_pb.ThingyLocalization,
+    requestType: thingy_pb.ThingyLocation,
     responseType: google_protobuf_empty_pb.Empty,
-    requestSerialize: serialize_ThingyLocalization,
-    requestDeserialize: deserialize_ThingyLocalization,
+    requestSerialize: serialize_ThingyLocation,
+    requestDeserialize: deserialize_ThingyLocation,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
+  },
+  setNewValue: {
+    path: '/ThingyPersistence/SetNewValue',
+    requestStream: false,
+    responseStream: false,
+    requestType: thingy_pb.ThingyValue,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_ThingyValue,
+    requestDeserialize: deserialize_ThingyValue,
     responseSerialize: serialize_google_protobuf_Empty,
     responseDeserialize: deserialize_google_protobuf_Empty,
   },
 };
 
-exports.PersistLocalizationClient = grpc.makeGenericClientConstructor(PersistLocalizationService);
+exports.ThingyPersistenceClient = grpc.makeGenericClientConstructor(ThingyPersistenceService);

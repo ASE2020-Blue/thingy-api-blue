@@ -1,15 +1,21 @@
 const Router = require("koa-router");
-const router = new Router();
-const { locationHistory, thingy } = require("../models");
 
-const baseRoute = "/locationHistory"
-router.get(baseRoute, getAllLocationHistory)
-  // .put(baseRoute, createLocationHistory)
-  .delete(baseRoute  + "/:id", deleteLocationHistory)
+const { localOrJwtAuth } = require("../controllers/authentication");
+const { LocationHistory } = require("../models");
+
+const router = new Router({
+    prefix: "/locationHistory"
+});
+
+router
+    .use(localOrJwtAuth)
+    .get("/", getAllLocationHistory)
+    // .put("/", createLocationHistory)
+    .delete("/:id", deleteLocationHistory)
 
 async function getAllLocationHistory(ctx) {
-  ctx.body = await locationHistory.findAll()
-  ctx.status = 200;
+    ctx.body = await LocationHistory.findAll()
+    ctx.status = 200;
 }
 
 // async function createLocationHistory(ctx) {
@@ -26,10 +32,10 @@ async function getAllLocationHistory(ctx) {
 // }
 
 async function deleteLocationHistory(ctx) {
-  const location = await locationHistory.findByPk(ctx.params.id)
-  if (!location) ctx.throw(404, {'error': 'location not found'});
-  ctx.status = 200;
-  return location.destroy()
+    const location = await locationHistory.findByPk(ctx.params.id)
+    if (!location) ctx.throw(404, { 'error': 'location not found' });
+    ctx.status = 200;
+    return location.destroy()
 }
 
 module.exports = router

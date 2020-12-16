@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col :class="{ 'text-center': true }">
-          <h1>Your report</h1>
+          <h1>Blue thingy, your weather station</h1>
         </v-col>
       </v-row>
     </v-container>
@@ -32,7 +32,7 @@
             :items="thingies"
             item-text="uuid"
             item-value="uuid"
-            label="Available thingies"
+            label="Your thingies"
             v-model="selectedThingy"
             outlined
             return-object
@@ -63,6 +63,14 @@
               :label="`last ${reportPeriod} days`"
               :value="reportPeriod"
             ></v-radio>
+            <v-radio
+              v-if="selectedThingyLastLocalisation"
+              key="entireLastLocation"
+              :label="
+                `last location : ${selectedThingyLastLocalisation.locationName}`
+              "
+              value="entireLastLocation"
+            ></v-radio>
           </v-radio-group>
         </v-col>
       </v-row>
@@ -88,6 +96,7 @@ export default {
     return {
       thingies: undefined,
       selectedThingy: undefined,
+      selectedThingyLastLocalisation: undefined,
       reportPeriods: [7, 30],
       selectedPeriod: undefined,
       envValues: [],
@@ -97,34 +106,47 @@ export default {
       isLoading: true,
       selectedEnvParams: [],
       dateFrom: undefined,
-      dateTo: today,
+      dateTo: today
     };
   },
   watch: {
     selectedThingy(value) {
       this.selectedThingy = value;
-      this.loadEnvParamValues();
+      this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0];
+      if (!this.selectedThingyLastLocalisation && this.isLastLocation()) {
+        this.selectedPeriod = this.reportPeriods[0];
+      } else {
+        this.loadEnvParamValues();
+      }
     },
     selectedPeriod(value) {
       this.selectedPeriod = value;
-      this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
+      if (this.isLastLocation()) {
+        this.dateFrom = new Date(this.selectedThingyLastLocalisation.createdAt);
+      } else {
+        this.dateFrom = new Date(today.getTime() - value * 24 * 60 * 60 * 1000);
+      }
       this.loadEnvParamValues();
     },
     selectedEnvParam() {
       this.loadEnvParamValues();
-    },
+    }
   },
   created() {
     this.selectedPeriod = this.reportPeriods[0];
     this.envParams = ENV_PARAMETERS;
     this.selectedEnvParam = this.envParams[0];
     Thingies.getAllThingies()
-      .then((res) => {
+      .then(res => {
         this.thingies = res.data;
         this.thingies.sort((a, b) => (a.uuid > b.uuid ? 1 : -1));
-        if (this.thingies.length > 0) this.selectedThingy = this.thingies[0];
+        if (this.thingies.length > 0) {
+          this.selectedThingy = this.thingies[0];
+          if (this.selectedThingy.locationHistories.length > 0)
+            this.selectedThingyLastLocalisation = this.selectedThingy.locationHistories[0];
+        }
       })
-      .catch((err) => console.error(err))
+      .catch(err => console.error(err))
       .finally((this.isLoading = false));
   },
   methods: {
@@ -132,27 +154,31 @@ export default {
       this.envValues = [];
       this.graphSeries = [];
     },
+    isLastLocation() {
+      return this.selectedPeriod === "entireLastLocation";
+    },
     loadEnvParamValues() {
       if (this.selectedThingy) {
         const promises = [];
-        this.envParams.forEach((envParam) => {
+        this.envParams.forEach(envParam => {
           const params = {
             dateFrom: this.dateFrom,
             dateTo: this.dateTo,
-            envParam: envParam.value,
+            envParam: envParam.value
           };
+
           promises.push(
             Thingies.getEnvironmentValues(this.selectedThingy.uuid, params)
           );
         });
         Promise.all(promises)
-          .then((resAll) => {
+          .then(resAll => {
             this.graphSeries = resAll;
           })
-          .catch((err) => console.error(err));
+          .catch(err => console.error(err));
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
