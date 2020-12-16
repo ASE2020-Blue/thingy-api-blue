@@ -27,6 +27,7 @@ services:
         - VUE_APP_API_BASE_URL=https://thingy-blue.xyz/api
       env_file:
         - .env
+        - .secrets.env
       restart: unless-stopped
       volumes:
         # Mount the frontend to build it in the dockerfile
@@ -64,6 +65,7 @@ services:
             - NODE_ENV=production
         env_file:
             - .env
+            - .secrets.env
         ports:
             - "8080:8080"
         volumes:
