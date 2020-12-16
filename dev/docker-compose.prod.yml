@@ -17,21 +17,30 @@ services:
 
     nginx:
       image: nginx:1.15-alpine
-      build:
-        context: .
-        dockerfile: docker/frontend/Dockerfile.prod
-      depends_on:
-        - backend
+    #   build:
+    #     context: .
+    #     dockerfile: docker/frontend/Dockerfile.prod
+    #   depends_on:
+    #     - backend
       environment:
         - NODE_ENV=production
+        - DOMAIN=thingy-blue.xyz
       env_file:
         - .env
       restart: unless-stopped
       volumes:
-        - ./frontend:/root/app
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./docker/nginx/certbot/conf:/etc/letsencrypt
+        - ./docker/nginx/certbot/www:/var/www/certbot
       ports:
         - "80:80"
+        - "443:443"
+
+    certbot:
+        image: certbot/certbot
+        volumes:
+          - ./docker/nginx/certbot/conf:/etc/letsencrypt
+          - ./docker/nginx/certbot/www:/var/www/certbot
 
     backend:
         build:
